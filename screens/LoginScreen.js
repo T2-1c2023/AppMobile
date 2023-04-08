@@ -1,7 +1,13 @@
 import React, { Component, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, Image, Dimensions, ActivityIndicator, TextInput} from 'react-native';
+import { StyleSheet, View, Image, Dimensions, TextInput} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenManager, constante } from '../src/TokenManager';
+
+import { ActivityIndicator, MD2Colors, Text, Divider, Button } from 'react-native-paper';
+
+import { useTheme } from 'react-native-paper';
+import styles from '../src/styles/styles';
+import { TextHeader, DividerWithMiddleText, ButtonStandard } from '../src/styles/components';
 
 class LoginScreen extends Component {
     constructor(props) {
@@ -68,9 +74,28 @@ class LoginScreen extends Component {
             )
         } else {
             return (
-                <View style={styles.container}>
-                    <Text style={styles.text}>Login Screen</Text>
+                <View>
+                    <Image 
+                        style={styles.loginImage}
+                        source={require('../assets/images/login-header.png')}
+                    />
                     
+                    <TextHeader body="Bienvenido"/>
+
+                    <DividerWithMiddleText text="o"/>
+
+                    <Image 
+                        style={styles.LoginFingerPrintImage}
+                        source={require('../assets/images/login-header.png')}
+                    />
+
+                    <ButtonStandard
+                        onPress={() => { console.log("To be implemented") }}
+                        title="Usar Huella"
+                    />
+
+                    <DividerWithMiddleText text="o"/>
+
                     <TextInput
                         placeholder='username'
                         onChangeText={(input) => {
@@ -83,10 +108,12 @@ class LoginScreen extends Component {
                             this.setState({ password: input })
                         }}
                     />
-                    <Button
+
+
+                    {/* <Button
                         title="Login"
                         onPress={this.handleLogin}
-                    />
+                    /> */}
                 </View>
             );
         }
@@ -95,28 +122,24 @@ class LoginScreen extends Component {
 
 export default LoginScreen;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 22,
-    },
-    text: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    item: {
-        padding: 10,
-        fontSize: 18,
-        height: 44,
-    },
-});
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         paddingTop: 22,
+//     },
+    
+//     sectionHeader: {
+//         paddingTop: 2,
+//         paddingLeft: 10,
+//         paddingRight: 10,
+//         paddingBottom: 2,
+//         fontSize: 14,
+//         fontWeight: 'bold',
+//         backgroundColor: 'rgba(247,247,247,1.0)',
+//     },
+//     item: {
+//         padding: 10,
+//         fontSize: 18,
+//         height: 44,
+//     },
+// });

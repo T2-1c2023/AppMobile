@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, ActivityIndicator, View, Image} from 'react-native';
+import { StyleSheet, ActivityIndicator, View, Image } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Provider as PaperProvider } from 'react-native-paper';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -33,20 +35,22 @@ export default class App extends Component {
       );
     }
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={"LoginScreen"}>
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{ title: 'Welcome' }}
-          />
-          <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreen}
-            options={{ title: 'Welcome' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <PaperProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={"LoginScreen"}>
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{ title: 'Welcome' }}
+            />
+            <Stack.Screen
+              name="HomeScreen"
+              component={HomeScreen}
+              options={{ title: 'Welcome' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
     )
   };
 }
