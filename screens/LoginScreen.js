@@ -7,7 +7,7 @@ import { ActivityIndicator, MD2Colors, Text, Divider, Button, TextInput } from '
 
 import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
-import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink} from '../src/styles/BaseComponents';
+import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 
 class LoginScreen extends Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class LoginScreen extends Component {
         this.handleLogin = this.handleLogin.bind(this);
         this.state = {
             loading: true,
-            username: '',
+            email: '',
             password: ''
         }
     }
@@ -75,31 +75,31 @@ class LoginScreen extends Component {
         } else {
             return (
                 <View>
-                    <Image 
-                        style={styles.loginImage}
-                        source={require('../assets/images/login-header.png')}
-                    />
+                    
+                    <LoginImage/>
                     
                     <TextHeader body="Bienvenido"/>
 
                     <DividerWithMiddleText text="o"/>
 
-                    <Image 
-                        style={styles.LoginFingerPrintImage}
-                        source={require('../assets/images/login-header.png')}
-                    />
+                    {/* <View style={{ flex:1}}> */}
+                        <Image 
+                            style={styles.LoginFingerPrintImage}
+                            source={require('../assets/images/fingerprint.png')}
+                        />
 
-                    <ButtonStandard
-                        onPress={() => { console.log("To be implemented") }}
-                        title="Usar Huella"
-                    />
+                        <ButtonStandard
+                            onPress={() => { console.log("To be implemented") }}
+                            title="Usar Huella"
+                        />
+                    {/* </View> */}
 
                     <DividerWithMiddleText text="o"/>
 
                     <InputData
                         placeholder='Correo electrónico'
                         onChangeText={(input) => {
-                            this.setState({ username: input })
+                            this.setState({ email: input })
                         }}
                     />
                     <InputData
@@ -110,15 +110,23 @@ class LoginScreen extends Component {
                         }}
                     />
 
-                    <ButtonStandard
-                        onPress={() => { console.log("user: ", this.state.username, "contraseña: ", this.state.password) }}
-                        title="Entrar"
-                    />
-
                     <TextWithLink 
                         text="¿Olvidate tu contraseña?" 
                         linkedText="Registrate" 
-                        onPress={() => console.log("to be implemented")}  />
+                        onPress={() => console.log("to be implemented")}  
+                    />
+
+                    <ButtonStandard
+                        onPress={() => { console.log("user: ", this.state.email, "contraseña: ", this.state.password) }}
+                        title="Entrar"
+                    />
+
+                    <TextWithLink
+                        text="¿No tienes cuenta?"
+                        linkedText="Registrate"
+                        onPress={() => this.props.navigation.replace('RegisterScreen1')}
+                    />
+
                 </View>
             );
         }

@@ -5,7 +5,7 @@ import { useTheme } from 'react-native-paper';
 
 export default StyleSheet.create({
     loginImage: {
-        width: 100, 
+        aspectRatio: 488/537, 
         height: 140
     },
     headerText: {
@@ -15,7 +15,7 @@ export default StyleSheet.create({
         margin: 10,
     },
     LoginFingerPrintImage: {
-        width: 60, 
-        height: 90
+        aspectRatio: 1, 
+        height: 50
     },    
 });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import { Text, Divider, Button, TextInput, IconButton } from 'react-native-paper';
+import styles from './styles';
 
 export const TextHeader = (props) => {
     return (
@@ -64,5 +65,14 @@ export const TextWithLink = (props) => {
                 {props.linkedText}
             </Text>
         </Text>
+    )
+}
+
+export const LoginImage = (props) => {
+    return (
+        <Image
+            style={styles.loginImage}
+            source={require('../../assets/images/icon.png')}
+        />
     )
 }
