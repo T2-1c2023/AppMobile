@@ -1,13 +1,13 @@
 import React, { Component, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions, TextInput} from 'react-native';
+import { StyleSheet, View, Image, Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenManager, constante } from '../src/TokenManager';
 
-import { ActivityIndicator, MD2Colors, Text, Divider, Button } from 'react-native-paper';
+import { ActivityIndicator, MD2Colors, Text, Divider, Button, TextInput } from 'react-native-paper';
 
 import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
-import { TextHeader, DividerWithMiddleText, ButtonStandard } from '../src/styles/components';
+import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink} from '../src/styles/BaseComponents';
 
 class LoginScreen extends Component {
     constructor(props) {
@@ -96,24 +96,29 @@ class LoginScreen extends Component {
 
                     <DividerWithMiddleText text="o"/>
 
-                    <TextInput
-                        placeholder='username'
+                    <InputData
+                        placeholder='Correo electrónico'
                         onChangeText={(input) => {
                             this.setState({ username: input })
                         }}
                     />
-                    <TextInput
-                        placeholder='password'
+                    <InputData
+                        placeholder='Contraseña'
+                        secureTextEntry={true}
                         onChangeText={(input) => {
                             this.setState({ password: input })
                         }}
                     />
 
+                    <ButtonStandard
+                        onPress={() => { console.log("user: ", this.state.username, "contraseña: ", this.state.password) }}
+                        title="Entrar"
+                    />
 
-                    {/* <Button
-                        title="Login"
-                        onPress={this.handleLogin}
-                    /> */}
+                    <TextWithLink 
+                        text="¿Olvidate tu contraseña?" 
+                        linkedText="Registrate" 
+                        onPress={() => console.log("to be implemented")}  />
                 </View>
             );
         }
