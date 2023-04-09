@@ -4,6 +4,7 @@ import { StyleSheet, ActivityIndicator, View, Image } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen1 from './screens/RegisterScreen1';
+import PinCodeScreen from './screens/PinCodeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -38,7 +39,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}>
+          <Stack.Navigator initialRouteName={"PinCodeScreen"}>
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
@@ -52,6 +53,10 @@ export default class App extends Component {
             <Stack.Screen
               name="RegisterScreen1"
               component={RegisterScreen1}
+            />
+            <Stack.Screen
+              name="PinCodeScreen"
+              component={PinCodeScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>
