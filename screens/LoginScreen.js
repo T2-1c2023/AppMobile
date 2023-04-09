@@ -1,5 +1,5 @@
 import React, { Component, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
+import { StyleSheet, View, Image, Dimensions, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenManager, constante } from '../src/TokenManager';
 
@@ -8,11 +8,14 @@ import { ActivityIndicator, MD2Colors, Text, Divider, Button, TextInput } from '
 import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
+import { auth } from "../config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 
 class LoginScreen extends Component {
     constructor(props) {
         super(props)
-        this.handleLogin = this.handleLogin.bind(this);
+        //this.handleLogin = this.handleLogin.bind(this);
         this.state = {
             loading: true,
             email: '',
@@ -20,8 +23,20 @@ class LoginScreen extends Component {
         }
     }
 
-    async handleLogin() {
-        try {
+    handleLogin = () => {
+        console.log('email:', this.state.email, 'password:', this.state.password)
+        signInWithEmailAndPassword(auth, this.state.email, this.state.password)
+        .then((userCredential) => {
+            console.log('Sign In Succesful!')
+            const user = userCredential.user;
+            updateToken
+            console.log(user)
+        })
+        .catch(error => {
+            console.log(error)
+            Alert.alert(error.message)
+        })
+        /*try {
             this.setState({ loading: true })
 
             const credentials = await this.getCredentials(this.state.username, this.state.password)
@@ -32,7 +47,7 @@ class LoginScreen extends Component {
             this.setState({ loading: false })
         } catch (e) {
             console.log(e);
-        }
+        }*/
     }
 
     async getCredentials(username, password) {
@@ -121,7 +136,7 @@ class LoginScreen extends Component {
                     />
 
                     <ButtonStandard
-                        onPress={() => { console.log("user: ", this.state.email, "contraseña: ", this.state.password) }}
+                        onPress={this.handleLogin}
                         title="Entrar"
                         marginTop={20}
                         marginBottom={10}
