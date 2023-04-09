@@ -11,6 +11,14 @@ export const TextHeader = (props) => {
     )
 }
 
+export const TextDetails = (props) => {
+    return (
+        <Text variant="labelMedium" style={props.style}>
+            {props.body}
+        </Text>
+    )
+}
+
 export const DividerWithMiddleText = (props) => {
     return (
         <View style={{ flexDirection: 'row', alignItems: 'center'}}>
