@@ -4,18 +4,25 @@ import { useTheme } from 'react-native-paper';
 // var { colors } = useTheme();
 
 export default StyleSheet.create({
+    container: {
+        backgroundColor: '#DED8E1',
+        flex: 1,
+        alignItems: 'center',
+    },
     loginImage: {
-        width: 100, 
-        height: 140
+        aspectRatio: 488/537, 
+        maxHeight: 140,
+        marginTop: 15,
+        marginBottom: 0,
     },
-    headerText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        margin: 10,
+    textHeader: {
+        marginTop: 0,
+        marginBottom: 20,
     },
-    LoginFingerPrintImage: {
-        width: 60, 
-        height: 90
-    },    
+    ImageLoginFingerPrint: {
+        aspectRatio: 1/1, 
+        maxWidth: 50,
+        alignSelf: 'center',
+        flexGrow: 1,
+    },
 });

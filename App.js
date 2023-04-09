@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, ActivityIndicator, View, Image } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
+import RegisterScreen1 from './screens/RegisterScreen1';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -29,7 +30,7 @@ export default class App extends Component {
     if (this.state.isLoading) {
       return (
         <Image
-          source={require('./assets/images/logo.png')}
+          source={require('./assets/images/icon.png')}
           style={{ width: 400, resizeMode: 'center' }}
         />
       );
@@ -47,6 +48,10 @@ export default class App extends Component {
               name="HomeScreen"
               component={HomeScreen}
               options={{ title: 'Welcome' }}
+            />
+            <Stack.Screen
+              name="RegisterScreen1"
+              component={RegisterScreen1}
             />
           </Stack.Navigator>
         </NavigationContainer>
