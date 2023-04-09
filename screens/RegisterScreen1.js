@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
+import { auth } from '../config/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default class RegisterScreen1 extends Component {
     constructor(props) {
@@ -11,6 +13,21 @@ export default class RegisterScreen1 extends Component {
             password: '',
         }
     }
+
+    handleCreateAccount = () => {
+        console.log('email:', this.state.email, 'password:', this.state.password)
+        createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
+        .then((userCredential) => {
+            console.log('Account created!')
+            const user = userCredential.user;
+            console.log(user)
+        })
+        .catch(error => {
+            console.log(error)
+            Alert.alert(error.message)
+        })
+    }
+
     render() {
         return (
             <View>
@@ -32,7 +49,7 @@ export default class RegisterScreen1 extends Component {
                 />
 
                 <ButtonStandard
-                    onPress={() => { console.log("user: ", this.state.username, "contraseña: ", this.state.password) }}
+                    onPress={this.handleCreateAccount}
                     title="Siguiente"
                 />
 

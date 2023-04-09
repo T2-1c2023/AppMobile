@@ -112,19 +112,19 @@ class LoginScreen extends Component {
                         marginBottom={10}
                     />
 
-                    <ButtonStandard
-                        onPress={() => { console.log("user: ", this.state.email, "contraseña: ", this.state.password) }}
-                        title="Entrar"
-                        marginTop={30}
-                        marginBottom={10}
-                    />
-
                     <TextWithLink
                         text="¿No tienes cuenta?"
                         linkedText="Registrate"
                         onPress={() => this.props.navigation.replace('RegisterScreen1')}
                         
-                        marginTop={100}
+                        marginTop={5}
+                    />
+
+                    <ButtonStandard
+                        onPress={() => { console.log("user: ", this.state.email, "contraseña: ", this.state.password) }}
+                        title="Entrar"
+                        marginTop={20}
+                        marginBottom={10}
                     />
 
                 </View>
