@@ -1,5 +1,5 @@
 import React, { Component, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, View, Image, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenManager, constante } from '../src/TokenManager';
 
@@ -26,7 +26,7 @@ class LoginScreen extends Component {
 
             const credentials = await this.getCredentials(this.state.username, this.state.password)
             await tokenManager.updateTokens(credentials.accessToken)
-    
+
             this.props.navigation.replace('HomeScreen')
 
             this.setState({ loading: false })
@@ -74,33 +74,27 @@ class LoginScreen extends Component {
             )
         } else {
             return (
-                <View>
-                    
-                    <LoginImage/>
-                    
-                    <TextHeader body="Bienvenido"/>
+                <View style={styles.container}>
 
-                    <DividerWithMiddleText text="o"/>
+                    <LoginImage />
 
-                    {/* <View style={{ flex:1}}> */}
-                        <Image 
-                            style={styles.LoginFingerPrintImage}
-                            source={require('../assets/images/fingerprint.png')}
-                        />
+                    <TextHeader
+                        body="Bienvenido"
+                        style={styles.textHeader} />
 
-                        <ButtonStandard
-                            onPress={() => { console.log("To be implemented") }}
-                            title="Usar Huella"
-                        />
-                    {/* </View> */}
+                    <DividerWithMiddleText text="o" />
 
-                    <DividerWithMiddleText text="o"/>
+                    <FingerPrintoOption />
+
+                    <DividerWithMiddleText text="o" />
 
                     <InputData
                         placeholder='Correo electrónico'
                         onChangeText={(input) => {
                             this.setState({ email: input })
                         }}
+                        marginTop={25}
+                        marginBottom={10}
                     />
                     <InputData
                         placeholder='Contraseña'
@@ -110,21 +104,27 @@ class LoginScreen extends Component {
                         }}
                     />
 
-                    <TextWithLink 
-                        text="¿Olvidate tu contraseña?" 
-                        linkedText="Registrate" 
-                        onPress={() => console.log("to be implemented")}  
+                    <TextWithLink
+                        text="¿Olvidaste tu contraseña?"
+                        linkedText="Restaurala"
+                        onPress={() => console.log("to be implemented")}
+                        marginTop={10}
+                        marginBottom={10}
                     />
 
                     <ButtonStandard
                         onPress={() => { console.log("user: ", this.state.email, "contraseña: ", this.state.password) }}
                         title="Entrar"
+                        marginTop={30}
+                        marginBottom={10}
                     />
 
                     <TextWithLink
                         text="¿No tienes cuenta?"
                         linkedText="Registrate"
                         onPress={() => this.props.navigation.replace('RegisterScreen1')}
+                        
+                        marginTop={100}
                     />
 
                 </View>
@@ -135,24 +135,29 @@ class LoginScreen extends Component {
 
 export default LoginScreen;
 
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         paddingTop: 22,
-//     },
-    
-//     sectionHeader: {
-//         paddingTop: 2,
-//         paddingLeft: 10,
-//         paddingRight: 10,
-//         paddingBottom: 2,
-//         fontSize: 14,
-//         fontWeight: 'bold',
-//         backgroundColor: 'rgba(247,247,247,1.0)',
-//     },
-//     item: {
-//         padding: 10,
-//         fontSize: 18,
-//         height: 44,
-//     },
-// });
+const FingerPrintoOption = () => {
+    return (
+        <View style={{ flexDirection: 'row', width: 250, height: 60 }}>
+            <View style={{ flex: .8, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                <Image
+                    style={{
+                        height: 50,
+                        width: 50,
+                        alignSelf: 'center',
+                        marginRight: 10,
+                    }}
+                    source={require('../assets/images/fingerprint.png')}
+                />
+
+            </View>
+            <View style={{ flexDirection: 'row', flex: 1.1, alignItems: 'center', justifyContent: 'flex-end' }}>
+                <ButtonStandard
+                    onPress={() => { console.log("To be implemented") }}
+                    title="Usar Huella"
+                    style={{ margin: 20 }}
+                />
+            </View>
+            <View style={{ flex: 0.1 }}></View>
+        </View>
+    )
+}
