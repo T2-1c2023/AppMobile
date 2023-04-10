@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Keyboard } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
 
@@ -15,14 +15,10 @@ export class PinInput extends Component {
             pin2: '',
             pin3: '',
             pin4: '',
-            p1Editable: true,
-            p2Editable: true,
-            p3Editable: true,
-            p4Editable: true,
         }
     }
 
-    handleInput() {
+    handleChange() {
         let input = this.state.pin1 + this.state.pin2 + this.state.pin3 + this.state.pin4
         this.props.callback(input)
     }
@@ -33,62 +29,124 @@ export class PinInput extends Component {
                 <View style={{ flexDirection: 'row', width: 300, height: 80, backgroundColor: 'green' }}>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            underlineColor="transparent"
+                            placeholder='-'
+                            caretHidden={true}
                             style={pinStyles.digitInput}
                             ref={this.p1Ref}
                             keyboardType='numeric'
                             maxLength={1}
                             onChangeText={(input) => {
-                                if (input === '') {
-                                    this.p1Ref.current.focus()
-                                } else {
-                                    this.setState({ pin1: input, p1Editable: false }, () => {
+                                if (input !== '') {
+                                    this.setState({ pin1: input }, () => {
+                                        this.handleChange()
+                                        this.p2Ref.current.clear()
                                         this.p2Ref.current.focus()
                                     })
                                 }
                             }}
-                            disabled={!this.state.p1Editable}
+                            onFocus={() => {
+                                this.p1Ref.current.clear()
+                                this.setState({ pin1: '' }, () => {
+                                    this.handleChange()
+                                })
+                            }}
                         />
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            underlineColor="transparent"
+                            placeholder='-'
+                            caretHidden={true}
                             style={pinStyles.digitInput}
                             ref={this.p2Ref}
                             keyboardType='numeric'
                             maxLength={1}
+                            onKeyPress={(e) => {
+                                if (e.nativeEvent.key === 'Backspace') {
+                                    this.p1Ref.current.focus()
+                                }
+                            }}
                             onChangeText={(input) => {
-                                this.setState({ pin2: input, p2Editable: false }, () => {
-                                    this.p3Ref.current.focus()
+                                if (input !== '') {                    
+                                    this.setState({ pin2: input }, () => {
+                                        this.handleChange()
+                                        this.p3Ref.current.clear()
+                                        this.p3Ref.current.focus()
+                                    })
+                                }
+                            }}
+                            onFocus={() => {
+                                this.p2Ref.current.clear()
+                                this.setState({ pin2: '' }, () => {
+                                    this.handleChange()
                                 })
                             }}
-                            disabled={!this.state.p2Editable}
                         />
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            underlineColor="transparent"
+                            placeholder='-'
+                            caretHidden={true}
                             style={pinStyles.digitInput}
                             ref={this.p3Ref}
                             keyboardType='numeric'
                             maxLength={1}
-                            onChangeText={(input) => {
-                                this.setState({ pin3: input, p3Editable: false }, () =>
-                                    this.p4Ref.current.focus()
-                                )
+                            onKeyPress={(e) => {
+                                if (e.nativeEvent.key === 'Backspace') {
+                                    this.handleChange()
+                                    this.p2Ref.current.clear()
+                                    this.p2Ref.current.focus()
+                                }
                             }}
-                            disabled={!this.state.p3Editable}
+                            onChangeText={(input) => {
+                                if (input !== '') {
+                                    this.setState({ pin3: input }, () => {
+                                        this.handleChange()
+                                        this.p4Ref.current.clear()
+                                        this.p4Ref.current.focus()
+                                    })
+                                }
+                            }}
+                            onFocus={() => {
+                                this.p3Ref.current.clear()
+                                this.setState({ pin3: '' }, () => {
+                                    this.handleChange()
+                                })
+                            }}
                         />
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            underlineColor="transparent"
+                            placeholder='-'
+                            caretHidden={true}
                             style={pinStyles.digitInput}
                             ref={this.p4Ref}
                             keyboardType='numeric'
                             maxLength={1}
+                            onKeyPress={(e) => {
+                                if (e.nativeEvent.key === 'Backspace') {
+                                    this.handleChange()
+                                    this.p3Ref.current.clear()
+                                    this.p3Ref.current.focus()
+                                }
+                            }}
                             onChangeText={(input) => {
-                                this.setState({ pin4: input, p4Editable: false }, () => {
-                                    this.handleInput()
+                                if (input !== '') {
+                                    this.setState({ pin4: input }, () => {
+                                        this.handleChange()
+                                        Keyboard.dismiss()
+                                    })
+                                }
+                            }}
+                            onFocus={() => {
+                                this.p4Ref.current.clear()
+                                this.setState({ pin4: '' }, () => {
+                                    this.handleChange()
                                 })
                             }}
-                            disabled={!this.state.p4Editable}
                         />
                     </View>
                 </View>
@@ -100,13 +158,19 @@ export class PinInput extends Component {
 const pinStyles = StyleSheet.create({
     digitContainer: {
         flex: .25,
-        backgroundColor: 'red',
+        backgroundColor: 'transparent',
         justifyContent: 'center',
         alignItems: 'center'
     },
     digitInput: {
         borderColor: 'black',
         borderWidth: 2,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
+        textAlign: 'center',
+        fontSize: 50,
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
     }
 })

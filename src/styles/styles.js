@@ -18,6 +18,7 @@ export default StyleSheet.create({
     textHeader: {
         marginTop: 0,
         marginBottom: 20,
+        
     },
     ImageLoginFingerPrint: {
         aspectRatio: 1/1, 
