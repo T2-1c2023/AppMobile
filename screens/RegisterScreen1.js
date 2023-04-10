@@ -3,6 +3,7 @@ import { View, Text, Alert } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 import { auth } from '../config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import axios from 'axios';
 
 export default class RegisterScreen1 extends Component {
     constructor(props) {
@@ -21,6 +22,38 @@ export default class RegisterScreen1 extends Component {
             console.log('Account created!')
             const user = userCredential.user;
             console.log(user)
+            
+            auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+                // ToDo --> Crear .js donde se hagan los envíos de token
+                axios.put('https://ejemplo.com/api/recurso', null, 
+                { headers: {
+                    Authorization: `Bearer ${idToken}`
+                }
+                })
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    if (error.response) {
+                        // The request was made and the server responded with a status code
+                        // that falls out of the range of 2xx
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                        // http.ClientRequest in node.js
+                        console.log(error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log('Error', error.message);
+                    }
+                    console.log(error.config);
+                });
+            }).catch(function(error) {
+                console.log(error.message);
+            })
         })
         .catch(error => {
             console.log(error)

@@ -17,7 +17,7 @@ class LoginScreen extends Component {
         super(props)
         //this.handleLogin = this.handleLogin.bind(this);
         this.state = {
-            loading: true,
+            loading: false, // ToDo --> ver bien el tema de las funciones de token comentadas
             email: '',
             password: ''
         }
@@ -27,10 +27,10 @@ class LoginScreen extends Component {
         console.log('email:', this.state.email, 'password:', this.state.password)
         signInWithEmailAndPassword(auth, this.state.email, this.state.password)
         .then((userCredential) => {
-            console.log('Sign In Succesful!')
+            console.log('Sign In Succesful!');
             const user = userCredential.user;
-            updateToken
-            console.log(user)
+            console.log(user);
+            this.props.navigation.replace('HomeScreen');
         })
         .catch(error => {
             console.log(error)
@@ -50,7 +50,7 @@ class LoginScreen extends Component {
         }*/
     }
 
-    async getCredentials(username, password) {
+    /*async getCredentials(username, password) {
 
         //simulacion de demora en la respuesta
         // -------------------------------------
@@ -60,9 +60,9 @@ class LoginScreen extends Component {
 
 
         return { accessToken: '12345' }
-    }
+    }*/
 
-    componentDidMount() {
+    /*componentDidMount() {
         tokenManager._loadTokens().then(() => {
             if (this.alreadyLogged()) {
                 this.props.navigation.replace('HomeScreen')
@@ -70,11 +70,11 @@ class LoginScreen extends Component {
                 this.setState({ loading: false })
             }
         })
-    }
+    }*/
 
-    alreadyLogged() {
+    /*alreadyLogged() {
         return tokenManager.getAccessToken() != null
-    }
+    }*/
 
     render() {
         if (this.state.loading) {
