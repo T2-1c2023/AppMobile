@@ -20,13 +20,13 @@ export class PinInput extends Component {
 
     handleChange() {
         let input = this.state.pin1 + this.state.pin2 + this.state.pin3 + this.state.pin4
-        this.props.callback(input)
+        this.props.onChange(input)
     }
 
     render() {
         return (
             <View style={this.props.style}>
-                <View style={{ flexDirection: 'row', width: 300, height: 80, backgroundColor: 'green' }}>
+                <View style={{ flexDirection: 'row', width: 300, height: 80 }}>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
                             underlineColor="transparent"

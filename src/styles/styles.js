@@ -13,17 +13,25 @@ export default StyleSheet.create({
         aspectRatio: 488/537, 
         maxHeight: 140,
         marginTop: 15,
-        marginBottom: 0,
     },
     textHeader: {
-        marginTop: 0,
-        marginBottom: 20,
-        
+        textAlign: 'center',
     },
     ImageLoginFingerPrint: {
         aspectRatio: 1/1, 
         maxWidth: 50,
         alignSelf: 'center',
         flexGrow: 1,
+    },
+    
+    textDetails: {
+        color: '#605D64',
+        width: 200,
+        textAlign: 'center',
+    },
+
+    // used in PinInput Component
+    pinInput: {
+        
     },
 });
