@@ -20,7 +20,7 @@ export default class PinCodeScreen extends Component {
                 <LoginImage />
 
                 <TextHeader 
-                    body="Código de Verificacion" 
+                    body="Código de verificación" 
                     style={{
                         marginTop: 20,
                     }}
