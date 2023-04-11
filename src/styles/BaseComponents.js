@@ -43,7 +43,9 @@ export const ButtonStandard = (props) => {
             <View style={{ display: 'flex', flexDirection: 'row' }}>
                 <Button
                     mode="contained"
-                    onPress={props.onPress}>
+                    onPress={props.onPress}
+                    disabled={props.disabled}
+                >
                     {props.title}
                 </Button>
             </View>
@@ -59,7 +61,7 @@ export const InputData = (props) => {
     }
 
     return (
-        <View style={{marginTop: props.marginTop, marginBottom: props.marginBottom}}>
+        <View style={props.style}>
             <TextInput
                 mode='outlined'
                 placeholder={props.placeholder}
