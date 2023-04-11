@@ -26,12 +26,26 @@ export default StyleSheet.create({
     
     textDetails: {
         color: '#605D64',
-        width: 200,
+        width: 250,
         textAlign: 'center',
     },
 
-    // used in PinInput Component
-    pinInput: {
-        
+    inputData: {
+        backgroundColor: '#CCC2DC',
+        width: 250,
     },
+
+    pinInput: {
+        borderColor: 'black',
+        borderWidth: 2,
+        backgroundColor: '#CCC2DC',
+        fontSize: 50,
+    },
+
+    phoneInput: {
+        backgroundColor: '#CCC2DC',
+        borderWidth: 1,
+        borderRadius: 40,
+    }
+
 });

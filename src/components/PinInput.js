@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, Keyboard } from 'react-native';
 import { TextInput } from 'react-native-paper';
+import styles from '../styles/styles';
 
 
 export class PinInput extends Component {
@@ -32,7 +33,7 @@ export class PinInput extends Component {
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
-                            style={pinStyles.digitInput}
+                            style={[pinStyles.digitInput, styles.pinInput]}
                             ref={this.p1Ref}
                             keyboardType='numeric'
                             maxLength={1}
@@ -58,7 +59,7 @@ export class PinInput extends Component {
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
-                            style={pinStyles.digitInput}
+                            style={[pinStyles.digitInput, styles.pinInput]}
                             ref={this.p2Ref}
                             keyboardType='numeric'
                             maxLength={1}
@@ -89,7 +90,7 @@ export class PinInput extends Component {
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
-                            style={pinStyles.digitInput}
+                            style={[pinStyles.digitInput, styles.pinInput]}
                             ref={this.p3Ref}
                             keyboardType='numeric'
                             maxLength={1}
@@ -122,7 +123,7 @@ export class PinInput extends Component {
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
-                            style={pinStyles.digitInput}
+                            style={[pinStyles.digitInput, styles.pinInput]}
                             ref={this.p4Ref}
                             keyboardType='numeric'
                             maxLength={1}
@@ -163,11 +164,7 @@ const pinStyles = StyleSheet.create({
         alignItems: 'center'
     },
     digitInput: {
-        borderColor: 'black',
-        borderWidth: 2,
-        backgroundColor: 'transparent',
         textAlign: 'center',
-        fontSize: 50,
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
         borderTopLeftRadius: 40,

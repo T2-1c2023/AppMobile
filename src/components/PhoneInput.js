@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import PhoneInput from "react-native-phone-number-input";
+import styles from '../styles/styles';
 
 export class PhoneNumberInput extends Component {
     constructor(props) {
@@ -35,11 +36,9 @@ export class PhoneNumberInput extends Component {
                         backgroundColor: 'transparent',
 
                     }}
-                    containerStyle={{
-                        backgroundColor: '#CCC2DC',
-                        borderWidth: 1,
-                        borderRadius: 40,
-                    }}
+                    containerStyle={
+                        styles.phoneInput
+                    }
                 />
             </View>
         )

@@ -58,6 +58,7 @@ export const InputData = (props) => {
 
     const handleClear = () => {
         setText('');
+        props.onChangeText('')
     }
 
     return (
@@ -72,7 +73,7 @@ export const InputData = (props) => {
                 secureTextEntry={props.secureTextEntry}
                 value={text}
                 right={<TextInput.Icon icon="close-circle-outline" onPress={handleClear} />}
-                style={{ width: 250, backgroundColor: 'transparent'}}
+                style={styles.inputData}
             />
         </View>
     )
