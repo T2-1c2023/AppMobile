@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Alert } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 import { auth } from '../config/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import axios from 'axios';
 
 export default class RegisterScreen1 extends Component {
@@ -16,20 +16,32 @@ export default class RegisterScreen1 extends Component {
     }
 
     handleCreateAccount = () => {
-        console.log('email:', this.state.email, 'password:', this.state.password)
+        console.log('nombre: ', this.state.fullName, 'email:', this.state.email, 'password:', this.state.password)
         createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
         .then((userCredential) => {
-            console.log('Account created!')
+            console.log('Account created!');
             const user = userCredential.user;
-            console.log(user)
+            updateProfile( user, {
+                displayName: this.state.fullName
+            });
+            console.log(user);
             
-            auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+            user.getIdToken(/* forceRefresh */ true).then(function(idToken) {
                 // ToDo --> Crear .js donde se hagan los envíos de token
-                axios.put('https://ejemplo.com/api/recurso', null, 
-                { headers: {
-                    Authorization: `Bearer ${idToken}`
+                console.log('Enviando Token: ' + idToken);
+                
+                // ToDo --> ver como hacer con los diferentes roles
+                const data = {
+                    role: 'atleta', // O entrenador
+                };
+
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${idToken}`
+                    }
                 }
-                })
+
+                axios.put('https://ejemplo.com/api/recurso', data, config)
                 .then(response => {
                     console.log(response.data);
                 })

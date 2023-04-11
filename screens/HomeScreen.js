@@ -37,9 +37,11 @@ class HomeScreen extends Component {
 
     render() {
         const currentUserEmail = auth.currentUser ? auth.currentUser.email : 'usuario desconocido';
+        const currentUserDisplayName = auth.currentUser ? auth.currentUser.displayName : 'No display name';
         return (
             <View style={styles.container}>
                 <Text style={styles.text}>Bienvenido {currentUserEmail}!</Text>
+                <Text style={styles.text}>Nombre: {currentUserDisplayName}</Text>
                 <Button
                     title="Logout"
                     onPress={this.handleSignOut}>

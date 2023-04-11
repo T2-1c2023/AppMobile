@@ -4,6 +4,7 @@ export default {
   "expo": {
     "name": "FiuFitApp",
     "slug": "FiuFitApp",
+    "scheme": "com.fiufit.appmobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,9 +18,11 @@ export default {
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fiufit.appmobile"
     },
     "android": {
+      "package": "com.fiufit.appmobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

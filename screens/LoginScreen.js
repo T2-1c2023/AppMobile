@@ -9,8 +9,11 @@ import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 
+WebBrowser.maybeCompleteAuthSession();
 
 class LoginScreen extends Component {
     constructor(props) {
@@ -19,9 +22,66 @@ class LoginScreen extends Component {
         this.state = {
             loading: false, // ToDo --> ver bien el tema de las funciones de token comentadas
             email: '',
-            password: ''
+            password: '',
+            // Login con Google
+            request: null,
+            response: null,
+            promptAsync: null,
+            token: "",
+            userInfo: null
         }
     }
+
+    /*componentDidMount() {
+        const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+            clientId: 
+            iosClientId: 
+            androidClientId:   
+        });
+
+        this.setState({
+            request: request,
+            response: response,
+            promptAsync: promptAsync
+        });
+
+    };
+
+    componentDidUpdate() {
+        const { response, token } = this.state;
+        if (response?.type === "success" && token === "") {
+          this.setToken(response.authentication.accessToken);
+          this.getUserInfo();
+        }
+    };
+    
+    getUserInfo = async () => {
+        try {
+          const response = await fetch(
+            "https://www.googleapis.com/userinfo/v2/me",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+    
+          const user = await response.json();
+          setUserInfo(user);
+        } catch (error) {
+          console.log(error.message);
+        }
+    };
+
+    setUserInfo = (userInfo) => {
+        this.setState({
+          userInfo: userInfo,
+        });
+    };
+
+    setToken = (token) => {
+        this.setState({
+          token: token,
+        });
+    };*/
 
     handleLogin = () => {
         console.log('email:', this.state.email, 'password:', this.state.password)
@@ -49,6 +109,27 @@ class LoginScreen extends Component {
             console.log(e);
         }*/
     }
+    
+    /*handleLoginGoogle = () => {
+        console.log('Intentando logearse con google!');
+        /*const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({
+            prompt: "select_account"
+        });
+
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                const credential = provider.credentialFromResult(result);
+                const token = credential.accessToken;
+                const user = result.user;
+
+                console.log('Datos de usuario: ', user );
+                console.log('Token: ', token);
+
+            }).catch((error) => {
+                console.log(error.message);
+            })
+    }*/
 
     /*async getCredentials(username, password) {
 
@@ -103,12 +184,20 @@ class LoginScreen extends Component {
 
                     <DividerWithMiddleText text="o" />
 
+                    <ButtonStandard
+                        title="Sign in with Google"
+                        //disabled={!this.state.request}
+                        //onPress={() => {
+                          //promptAsync();
+                        //}}
+                    />
+
                     <InputData
                         placeholder='Correo electrónico'
                         onChangeText={(input) => {
                             this.setState({ email: input })
                         }}
-                        marginTop={25}
+                        marginTop={10}
                         marginBottom={10}
                     />
                     <InputData
@@ -138,7 +227,7 @@ class LoginScreen extends Component {
                     <ButtonStandard
                         onPress={this.handleLogin}
                         title="Entrar"
-                        marginTop={20}
+                        marginTop={10}
                         marginBottom={10}
                     />
 
