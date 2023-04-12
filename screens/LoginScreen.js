@@ -9,10 +9,11 @@ import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 
+// Expo
 WebBrowser.maybeCompleteAuthSession();
 
 class LoginScreen extends Component {
@@ -32,6 +33,9 @@ class LoginScreen extends Component {
         }
     }
 
+    // A partir de acá es el código recomendado por expo. En realidad expo usa un objeto function y trate de traducirlo
+    // a formato de clase pero lanza un error relacionado a hooks
+    // https://docs.expo.dev/guides/google-authentication/#minimal-working-example
     /*componentDidMount() {
         const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
             clientId: 
@@ -85,6 +89,7 @@ class LoginScreen extends Component {
 
     handleLogin = () => {
         console.log('email:', this.state.email, 'password:', this.state.password)
+        
         signInWithEmailAndPassword(auth, this.state.email, this.state.password)
         .then((userCredential) => {
             console.log('Sign In Succesful!');
@@ -110,8 +115,36 @@ class LoginScreen extends Component {
         }*/
     }
     
-    /*handleLoginGoogle = () => {
+    handleLoginGoogle = () => {
         console.log('Intentando logearse con google!');
+        
+        // Parece que ninguna de las dos de abajo funcionan en react native. "Undefined is not a function"
+        // https://github.com/firebase/firebase-js-sdk/issues/5699#issuecomment-961263804
+        
+        // Sign in with redirect
+        //const provider = new GoogleAuthProvider();
+        /*signInWithRedirect(auth, provider);
+        getRedirectResult(auth)
+            .then((result) => {
+                // This gives you a Google Access Token. You can use it to access Google APIs.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+
+                // The signed-in user info.
+                const user = result.user;
+                // IdP data available using getAdditionalUserInfo(result)
+                // ...
+            }).catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+                // ...
+            });/
+        // Sign in with pop up
         /*const provider = new GoogleAuthProvider();
         provider.setCustomParameters({
             prompt: "select_account"
@@ -128,8 +161,8 @@ class LoginScreen extends Component {
 
             }).catch((error) => {
                 console.log(error.message);
-            })
-    }*/
+            })*/
+    }
 
     /*async getCredentials(username, password) {
 
@@ -186,10 +219,13 @@ class LoginScreen extends Component {
 
                     <ButtonStandard
                         title="Sign in with Google"
+                        // Expo
                         //disabled={!this.state.request}
                         //onPress={() => {
                           //promptAsync();
                         //}}
+                        // Firebase
+                        onPress={this.handleLoginGoogle}
                     />
 
                     <InputData

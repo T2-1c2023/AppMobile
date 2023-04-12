@@ -7,6 +7,7 @@ import RegisterScreen1 from './screens/RegisterScreen1';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { useAuthentication } from './utils/hooks/useAuthentication'
 
 const Stack = createNativeStackNavigator();
 
@@ -20,8 +21,45 @@ export default class App extends Component {
 
   async componentDidMount() {
     // await new Promise(resolve => setTimeout(resolve, 1000));
-
     this.setState({ isLoading: false });
+  }
+
+  loginNavigation = () => {
+    return (
+      <NavigationContainer>
+          <Stack.Navigator initialRouteName={"LoginScreen"}>
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{ title: 'Welcome' }}
+            />
+            <Stack.Screen
+              name="RegisterScreen1"
+              component={RegisterScreen1}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+    );
+  }
+
+  userLoggedNavigation = () => {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={"HomeScreen"}>
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ title: 'Welcome' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  rootNavigation = () => {
+    const { user } = useAuthentication();
+
+    //return user ? this.userLoggedNavigation : this.loginNavigation;
   }
 
   render() {
@@ -35,24 +73,7 @@ export default class App extends Component {
     }
     return (
       <PaperProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}>
-            <Stack.Screen
-              name="LoginScreen"
-              component={LoginScreen}
-              options={{ title: 'Welcome' }}
-            />
-            <Stack.Screen
-              name="HomeScreen"
-              component={HomeScreen}
-              options={{ title: 'Welcome' }}
-            />
-            <Stack.Screen
-              name="RegisterScreen1"
-              component={RegisterScreen1}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        {this.rootNavigation()}
       </PaperProvider>
     )
   };

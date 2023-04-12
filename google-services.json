@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "515433769",
+    "project_id": "fiufit-e6453",
+    "storage_bucket": "fiufit-e6453.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515433769:android:89ccaf3f78d5c450dd4338",
+        "android_client_info": {
+          "package_name": "com.fiufit.appmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "515433769-lhbj6odnvl3es8rv2o1bnd1f9v25ogqm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fiufit.appmobile",
+            "certificate_hash": "2cb78968992a9fa09b7ca5bbbc8fc1b1db4a086e"
+          }
+        },
+        {
+          "client_id": "515433769-qu7embngtraq2mf6frcifi1kab498pdv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQsSPYZH7Uwnt8gwvxsNbf09xrlwlKFRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515433769-5dirln5s1j5p21ljgskj2iem5mnj4cp2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "515433769-5tsdm43sg2jn3kfooie095humq6802j1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fiufit.appmobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

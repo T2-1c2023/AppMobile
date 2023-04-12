@@ -4,6 +4,7 @@ export default {
   "expo": {
     "name": "FiuFitApp",
     "slug": "FiuFitApp",
+    "plugins": ["@react-native-google-signin/google-signin"],
     "scheme": "com.fiufit.appmobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -23,6 +24,7 @@ export default {
     },
     "android": {
       "package": "com.fiufit.appmobile",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
