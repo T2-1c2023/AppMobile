@@ -8,6 +8,8 @@ import PinCodeScreen from './screens/PinCodeScreen';
 import PhoneNumberScreen from './screens/phoneNumberScreen';
 import PassRecoveryScreen from './screens/PassRecoveryScreen';
 import PassRecoveryConfirmationScreen from './screens/PassRecoveryConfirmationScreen';
+import EnrollmentScreen from './screens/EnrollmentScreen';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -42,7 +44,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}>
+          <Stack.Navigator initialRouteName={"EnrollmentScreen"}>
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
@@ -71,6 +73,10 @@ export default class App extends Component {
             <Stack.Screen
               name="PassRecoveryConfirmationScreen"
               component={PassRecoveryConfirmationScreen}
+            />
+            <Stack.Screen
+              name="EnrollmentScreen"
+              component={EnrollmentScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

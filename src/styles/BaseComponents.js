@@ -19,7 +19,7 @@ export const TextDetails = (props) => {
             <Text 
                 numberOfLines= {props.numberOfLines}
                 variant="labelMedium" 
-                style={styles.textDetails}>
+                style={props.warning? styles.textWarning : styles.textDetails}>
                     {props.body}
             </Text>
         </View>
@@ -95,8 +95,17 @@ export const TextWithLink = (props) => {
 export const LoginImage = (props) => {
     return (
         <Image
-            style={styles.loginImage}
+            style={[styles.loginImage, props.style]}
             source={require('../../assets/images/icon.png')}
+        />
+    )
+}
+
+export const FingerprintImage = (props) => {
+    return (
+        <Image
+            style={[styles.fingerprintImage, props.style]}
+            source={require('../../assets/images/fingerprint.png')}
         />
     )
 }

@@ -12,8 +12,13 @@ export default StyleSheet.create({
     loginImage: {
         aspectRatio: 488/537, 
         maxHeight: 140,
-        marginTop: 15,
     },
+
+    fingerprintImage: {
+        aspectRatio: 1/1,
+        maxHeight: 140,
+    },
+
     textHeader: {
         textAlign: 'center',
     },
@@ -26,6 +31,12 @@ export default StyleSheet.create({
     
     textDetails: {
         color: '#605D64',
+        width: 250,
+        textAlign: 'center',
+    },
+
+    textWarning: {
+        color: 'red',
         width: 250,
         textAlign: 'center',
     },
@@ -46,6 +57,6 @@ export default StyleSheet.create({
         backgroundColor: '#CCC2DC',
         borderWidth: 1,
         borderRadius: 40,
-    }
+    },
 
 });
