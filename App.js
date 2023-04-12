@@ -11,72 +11,65 @@ import { useAuthentication } from './utils/hooks/useAuthentication'
 
 const Stack = createNativeStackNavigator();
 
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoading: true,
-    };
-  }
+export default App = () => {
 
-  async componentDidMount() {
-    // await new Promise(resolve => setTimeout(resolve, 1000));
-    this.setState({ isLoading: false });
-  }
-
-  loginNavigation = () => {
+  const loginNavigation = () => {
     return (
       <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}>
-            <Stack.Screen
-              name="LoginScreen"
-              component={LoginScreen}
-              options={{ title: 'Welcome' }}
-            />
-            <Stack.Screen
-              name="RegisterScreen1"
-              component={RegisterScreen1}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-    );
-  }
-
-  userLoggedNavigation = () => {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={"HomeScreen"}>
+        <Stack.Navigator initialRouteName={"LoginScreen"}>
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ title: 'Welcome' }}
+          />
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}
             options={{ title: 'Welcome' }}
+          />
+          <Stack.Screen
+            name="RegisterScreen1"
+            component={RegisterScreen1}
           />
         </Stack.Navigator>
       </NavigationContainer>
     );
   }
 
-  rootNavigation = () => {
-    const { user } = useAuthentication();
-
-    //return user ? this.userLoggedNavigation : this.loginNavigation;
+  const userLoggedNavigation = () => {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={"HomeScreen"}>
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ title: 'Welcome' }}
+          />
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ title: 'Welcome' }}
+          />
+          <Stack.Screen
+            name="RegisterScreen1"
+            component={RegisterScreen1}
+          />
+        </Stack.Navigator>
+      </NavigationContainer >
+    );
   }
 
-  render() {
-    if (this.state.isLoading) {
-      return (
-        <Image
-          source={require('./assets/images/icon.png')}
-          style={{ width: 400, resizeMode: 'center' }}
-        />
-      );
-    }
-    return (
-      <PaperProvider>
-        {this.rootNavigation()}
-      </PaperProvider>
-    )
-  };
+  const rootNavigation = () => {
+    const { user } = useAuthentication();
+
+    return user ? userLoggedNavigation() : loginNavigation();
+  }
+
+  return (
+    <PaperProvider>
+      {rootNavigation()}
+    </PaperProvider>
+  );
 }
 
 const styles = StyleSheet.create({
