@@ -1,3 +1,5 @@
+// PRUEBA DE CONCEPTO LOGIN CON GOOGLE
+/*
 import { useEffect, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -15,21 +17,25 @@ export default function App() {
     clientId: "515433769-5dirln5s1j5p21ljgskj2iem5mnj4cp2.apps.googleusercontent.com",
     iosClientId: "515433769-5tsdm43sg2jn3kfooie095humq6802j1.apps.googleusercontent.com",
     androidClientId: "515433769-lhbj6odnvl3es8rv2o1bnd1f9v25ogqm.apps.googleusercontent.com"
-  });
+    // androidClientId (firebase): AIzaSyBQsSPYZH7Uwnt8gwvxsNbf09xrlwlKFRA
+    // clientId (firebase): AIzaSyD4FQ79tPQz70hWShAvVJe3WldnMPYzWFw
+    // No funcionan los de firebase "Oauth client not found"
+    // Ir a google cloud y preguntar como usar el de firebase o si es necesario
+  });*/
 
   // Version actualizada https://github.com/expo/fyi/blob/main/auth-proxy-migration.md pero no compila
   /*const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: '515433769-5dirln5s1j5p21ljgskj2iem5mnj4cp2.apps.googleusercontent.com',
       scopes: [...],
-+     redirectUri: makeRedirectUri({
-+       scheme: 'your-scheme'
-+     }),
+      redirectUri: makeRedirectUri({
+      scheme: 'your-scheme'
+      }),
     },
   );*/
 
   // Vemos si el usuario tiene o no una sesión de Google
-  useEffect(() => {
+  /*useEffect(() => {
     if(response?.type === "success") {
       setToken(response.authentication.accessToken);
       getUserInfo();
@@ -92,7 +98,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+});*/
+
+
+//================================================================================================
+// PROGRAMA PRINCIPAL USANDO NAVIGATION
+import React from 'react';
+import './config/firebase';
+import RootNavigation from './navigation/index';
+
+export default function App() {
+  return (
+    <RootNavigation />
+  );
+}
+
+//================================================================================================
+// PROGRAMA PRINCIPAL
 
 /*import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
@@ -107,7 +129,7 @@ import { useAuthentication } from './utils/hooks/useAuthentication'
 
 const Stack = createNativeStackNavigator();
 
-export default App = () => {
+export default function App() {
 
   const loginNavigation = () => {
     return (
@@ -175,4 +197,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});*/
+});
+*/
