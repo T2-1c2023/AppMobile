@@ -12,9 +12,10 @@ import { auth } from "../config/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
+import GoogleSignIn from '../src/googleSignIn';
 
 // Expo
-WebBrowser.maybeCompleteAuthSession();
+// WebBrowser.maybeCompleteAuthSession();
 
 class LoginScreen extends Component {
     constructor(props) {
@@ -217,16 +218,7 @@ class LoginScreen extends Component {
 
                     <DividerWithMiddleText text="o" />
 
-                    <ButtonStandard
-                        title="Sign in with Google"
-                        // Expo
-                        //disabled={!this.state.request}
-                        //onPress={() => {
-                          //promptAsync();
-                        //}}
-                        // Firebase
-                        onPress={this.handleLoginGoogle}
-                    />
+                    <GoogleSignIn />
 
                     <InputData
                         placeholder='Correo electrónico'
