@@ -5,7 +5,7 @@ export default {
     "name": "FiuFitApp",
     "slug": "FiuFitApp",
     "plugins": ["@react-native-google-signin/google-signin"],
-    "scheme": "com.fiufit.appmobile",
+    "scheme": "https://auth.expo.io/@juanh2607/FiuFitApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
