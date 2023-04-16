@@ -9,6 +9,8 @@ import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 
+import axios from 'axios';
+
 class LoginScreen extends Component {
     constructor(props) {
         super(props)
@@ -24,7 +26,12 @@ class LoginScreen extends Component {
         try {
             this.setState({ loading: true })
 
-            const credentials = await this.getCredentials(this.state.username, this.state.password)
+            const data = {
+                username: this.state.username,
+                password: this.state.password
+            }
+
+            const credentials = await this.getCredentials(data)
             await tokenManager.updateTokens(credentials.accessToken)
 
             this.props.navigation.replace('HomeScreen')
@@ -35,16 +42,17 @@ class LoginScreen extends Component {
         }
     }
 
-    async getCredentials(username, password) {
+    async getCredentials(data) {
+        const domain = "test";
 
-        //simulacion de demora en la respuesta
-        // -------------------------------------
-        console.log('username:', username, 'password', password)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // -------------------------------------
-
-
-        return { accessToken: '12345' }
+        try {
+            const response = await axios.post(domain + '/login', data); 
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+   
+        return response.data;
     }
 
     componentDidMount() {
@@ -113,7 +121,7 @@ class LoginScreen extends Component {
                     />
 
                     <ButtonStandard
-                        onPress={() => { console.log("user: ", this.state.email, "contraseña: ", this.state.password) }}
+                        onPress={() => {this.handleLogin()}}
                         title="Entrar"
                         marginTop={30}
                         marginBottom={10}
