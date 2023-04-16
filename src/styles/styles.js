@@ -12,12 +12,15 @@ export default StyleSheet.create({
     loginImage: {
         aspectRatio: 488/537, 
         maxHeight: 140,
-        marginTop: 15,
-        marginBottom: 0,
     },
+
+    fingerprintImage: {
+        aspectRatio: 1/1,
+        maxHeight: 140,
+    },
+
     textHeader: {
-        marginTop: 0,
-        marginBottom: 20,
+        textAlign: 'center',
     },
     ImageLoginFingerPrint: {
         aspectRatio: 1/1, 
@@ -25,4 +28,35 @@ export default StyleSheet.create({
         alignSelf: 'center',
         flexGrow: 1,
     },
+    
+    textDetails: {
+        color: '#605D64',
+        width: 250,
+        textAlign: 'center',
+    },
+
+    textWarning: {
+        color: 'red',
+        width: 250,
+        textAlign: 'center',
+    },
+
+    inputData: {
+        backgroundColor: '#CCC2DC',
+        width: 250,
+    },
+
+    pinInput: {
+        borderColor: 'black',
+        borderWidth: 2,
+        backgroundColor: '#CCC2DC',
+        fontSize: 50,
+    },
+
+    phoneInput: {
+        backgroundColor: '#CCC2DC',
+        borderWidth: 1,
+        borderRadius: 40,
+    },
+
 });

@@ -6,3 +6,6 @@ npx expo install react-native-screens react-native-safe-area-context
 npm install @react-navigation/native-stack
 npm install react-native-keychain
 npx expo install @react-native-async-storage/async-storage
+
+npm install --save react-native-confirmation-code-input
+npm install --save prop-types
