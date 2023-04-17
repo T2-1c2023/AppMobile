@@ -44,7 +44,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"EnrollmentScreen"}>
+          <Stack.Navigator initialRouteName={"LoginScreen"}>
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}

@@ -9,6 +9,8 @@ import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 
+import GoogleSingInButton from '../src/components/GoogleSignInButton';
+
 import axios from 'axios';
 
 class LoginScreen extends Component {
@@ -95,6 +97,8 @@ class LoginScreen extends Component {
                     <FingerPrintoOption />
 
                     <DividerWithMiddleText text="o" />
+
+                    <GoogleSingInButton />
 
                     <InputData
                         placeholder='Correo electrónico'
