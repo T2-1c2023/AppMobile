@@ -9,11 +9,13 @@ import { useTheme } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 
-import GoogleSingInButton from '../src/components/GoogleSignInButton';
+import { FingerprintInput } from '../src/components/FingerprintInput';
+
+// import GoogleSingInButton from '../src/components/GoogleSignInButton';
 
 import axios from 'axios';
 
-class LoginScreen extends Component {
+export default class LoginScreen extends Component {
     constructor(props) {
         super(props)
         this.handleLogin = this.handleLogin.bind(this);
@@ -48,12 +50,12 @@ class LoginScreen extends Component {
         const domain = "test";
 
         try {
-            const response = await axios.post(domain + '/login', data); 
+            const response = await axios.post(domain + '/login', data);
             console.log(response.data);
         } catch (error) {
             console.error(error);
         }
-   
+
         return response.data;
     }
 
@@ -74,10 +76,6 @@ class LoginScreen extends Component {
     render() {
         if (this.state.loading) {
             return (
-                // <Image 
-                //     source={require('../assets/images/logo.png')} 
-                //     style={{ width: 400, resizeMode: 'center' }}
-                // />
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
@@ -85,28 +83,46 @@ class LoginScreen extends Component {
         } else {
             return (
                 <View style={styles.container}>
-
                     <LoginImage />
 
                     <TextHeader
                         body="Bienvenido"
-                        style={styles.textHeader} />
+                        style={styles.textHeader} 
+                    />
 
-                    <DividerWithMiddleText text="o" />
+                    {/* <GoogleSingInButton /> */}
 
-                    <FingerPrintoOption />
+                    <DividerWithMiddleText 
+                        text="o"
+                        style={{
+                            marginTop: 5,
+                        }} 
+                    />
 
-                    <DividerWithMiddleText text="o" />
+                    <FingerprintInput 
+                        onValidFingerprint={() => {
+                            console.log("Action on valid fingerprint - to be implemented")
+                        }}
+                        style={{ 
+                            marginTop: 10
+                        }}
+                    />
 
-                    <GoogleSingInButton />
+                    <DividerWithMiddleText 
+                        text="o"
+                        style={{
+                            marginTop: 5,
+                        }} 
+                    />
 
                     <InputData
                         placeholder='Correo electrónico'
                         onChangeText={(input) => {
                             this.setState({ email: input })
                         }}
-                        marginTop={25}
-                        marginBottom={10}
+                        style={{
+                            marginTop: 25,
+                        }}
                     />
                     <InputData
                         placeholder='Contraseña'
@@ -114,62 +130,38 @@ class LoginScreen extends Component {
                         onChangeText={(input) => {
                             this.setState({ password: input })
                         }}
+                        style={{
+                            marginTop: 5,
+                        }}
                     />
 
                     <TextWithLink
                         text="¿Olvidaste tu contraseña?"
                         linkedText="Restaurala"
                         onPress={() => console.log("to be implemented")}
-                        marginTop={10}
-                        marginBottom={10}
+                        style={{
+                            marginTop: 10,
+                        }}
                     />
 
                     <ButtonStandard
-                        onPress={() => {this.handleLogin()}}
+                        onPress={() => { this.handleLogin() }}
                         title="Entrar"
-                        marginTop={30}
-                        marginBottom={10}
+                        style={{
+                            marginTop: 50,
+                        }}
                     />
 
                     <TextWithLink
                         text="¿No tienes cuenta?"
                         linkedText="Registrate"
                         onPress={() => this.props.navigation.replace('RegisterScreen1')}
-                        
-                        marginTop={100}
+                        style={{
+                            marginTop: 10,
+                        }}
                     />
-
                 </View>
             );
         }
     }
-}
-
-export default LoginScreen;
-
-const FingerPrintoOption = () => {
-    return (
-        <View style={{ flexDirection: 'row', width: 250, height: 60 }}>
-            <View style={{ flex: .8, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                <Image
-                    style={{
-                        height: 50,
-                        width: 50,
-                        alignSelf: 'center',
-                        marginRight: 10,
-                    }}
-                    source={require('../assets/images/fingerprint.png')}
-                />
-
-            </View>
-            <View style={{ flexDirection: 'row', flex: 1.1, alignItems: 'center', justifyContent: 'flex-end' }}>
-                <ButtonStandard
-                    onPress={() => { console.log("To be implemented") }}
-                    title="Usar Huella"
-                    style={{ margin: 20 }}
-                />
-            </View>
-            <View style={{ flex: 0.1 }}></View>
-        </View>
-    )
 }

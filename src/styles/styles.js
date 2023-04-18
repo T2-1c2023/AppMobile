@@ -41,6 +41,11 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
 
+    textLinked: {
+        color: '#21005D', 
+        fontWeight: 'bold',
+    },
+
     inputData: {
         backgroundColor: '#CCC2DC',
         width: 250,

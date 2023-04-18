@@ -5,22 +5,20 @@ import styles from './styles';
 
 export const TextHeader = (props) => {
     return (
-        <View style={props.style}>
-            <Text variant="displayLarge" style={styles.textHeader}>
-                {props.body}
-            </Text>
-        </View>
+        <Text variant="displayLarge" style={[styles.textHeader,props.style]}>
+            {props.body}
+        </Text>
     )
 }
 
 export const TextDetails = (props) => {
     return (
         <View style={props.style}>
-            <Text 
-                numberOfLines= {props.numberOfLines}
-                variant="labelMedium" 
-                style={props.warning? styles.textWarning : styles.textDetails}>
-                    {props.body}
+            <Text
+                numberOfLines={props.numberOfLines}
+                variant="labelMedium"
+                style={props.warning ? styles.textWarning : styles.textDetails}>
+                {props.body}
             </Text>
         </View>
     )
@@ -28,7 +26,7 @@ export const TextDetails = (props) => {
 
 export const DividerWithMiddleText = (props) => {
     return (
-        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+        <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
             <Divider style={{ flex: 1, height: 1, maxWidth: 100 }} />
             <Text style={{ marginHorizontal: 10 }}>{props.text}</Text>
             <Divider style={{ flex: 1, height: 1, maxWidth: 100 }} />
@@ -81,14 +79,13 @@ export const InputData = (props) => {
 
 export const TextWithLink = (props) => {
     return (
-        <View style={{marginTop: props.marginTop, marginBottom: props.marginBottom, position: props.position, bottom: props.bottom }}>
-            <Text style={styles.textDetails}>
-                {props.text + " "}
-                <Text onPress={props.onPress} style={{color: '#21005D', fontWeight: 'bold'}}>
-                    {props.linkedText}
-                </Text>
+        <Text style={[styles.textDetails, props.style]}>
+            {props.text + " "}
+            <Text onPress={props.onPress} style={styles.textLinked}>
+                {props.linkedText}
             </Text>
-        </View>
+        </Text>
+
     )
 }
 
