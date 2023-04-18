@@ -31,7 +31,7 @@ export default class LoginScreen extends Component {
             this.setState({ loading: true })
 
             const data = {
-                username: this.state.username,
+                mail: this.state.email,
                 password: this.state.password
             }
 
@@ -47,11 +47,11 @@ export default class LoginScreen extends Component {
     }
 
     async getCredentials(data) {
-        const domain = "test";
+        const domain = "https://users-g6-1c-2023.onrender.com";
 
         try {
             const response = await axios.post(domain + '/login', data);
-            console.log(response.data);
+            console.log(response.data)
         } catch (error) {
             console.error(error);
         }
@@ -155,7 +155,7 @@ export default class LoginScreen extends Component {
                     <TextWithLink
                         text="¿No tienes cuenta?"
                         linkedText="Registrate"
-                        onPress={() => this.props.navigation.replace('RegisterScreen1')}
+                        onPress={() => this.props.navigation.replace('ProfileSelectionScreen')}
                         style={{
                             marginTop: 10,
                         }}

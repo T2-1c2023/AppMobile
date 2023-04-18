@@ -15,7 +15,7 @@ export default class ProfileSelectionScreen extends Component {
     }
 
     handleProceed = () => {
-        this.props.navigation.navigate('ProfileCreation')
+        this.props.navigation.replace('RegisterScreen1')
     }
 
     render() {
