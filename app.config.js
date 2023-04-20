@@ -50,7 +50,9 @@ export default {
       androidClientId: process.env.ANDROID_CLIENT_ID,
       iosClientId: process.env.IOS_CLIENT_ID,
 
-      webClientId: process.env.WEB_CLIENT_ID
+      webClientId: process.env.WEB_CLIENT_ID,
+
+      apiGatewayUrl: process.env.API_GATEWAY_URL
     }
   }
 }

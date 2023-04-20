@@ -15,8 +15,12 @@ export default class ProfileSelectionScreen extends Component {
     }
 
     handleProceed = () => {
-        this.props.navigation.replace('RegisterScreen1')
-    }
+        // TODO: No permitir que avance hasta que no se haya seleccionado una de las opciones
+        this.props.navigation.navigate('RegisterScreen1', {
+            trainer: this.state.trainer,
+            athlete: this.state.athlete,
+        });
+    };
 
     render() {
         return (
@@ -45,7 +49,7 @@ export default class ProfileSelectionScreen extends Component {
 
                 <ProfileInput 
                     onChange={({ trainer, athlete }) => {
-                        this.setState({ trainer: trainer, athlete: athlete })
+                        this.setState({ trainer: trainer, athlete: athlete });
                     }}
                     style={{
                         marginTop: 20,

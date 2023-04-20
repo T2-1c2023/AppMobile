@@ -1,5 +1,4 @@
 import React from 'react';
-import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 import { ButtonStandard } from '../styles/BaseComponents';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
@@ -18,7 +17,7 @@ export default function GoogleSingInButton() {
 
             console.log('Token:' + idToken);
 
-            // Puedo conectar con firebase o enviar token al api gateway
+            // TODO: Enviar token al api gateway
         } catch (error) {
             console.log(error);
             console.log(error.code);
