@@ -29,6 +29,14 @@ export default class RegisterScreen1 extends Component {
             password: this.state.password
         }
         await register(data);
+       
+        if (this.userIsLogged) {
+            this.props.navigation.replace('HomeScreen');
+        }
+    }
+
+    userIsLogged() {
+        return tokenManager.getAccessToken() != null
     }
 
     generateRoleText = () => {

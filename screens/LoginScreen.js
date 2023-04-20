@@ -2,6 +2,7 @@ import React, { Component, useEffect } from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenManager, constante } from '../src/TokenManager';
+import { logIn } from '../src/User';
 
 import { ActivityIndicator, MD2Colors, Text, Divider, Button, TextInput } from 'react-native-paper';
 
@@ -12,8 +13,6 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 import { FingerprintInput } from '../src/components/FingerprintInput';
 
 // import GoogleSingInButton from '../src/components/GoogleSignInButton';
-
-import axios from 'axios';
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -27,36 +26,11 @@ export default class LoginScreen extends Component {
     }
 
     async handleLogin() {
-        try {
-            this.setState({ loading: true })
+        await logIn(this.state.email, this.state.password);
 
-            const data = {
-                mail: this.state.email,
-                password: this.state.password
-            }
-
-            const credentials = await this.getCredentials(data)
-            await tokenManager.updateTokens(credentials.accessToken)
-
-            this.props.navigation.replace('HomeScreen')
-
-            this.setState({ loading: false })
-        } catch (e) {
-            console.log(e);
+        if (this.alreadyLogged) {
+            this.props.navigation.replace('HomeScreen');
         }
-    }
-
-    async getCredentials(data) {
-        const domain = "https://users-g6-1c-2023.onrender.com";
-
-        try {
-            const response = await axios.post(domain + '/login', data);
-            console.log(response.data)
-        } catch (error) {
-            console.error(error);
-        }
-
-        return response.data;
     }
 
     componentDidMount() {
