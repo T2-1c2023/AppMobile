@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
+import Styles from '../src/styles/styles';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode'; 
 
@@ -41,12 +42,12 @@ class HomeScreen extends Component {
     render() {
         const { fullname, mail } = this.state.data || {};
         return (
-            <View style={styles.container}>
+            <View style={styles_hs.container}>
                 {this.state.data && (
                     <>
-                        <Text style={styles.text}>Welcome {fullname}!</Text>
-                        <Text style={styles.text}>Email: {mail}</Text>
-                        <Text style={styles.text}>Role: {this.getRole()}</Text>
+                        <Text style={styles_hs.text}>Welcome {fullname}!</Text>
+                        <Text style={styles_hs.text}>Email: {mail}</Text>
+                        <Text style={styles_hs.text}>Role: {this.getRole()}</Text>
                     </>
                 )}
 
@@ -61,7 +62,7 @@ class HomeScreen extends Component {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({
+const styles_hs = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',

@@ -11,15 +11,19 @@ export default class ProfileSelectionScreen extends Component {
         this.state = {
             trainer: false,
             athlete: false,
+            showError: false,
         }
     }
 
     handleProceed = () => {
-        // TODO: No permitir que avance hasta que no se haya seleccionado una de las opciones
-        this.props.navigation.navigate('RegisterScreen1', {
-            trainer: this.state.trainer,
-            athlete: this.state.athlete,
-        });
+        if (!this.state.trainer && !this.state.athlete) {
+            this.setState({ showError: true });
+        } else {
+            this.props.navigation.navigate('RegisterScreen1', {
+                trainer: this.state.trainer,
+                athlete: this.state.athlete,
+            });
+        }
     };
 
     render() {
@@ -55,6 +59,10 @@ export default class ProfileSelectionScreen extends Component {
                         marginTop: 20,
                     }}
                 />
+
+                {this.state.showError && (
+                    <Text style={styles.error}>Seleccione por lo menos una de las opciones</Text>
+                )}
 
                 <ButtonStandard
                     title="Siguiente"

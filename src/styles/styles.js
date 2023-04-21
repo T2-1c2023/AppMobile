@@ -63,4 +63,9 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderRadius: 40,
     },
+    error: {
+        color: 'red',
+        marginTop: 10,
+        textAlign: 'center',
+    },
 });

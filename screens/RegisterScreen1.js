@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage, TextDetails } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { register } from '../src/User';
+import { tokenManager } from '../src/TokenManager';
 
 
 export default class RegisterScreen1 extends Component {
@@ -13,30 +14,46 @@ export default class RegisterScreen1 extends Component {
             fullName: '',
             email: '',
             password: '',
+            errorMessage: undefined,
         }
     }
 
     handleProceed = async () => {
         // TODO: ver manejo de nº de telefono
-        const data = {
-            fullname: this.state.fullName,
-            mail: this.state.email,
-            phone_number: '0123456789',
-            blocked: false,
-            is_trainer: this.props.route.params.trainer,
-            is_athlete: this.props.route.params.athlete,
-            is_admin: false,
-            password: this.state.password
-        }
-        await register(data);
-       
-        if (this.userIsLogged) {
-            this.props.navigation.replace('HomeScreen');
+        if (this.validateFields()) {
+            this.setState({ errorMessage: undefined}) 
+            const data = {
+                fullname: this.state.fullName,
+                mail: this.state.email,
+                phone_number: '0123456789',
+                blocked: false,
+                is_trainer: this.props.route.params.trainer,
+                is_athlete: this.props.route.params.athlete,
+                is_admin: false,
+                password: this.state.password
+            }
+            await register(data);
+           
+            if (this.userIsLogged()) {
+                this.props.navigation.replace('HomeScreen');
+            }
         }
     }
 
     userIsLogged() {
         return tokenManager.getAccessToken() != null
+    }
+
+    validateFields = () => {
+        const { fullName, email, password } = this.state;
+        let errorMessage;
+        if (!fullName || !email || !password) {
+            errorMessage = 'Complete todos los campos antes de continuar'
+        } else if (password.length <= 8) {
+            errorMessage = 'La contraseña debe tener al menos 8 caracteres'
+        } 
+        this.setState({ errorMessage: errorMessage})
+        return !errorMessage;
     }
 
     generateRoleText = () => {
@@ -69,16 +86,13 @@ export default class RegisterScreen1 extends Component {
                     }} 
                 />
 
-                <TextDetails 
-                    numberOfLines={2}
-                    body="Debes completar todos los campos para continuar"
-                    style={{
-                        marginTop: 5,
-                    }}
-                />
+                {this.state.errorMessage && (
+                    <Text style={styles.error}>{this.state.errorMessage}</Text>
+                )}
 
                 <InputData 
-                    placeholder="Nombre y apellido" 
+                    placeholder="Nombre y apellido"
+                    maxLength={30} 
                     onChangeText={(input) => { 
                         this.setState({ fullName: input }) 
                     }}
@@ -89,6 +103,7 @@ export default class RegisterScreen1 extends Component {
 
                 <InputData 
                     placeholder="Correo electrónico" 
+                    maxLength={30}
                     onChangeText={(input) => { 
                         this.setState({ email: input }) 
                     }}

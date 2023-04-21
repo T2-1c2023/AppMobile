@@ -12,7 +12,7 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 
 import { FingerprintInput } from '../src/components/FingerprintInput';
 
-// import GoogleSingInButton from '../src/components/GoogleSignInButton';
+import GoogleSingInButton from '../src/components/GoogleSignInButton';
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -21,15 +21,21 @@ export default class LoginScreen extends Component {
         this.state = {
             loading: true,
             email: '',
-            password: ''
+            password: '',
         }
     }
 
     async handleLogin() {
-        await logIn(this.state.email, this.state.password);
+        const { email, password } = this.state;
+        
+        if (!email || !password ) {
+            alert("Complete todos los campos para continuar");
+        } else {
+            await logIn(this.state.email, this.state.password);
 
-        if (this.alreadyLogged) {
-            this.props.navigation.replace('HomeScreen');
+            if (this.alreadyLogged) {
+                this.props.navigation.replace('HomeScreen');
+            }
         }
     }
 
@@ -64,7 +70,7 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
 
-                    {/* <GoogleSingInButton /> */}
+                    <GoogleSingInButton />
 
                     <DividerWithMiddleText 
                         text="o"
@@ -91,11 +97,12 @@ export default class LoginScreen extends Component {
 
                     <InputData
                         placeholder='Correo electrónico'
+                        maxLength={30}
                         onChangeText={(input) => {
                             this.setState({ email: input })
                         }}
                         style={{
-                            marginTop: 25,
+                            marginTop: 15,
                         }}
                     />
                     <InputData
@@ -122,7 +129,7 @@ export default class LoginScreen extends Component {
                         onPress={() => { this.handleLogin() }}
                         title="Entrar"
                         style={{
-                            marginTop: 50,
+                            marginTop: 15,
                         }}
                     />
 
