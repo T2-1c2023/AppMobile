@@ -12,7 +12,7 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 
 import { FingerprintInput } from '../src/components/FingerprintInput';
 
-import GoogleSingInButton from '../src/components/GoogleSignInButton';
+// import GoogleSingInButton from '../src/components/GoogleSignInButton';
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -70,7 +70,7 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
 
-                    <GoogleSingInButton />
+                    {/* <GoogleSingInButton /> */}
 
                     <DividerWithMiddleText 
                         text="o"

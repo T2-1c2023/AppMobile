@@ -10,6 +10,8 @@ import PassRecoveryScreen from './screens/PassRecoveryScreen';
 import PassRecoveryConfirmationScreen from './screens/PassRecoveryConfirmationScreen';
 import EnrollmentScreen from './screens/EnrollmentScreen';
 import ProfileSelectionScreen from './screens/ProfileSelectionScreen';
+import GoalScreen from './screens/GoalScreen';
+import PlaygroundScreen from './screens/PlaygroundScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -45,7 +47,14 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}>
+          <Stack.Navigator initialRouteName={"GoalScreen"}
+            screenOptions={{ 
+              headerStyle: {
+                backgroundColor: '#CCC2DC',
+              },
+              headerTitleAlign: 'center'
+            }}
+          >
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
@@ -82,6 +91,15 @@ export default class App extends Component {
             <Stack.Screen
               name="EnrollmentScreen"
               component={EnrollmentScreen}
+            />
+            <Stack.Screen
+              name="PlaygroundScreen"
+              component={PlaygroundScreen}
+            />
+            <Stack.Screen
+              name="GoalScreen"
+              component={GoalScreen}
+              // options={( { route } ) => ({ title: route.params.title })}
             />
           </Stack.Navigator>
         </NavigationContainer>
