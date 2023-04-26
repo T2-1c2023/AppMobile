@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Button, ScrollView } from 'react-native';
 import { DaysInput, DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
+import MultimediaInput from '../src/components/MultimediaInput';
 import styles from '../src/styles/styles';
 
 export default class GoalScreen extends Component {
@@ -22,7 +23,7 @@ export default class GoalScreen extends Component {
                 automaticallyAdjustKeyboardInsets={true}
                 style={styles.scrollView}
             >
-              
+            
             <View style={styles.container}>
                 <TextBox 
                     title="Título"
@@ -57,7 +58,9 @@ export default class GoalScreen extends Component {
                     }}
                 />
 
-
+                <MultimediaInput
+                    ids={['1', '2', '3', '4', '5', '6', '7', '8', '9']}
+                />
 
                 <DividerWithLeftText 
                     text="Límite de tiempo"
