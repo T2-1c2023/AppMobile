@@ -20,6 +20,7 @@ class HomeScreen extends Component {
         console.log(data);
     }
 
+    // TODO: ver el logout de google
     async handleLogout() {
         await tokenManager.unloadTokens()
         this.props.navigation.replace('LoginScreen')

@@ -4,6 +4,8 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 import styles from '../src/styles/styles';
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
+import { GoogleSignInButton } from '../src/components/GoogleAccButton';
+
 
 
 export default class RegisterScreen1 extends Component {
@@ -29,7 +31,6 @@ export default class RegisterScreen1 extends Component {
                 blocked: false,
                 is_trainer: this.props.route.params.trainer,
                 is_athlete: this.props.route.params.athlete,
-                is_admin: false,
                 password: this.state.password
             }
             await register(data);
@@ -86,6 +87,11 @@ export default class RegisterScreen1 extends Component {
                     }} 
                 />
 
+                <GoogleSignInButton phone_number={"0123456789"} 
+                                    is_athlete={this.props.route.params.athlete}
+                                    is_trainer={this.props.route.params.trainer}
+                />
+
                 {this.state.errorMessage && (
                     <Text style={styles.error}>{this.state.errorMessage}</Text>
                 )}
@@ -97,7 +103,7 @@ export default class RegisterScreen1 extends Component {
                         this.setState({ fullName: input }) 
                     }}
                     style={{
-                        marginTop: 25,
+                        marginTop: 5,
                     }} 
                 />
 
