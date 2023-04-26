@@ -8,7 +8,7 @@ export default class GoalScreen extends Component {
         super(props)
     }
     componentDidMount() {
-        this.props.navigation.navigate('GoalScreen',  { title: 'asdf' })
+        this.props.navigation.navigate('GoalScreen',  { title: 'Nueva meta' })
     }
 
     render() {
@@ -21,7 +21,7 @@ export default class GoalScreen extends Component {
                         marginTop: 70,
                     }}
                     onPress={() => {
-                        this.props.navigation.navigate('GoalScreen',  { title: 'asdf' })
+                        this.props.navigation.navigate('GoalScreen',  { title: 'Nueva meta' })
                     }}
                 />
 

@@ -107,4 +107,12 @@ export default StyleSheet.create({
         marginTop: 10,
         textAlign: 'center',
     },
+
+    confirmationButton: { 
+        backgroundColor: '#21005D',
+    },
+
+    cancelButton: {
+        backgroundColor: 'grey',
+    },
 });

@@ -63,6 +63,30 @@ export const ButtonStandard = (props) => {
     )
 }
 
+export const ConfirmationButtons = (props) => {
+    return (
+        <View style={[{ flexDirection: 'row' , alignSelf: 'flex-start'}, props.style]}>
+            <Button
+                mode="contained"
+                onPress={props.onConfirmPress}
+                disabled={props.disabled}
+                style={[{marginLeft: 10}, styles.confirmationButton]}
+                
+            >
+                {props.confirmationText}
+            </Button>
+            <Button
+                mode="contained"
+                onPress={props.onCancelPress}
+                disabled={props.disabled}
+                style={[{ marginLeft: 10 }, styles.cancelButton]}
+            >
+                {props.cancelText}
+            </Button>
+        </View>
+    )
+}
+
 export const InputData = (props) => {
     const [text, setText] = useState('');
 

@@ -47,7 +47,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"GoalScreen"}
+          <Stack.Navigator initialRouteName={"PlaygroundScreen"}
             screenOptions={{ 
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -99,7 +99,7 @@ export default class App extends Component {
             <Stack.Screen
               name="GoalScreen"
               component={GoalScreen}
-              // options={( { route } ) => ({ title: route.params.title })}
+              options={( { route } ) => ({ title: route.params.title })}
             />
           </Stack.Navigator>
         </NavigationContainer>
