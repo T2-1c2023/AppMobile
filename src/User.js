@@ -59,9 +59,9 @@ export async function logIn(mail, password) {
 }
 
 // TODO: ver manejo de nº de teléfono
-export async function registerGoogleAcc(googleToken, phone_number, is_athlete, is_trainer) {
+export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer) {
   const data = {
-    token: googleToken,
+    token: firebaseToken,
     phone_number: phone_number,
     is_athlete: is_athlete,
     is_trainer: is_trainer

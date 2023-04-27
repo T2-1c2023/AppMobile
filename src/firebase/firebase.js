@@ -1,6 +1,7 @@
 // Ya no usamos firebase auth pero vamos a necesitar este archivo cuando usemos firebase storage,
 // Real time database y Cloud Messaging
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import Constants from 'expo-constants'
 
 const firebaseConfig = {
@@ -13,7 +14,7 @@ const firebaseConfig = {
     measurementId: Constants.manifest?.extra?.firebaseMeasurementId
 }
 
-const app = initializeApp(firebaseConfig);
+//const app = initializeApp(firebaseConfig);
 
 // Acá se inicializan los != servicios (export const servicio = getServicio(app))
-
+//export const auth = getAuth(app);
