@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Styles from '../src/styles/styles';
 import { tokenManager } from '../src/TokenManager';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import jwt_decode from 'jwt-decode'; 
 
 class HomeScreen extends Component {
@@ -22,6 +23,10 @@ class HomeScreen extends Component {
 
     // TODO: ver el logout de google
     async handleLogout() {
+        const isSignedInGoogle = await GoogleSignin.isSignedIn();
+        if (isSignedInGoogle) {
+            await GoogleSignin.signOut();
+        }
         await tokenManager.unloadTokens()
         this.props.navigation.replace('LoginScreen')
     }

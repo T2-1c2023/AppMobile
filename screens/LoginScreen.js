@@ -12,7 +12,7 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 
 import { FingerprintInput } from '../src/components/FingerprintInput';
 
-import { GoogleLogInButton } from '../src/components/GoogleAccButton';
+import { googleLogIn } from '../src/GoogleAccount';
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -36,6 +36,16 @@ export default class LoginScreen extends Component {
             if (this.alreadyLogged) {
                 this.props.navigation.replace('HomeScreen');
             }
+        }
+    }
+
+    async handleGoogleLogIn () {
+        this.setState({ loading: true })
+        await googleLogIn();
+        if (this.alreadyLogged()) {
+            this.props.navigation.replace('HomeScreen');
+        } else {
+            this.setState({ loading: false })
         }
     }
 
@@ -70,7 +80,12 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
 
-                    <GoogleLogInButton />
+                    <ButtonStandard
+                        onPress={() => this.handleGoogleLogIn()}
+                        title="Log In con Google"
+                        marginTop={30}
+                        marginBottom={10}
+                    />
 
                     <DividerWithMiddleText 
                         text="o"
