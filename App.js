@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, ActivityIndicator, View, Image } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, Image, Text } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen1 from './screens/RegisterScreen1';
@@ -12,6 +12,7 @@ import EnrollmentScreen from './screens/EnrollmentScreen';
 import ProfileSelectionScreen from './screens/ProfileSelectionScreen';
 import GoalScreen from './screens/GoalScreen';
 import PlaygroundScreen from './screens/PlaygroundScreen';
+import GoalsListScreen from './screens/GoalsListScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -47,8 +48,8 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"PlaygroundScreen"}
-            screenOptions={{ 
+          <Stack.Navigator initialRouteName={"GoalsListScreen"}
+            screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
               },
@@ -99,7 +100,28 @@ export default class App extends Component {
             <Stack.Screen
               name="GoalScreen"
               component={GoalScreen}
-              options={( { route } ) => ({ title: route.params.title })}
+              // options={({ route }) => ({ title: route.params.title })}
+              
+              //temporal
+              //--------
+              options={() => ({ title: 'Nueva meta' })}
+              //--------
+            />
+            <Stack.Screen
+              name="GoalsListScreen"
+              component={GoalsListScreen}
+              
+              //temporal
+              //--------
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
+                    Definicion muscular - Cuerpo {'\n'}
+                    Metas
+                  </Text>
+                )
+              })}
+              //--------
             />
           </Stack.Navigator>
         </NavigationContainer>
