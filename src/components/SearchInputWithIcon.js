@@ -7,6 +7,9 @@ import styles from '../styles/styles'
 export default class SearchInputWithIcon extends Component {
     constructor(props) {
         super(props)
+        this.state = {
+            queryText: '',
+        }
     }
     
     render() {
@@ -17,12 +20,15 @@ export default class SearchInputWithIcon extends Component {
                 <Searchbar
                     style={searchStyles.searchbar}
                     placeholder="Search"
+                    onChangeText={(queryText) => this.setState({ queryText })}
+                    onIconPress={() => this.props.onSubmit(this.state.queryText)}
+                    onSubmitEditing={(param) => this.props.onSubmit(param.nativeEvent.text)}
                 />
                 <IconButton
                     icon="plus"
                     iconColor='white'
                     size={40}
-                    onPress={() => console.log('Pressed')}
+                    onPress={this.props.onIconPress}
                     style={searchStyles.iconButton}
                 />
             </View>
@@ -38,7 +44,7 @@ const searchStyles = StyleSheet.create({
     },
 
     searchbar: {
-        width: '70%',
+        width: '75%',
         height: 60,
         backgroundColor: '#CCC2DC',
         borderWidth: 1,
