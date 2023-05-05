@@ -13,6 +13,7 @@ import ProfileSelectionScreen from './screens/ProfileSelectionScreen';
 import GoalScreen from './screens/GoalScreen';
 import PlaygroundScreen from './screens/PlaygroundScreen';
 import GoalsListScreen from './screens/GoalsListScreen';
+import NewTrainingScreen from './screens/NewTrainingScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -48,7 +49,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"GoalsListScreen"}
+          <Stack.Navigator initialRouteName={"NewTrainingScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -122,6 +123,11 @@ export default class App extends Component {
                 )
               })}
               //--------
+            />
+            <Stack.Screen
+              name="NewTrainingScreen"
+              component={NewTrainingScreen}
+              options={() => ({ title: 'Nuevo entrenamiento' })}
             />
           </Stack.Navigator>
         </NavigationContainer>

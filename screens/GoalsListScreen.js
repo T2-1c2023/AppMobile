@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
-import { DaysInput, DividerWithLeftText, TextBox, ButtonStandard, ConfirmationButtons } from '../src/styles/BaseComponents';
-import MultimediaInput from '../src/components/MultimediaInput';
 import styles from '../src/styles/styles';
 
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
