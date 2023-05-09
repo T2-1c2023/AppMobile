@@ -143,18 +143,22 @@ export const TextBox = (props) => {
         props.onChangeText(newText)
     }
 
+    const textStyle = props.flexible? styles.flexibleTextBox : styles.textBox;
+
     return (
         <View style={[{ width: '100%', alignItems: 'center'}, props.style]}>
-            <DividerWithLeftText
-                text={props.title}
-            />
+            { props.title &&    
+                <DividerWithLeftText
+                    text={props.title}
+                />
+            }
             <reactNative.TextInput
-                multiline
+                multiline = {props.singleline? false : true}
                 onChangeText={(newText) => handleChange(newText)}
                 maxLength={props.maxLength}
                 placeholder={props.placeholder? props.placeholder : "Escribe aquí..."}
                 selectionColor="grey"
-                style={[styles.textBox, 
+                style={[textStyle, 
                     { marginTop: 10 }
                 ]}
             />

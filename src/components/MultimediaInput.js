@@ -119,6 +119,5 @@ const multimediaStyles = StyleSheet.create({
         borderBottomLeftRadius: 10,
         borderTopLeftRadius: 10,
         borderWidth: 1,
-
     }
 })

@@ -68,6 +68,19 @@ export default StyleSheet.create({
         textAlignVertical: 'top',
     },
 
+    flexibleTextBox: {
+        color: '#605D64',
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        padding: 10,
+        width: '100%',
+        fontSize: 18,
+        backgroundColor: 'transparent',
+        minHeight: 40,
+        textAlignVertical: 'top',
+    },
+
     daysWord: { 
         fontSize: 26, 
         marginLeft: 10,
