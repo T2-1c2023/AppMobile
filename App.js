@@ -14,6 +14,7 @@ import GoalScreen from './screens/GoalScreen';
 import PlaygroundScreen from './screens/PlaygroundScreen';
 import GoalsListScreen from './screens/GoalsListScreen';
 import NewTrainingScreen from './screens/NewTrainingScreen';
+import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -49,7 +50,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"NewTrainingScreen"}
+          <Stack.Navigator initialRouteName={"TrainingActivitiesScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -117,7 +118,8 @@ export default class App extends Component {
               options={() => ({
                 headerTitle: () => (
                   <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
-                    Definicion muscular - Cuerpo {'\n'}
+                    Definicion muscular - Cuerpo 
+                    {'\n'}
                     Metas
                   </Text>
                 )
@@ -128,6 +130,20 @@ export default class App extends Component {
               name="NewTrainingScreen"
               component={NewTrainingScreen}
               options={() => ({ title: 'Nuevo entrenamiento' })}
+            />
+
+            <Stack.Screen
+              name="TrainingActivitiesScreen"
+              component={TrainingActivitiesScreen}
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
+                    Definicion muscular - Cuerpo 
+                    {'\n'}
+                    Actividades
+                  </Text>
+                )
+              })}
             />
           </Stack.Navigator>
         </NavigationContainer>
