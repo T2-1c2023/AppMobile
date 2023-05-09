@@ -21,7 +21,6 @@ class HomeScreen extends Component {
         console.log(data);
     }
 
-    // TODO: ver el logout de google
     async handleLogout() {
         const isSignedInGoogle = await GoogleSignin.isSignedIn();
         if (isSignedInGoogle) {

@@ -32,8 +32,8 @@ export default class LoginScreen extends Component {
             alert("Complete todos los campos para continuar");
         } else {
             await logIn(this.state.email, this.state.password);
-
-            if (this.alreadyLogged) {
+            
+            if (this.alreadyLogged()) {
                 this.props.navigation.replace('HomeScreen');
             }
         }

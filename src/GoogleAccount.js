@@ -62,38 +62,3 @@ export async function googleLogIn() {
         console.log(error.code);
     }
 }
-
-/*export function GoogleLogInButton() {
-    async function onGoogleButtonPress() {
-        try {
-            // Check if your device supports Google Play
-            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-            // Get the users ID token
-            const { idToken } = await GoogleSignin.signIn();
-            // TODO: esta parte podría ir en firebase.js
-            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-            auth().signInWithCredential(googleCredential)
-                .then(async (userCredential) => {
-                    const firebaseToken = await userCredential.user.getIdToken();
-                    await logInGoogleAcc(firebaseToken);
-                })
-                .catch((error) => {
-                    console.error(error);
-                })
-                            
-        } catch (error) {
-            console.log(error);
-            console.log(error.code);
-        }
-    }
-
-    return (
-        <ButtonStandard
-            onPress={() => onGoogleButtonPress()}
-            title="Log In con Google"
-            marginTop={30}
-            marginBottom={10}
-        />
-    );
-}*/
