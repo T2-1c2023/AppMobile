@@ -4,6 +4,7 @@ import { DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { SelectList } from 'react-native-dropdown-select-list'
 import LevelInput from '../src/components/LevelInput';
+import { ConfirmationButtons } from '../src/styles/BaseComponents';
 
 import axios from 'axios';
 
@@ -11,13 +12,20 @@ import axios from 'axios';
 export default class NewTrainingScreen extends Component {
     constructor(props) {
         super(props)
+        this.handleCreatePress = this.handleCreatePress.bind(this)
+        this.handleCancelPress = this.handleCancelPress.bind(this)
         this.state = {
             trainingTypes: {},
             title: '',
             description: '',
-            trainingType: '',
+            trainingTypeId: '',
             level: 'basic',
         }
+    }
+
+    async getTrainingsTypes() {
+        const response = await axios.get('https://trainings-g6-1c-2023.onrender.com/training-types')       
+        return response.data
     }
 
     async componentDidMount() {
@@ -27,32 +35,25 @@ export default class NewTrainingScreen extends Component {
             return {"key": trainingType.id, "value": trainingType.description}
         })
 
-        this.setState({ trainingTypes })
+        this.setState({ trainingTypes  })
     }
 
-    async getTrainingsTypes() {
+    handleCreatePress() {
+        const body = {
+            "trainer_id": 1,
+            "title": this.state.title,
+            "description": this.state.description,
+            "type_id": this.state.trainingTypeId,
+            "level": this.state.level,
+        }
+        console.log(body)
+    }
 
-        // reemplazar por request de tipos de entrenamiento
-        //-----------------------------------------------
-        const trainingTypes = ['Fuerza','Resistencia','Flexibilidad','Velocidad','Agilidad','Equilibrio','Coordinación','Potencia','Precisión','Fuerza explosiva','Fuerza reactiva','Fuerza resistencia','Fuerza máxima','Fuerza velocidad','Resistencia aeróbica','Resistencia anaeróbica','Resistencia de fuerza','Running','Ciclismo','Natación','Triatlón','Crossfit','Calistenia','Gimnasia','Yoga','Pilates','Artes marciales','Deportes de raqueta','Deportes de equipo',]
-        //-----------------------------------------------
-        const response = await axios.get('https://trainings-g6-1c-2023.onrender.com/training-types')       
-        return response.data
-
-        // .then(function (response) {
-        //         console.log(response.data);
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
-        
-        // return trainingTypes
+    handleCancelPress() {
+        alert('Cancel pressed')
     }
 
     render() {
-
-        // const trainingTypes = this.getTrainingsTypes()
-
         return (
             <ScrollView 
                 automaticallyAdjustKeyboardInsets={true}
@@ -87,9 +88,9 @@ export default class NewTrainingScreen extends Component {
                 />
 
                 <SelectList
-                    setSelected={(trainingType) => this.setState({ trainingType })} 
+                    setSelected={(trainingTypeId) => this.setState({ trainingTypeId })} 
                     data={this.state.trainingTypes} 
-                    save="value"
+                    save="key"
                     placeholder="Tipo de entrenamiento"
                     notFoundText="No se encontraron resultados"
                     searchPlaceholder="Buscar"
@@ -108,11 +109,31 @@ export default class NewTrainingScreen extends Component {
                     initialLevel={this.state.level}
                     setSelected={(level) => this.setState({ level })}
                     style={{
-                        marginTop: 5,
+                        marginTop: 10,
                     }}
                 />
 
-                
+                <DividerWithLeftText
+                    text="Ubicación"
+                    style={{
+                        marginTop: 10,
+                    }}
+                />
+
+                {/* TODO: reemplazar por componente de input de ubicación
+                -------------------- */}
+                <Text>To be implemented </Text>
+                {/* -------------------- */}
+
+                <ConfirmationButtons 
+                    confirmationText="Crear entrenamiento "
+                    cancelText="Cancelar"
+                    onConfirmPress={this.handleCreatePress}
+                    onCancelPress={this.handleCancelPress}
+                    style={{
+                        marginTop: 20,
+                    }}
+                />
             </View>
               
             </ScrollView>

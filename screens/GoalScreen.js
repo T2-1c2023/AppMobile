@@ -83,20 +83,6 @@ export default class GoalScreen extends Component {
                         marginTop: 5,
                     }}
                 />
-
-                {/* <DividerWithLeftText 
-                    text="Límite de tiempo"
-                    style={{
-                        marginTop: 5,
-                    }}
-                /> */}
-
-                {/* <DaysInput 
-                    onChange={(days) => this.state({ days })}
-                    style={{
-                        marginTop: 10,
-                    }}
-                /> */}
                 
                 <ConfirmationButtons 
                     confirmationText="Crear "
