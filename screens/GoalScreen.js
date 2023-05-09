@@ -3,6 +3,7 @@ import { View, Button, ScrollView } from 'react-native';
 import { DaysInput, DividerWithLeftText, TextBox, ButtonStandard, ConfirmationButtons } from '../src/styles/BaseComponents';
 import MultimediaInput from '../src/components/MultimediaInput';
 import styles from '../src/styles/styles';
+import axios from 'axios';
 
 export default class GoalScreen extends Component {
     constructor(props) {
@@ -13,16 +14,27 @@ export default class GoalScreen extends Component {
             title: '',
             description: '',
             metric: '',
-            days: 0,
         }
     }
 
     handleCreatePress() {
-        console.log('Create pressed')
+        const body = {
+            "trainer_id": 1,
+            "title": "TEST2",
+            "description": "TEST2",
+            "objective": "TEST2"
+        }
+
+        axios.post('https://trainings-g6-1c-2023.onrender.com/trainers/1/goals', body)
+            .then(function (response) {
+                console.log(response.data);
+            }).catch(function (error) {
+                console.log(error);
+            });
     }
 
     handleCancelPress() {
-        console.log('Cancel pressed')
+        alert('Cancel pressed')
     }
 
     render() {
@@ -72,19 +84,19 @@ export default class GoalScreen extends Component {
                     }}
                 />
 
-                <DividerWithLeftText 
+                {/* <DividerWithLeftText 
                     text="Límite de tiempo"
                     style={{
                         marginTop: 5,
                     }}
-                />
+                /> */}
 
-                <DaysInput 
+                {/* <DaysInput 
                     onChange={(days) => this.state({ days })}
                     style={{
                         marginTop: 10,
                     }}
-                />
+                /> */}
                 
                 <ConfirmationButtons 
                     confirmationText="Crear "

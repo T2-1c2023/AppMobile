@@ -38,7 +38,7 @@ class Goal extends Component {
                 onPress={this.handlePress}
             >
                 <View style={{ position: 'relative' }}>
-                    {this.props.goal.image_ids.length > 0 ?
+                    {(this.props.goal.image_ids != undefined && this.props.goal.image_ids.length > 0) ?
                         (<Image
                             source={{ uri: this.getUriById(this.props.goal.image_ids[0]) }}
                             style={ goalsStyles.cardImage }

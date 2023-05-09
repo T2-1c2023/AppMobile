@@ -5,12 +5,14 @@ import styles from '../src/styles/styles';
 import { SelectList } from 'react-native-dropdown-select-list'
 import LevelInput from '../src/components/LevelInput';
 
+import axios from 'axios';
 
 
 export default class NewTrainingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            trainingTypes: {},
             title: '',
             description: '',
             trainingType: '',
@@ -18,19 +20,38 @@ export default class NewTrainingScreen extends Component {
         }
     }
 
-    getTrainingsTypes() {
+    async componentDidMount() {
+        const data = await this.getTrainingsTypes()
+
+        const trainingTypes = data.map((trainingType) => {
+            return {"key": trainingType.id, "value": trainingType.description}
+        })
+
+        this.setState({ trainingTypes })
+    }
+
+    async getTrainingsTypes() {
 
         // reemplazar por request de tipos de entrenamiento
         //-----------------------------------------------
         const trainingTypes = ['Fuerza','Resistencia','Flexibilidad','Velocidad','Agilidad','Equilibrio','Coordinación','Potencia','Precisión','Fuerza explosiva','Fuerza reactiva','Fuerza resistencia','Fuerza máxima','Fuerza velocidad','Resistencia aeróbica','Resistencia anaeróbica','Resistencia de fuerza','Running','Ciclismo','Natación','Triatlón','Crossfit','Calistenia','Gimnasia','Yoga','Pilates','Artes marciales','Deportes de raqueta','Deportes de equipo',]
         //-----------------------------------------------
+        const response = await axios.get('https://trainings-g6-1c-2023.onrender.com/training-types')       
+        return response.data
+
+        // .then(function (response) {
+        //         console.log(response.data);
+        //     })
+        //     .catch(function (error) {
+        //         console.log(error);
+        //     });
         
-        return trainingTypes
+        // return trainingTypes
     }
 
     render() {
 
-        const trainingTypes = this.getTrainingsTypes()
+        // const trainingTypes = this.getTrainingsTypes()
 
         return (
             <ScrollView 
@@ -67,7 +88,7 @@ export default class NewTrainingScreen extends Component {
 
                 <SelectList
                     setSelected={(trainingType) => this.setState({ trainingType })} 
-                    data={trainingTypes} 
+                    data={this.state.trainingTypes} 
                     save="value"
                     placeholder="Tipo de entrenamiento"
                     notFoundText="No se encontraron resultados"

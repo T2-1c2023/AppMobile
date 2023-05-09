@@ -4,6 +4,7 @@ import styles from '../src/styles/styles';
 
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import GoalsList from '../src/components/GoalsList';
+import axios from 'axios';
 
 export default class GoalsListScreen extends Component {
     constructor(props) {
@@ -14,11 +15,23 @@ export default class GoalsListScreen extends Component {
             description: '',
             metric: '',
             days: 0,
+            goals: [],
         }
     }
 
     handleGoalPress = (goal) => {
         alert('id de meta: ' + goal.goal_id + '\n' + 'Titulo: ' + goal.title)
+    }
+
+    componentDidMount() {
+        axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
+            .then(response => {
+                const goals = response.data;
+                this.setState({ goals });
+            }).catch(function (error) {
+                console.log(error);
+            }
+            );
     }
 
     render() {
@@ -32,8 +45,6 @@ export default class GoalsListScreen extends Component {
                 description:"asdfHacer 10 flexiones por día en ayunas",
                 
                 image_ids:[],
-                objective:"Aprender la técnica correcta para hacer flexiones",
-                deadline_days:10,
             },
             {
                 goal_id:2,
@@ -41,8 +52,6 @@ export default class GoalsListScreen extends Component {
                 description:"vHacer 10 flexiones por día en ayunas",
                 
                 image_ids:[1, 2, 3],
-                objective:"vAprender la técnica correcta para hacer flexiones",
-                deadline_days:10,
             },
             {
                 goal_id:3,
@@ -50,8 +59,6 @@ export default class GoalsListScreen extends Component {
                 description:"Hacer 10 flexiones por día en ayunas",
                 
                 image_ids:[1, 2, 3],
-                objective:"Aprender la técnica correcta para hacer flexiones",
-                deadline_days:10,
             },
             {
                 goal_id:4,
@@ -109,7 +116,7 @@ export default class GoalsListScreen extends Component {
                 />
 
                 <GoalsList 
-                    goals={goals} 
+                    goals={this.state.goals} 
                     style={{
                         marginTop: 20,
                     }}
