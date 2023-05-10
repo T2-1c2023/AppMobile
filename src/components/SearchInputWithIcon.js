@@ -19,7 +19,7 @@ export default class SearchInputWithIcon extends Component {
             >
                 <Searchbar
                     style={searchStyles.searchbar}
-                    placeholder="Search"
+                    placeholder={this.props.placeholder}
                     onChangeText={(queryText) => this.setState({ queryText })}
                     onIconPress={() => this.props.onSubmit(this.state.queryText)}
                     onSubmitEditing={(param) => this.props.onSubmit(param.nativeEvent.text)}

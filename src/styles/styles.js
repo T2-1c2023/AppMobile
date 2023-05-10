@@ -8,8 +8,19 @@ export default StyleSheet.create({
         backgroundColor: '#DED8E1',
     },
     
+    scrollViewWithFooter: {
+        backgroundColor: '#DED8E1',
+        flex: 0.9,
+    },
+
+    footerContainer: {
+        flex: 0.1, 
+        // backgroundColor: 'blue'
+    },
+
     container: {
         backgroundColor: '#DED8E1',
+        // backgroundColor: 'green',
         flex: 1,
         alignItems: 'center',
     },

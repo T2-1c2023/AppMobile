@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import styles from '../src/styles/styles';
 
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import GoalsList from '../src/components/GoalsList';
+import { ConfirmationButtons } from '../src/styles/BaseComponents';
 import axios from 'axios';
 
 export default class GoalsListScreen extends Component {
@@ -12,6 +13,7 @@ export default class GoalsListScreen extends Component {
         this.handlePress = this.handlePress.bind(this)
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
+        this.handleSearch = this.handleSearch.bind(this)
         this.state = {
             title: '',
             description: '',
@@ -54,8 +56,6 @@ export default class GoalsListScreen extends Component {
         alert('id de meta: ' + goal.goal_id + '\n' + 'Titulo: ' + goal.title)
     }
 
-
-
     componentDidMount() {
         const trainerGoalsPromise = axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
             
@@ -77,28 +77,43 @@ export default class GoalsListScreen extends Component {
                 console.log(error);
             }
             );
+    }
 
+
+
+    handleSearch (queryText) {
+        axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
+            .then(response => {
+                const goals = response.data;
+                const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
+                this.setState({ goals: filteredGoals })
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     render() {
         return (
+            <>
             <ScrollView 
                 automaticallyAdjustKeyboardInsets={true}
-                style={styles.scrollView}
+                style={styles.scrollViewWithFooter}
             >
             
             <View style={styles.container}>
                 
                 <SearchInputWithIcon
                     onIconPress={() => alert('Icon pressed')}
-                    onSubmit={(queryText) => alert('searching for ' + queryText)}
+                    onSubmit={this.handleSearch}
+                    placeholder="Buscar por título"
                     style={{
                         marginTop: 20,
                     }}
                 />
 
                 <GoalsList 
-                    goals={this.state.goals} 
+                    goals={this.state.goals}
                     style={{
                         marginTop: 20,
                     }}
@@ -109,8 +124,20 @@ export default class GoalsListScreen extends Component {
                 />
 
             </View>
-              
             </ScrollView>
+            <View style={styles.footerContainer}>
+                <ConfirmationButtons
+                    confirmationText="Continuar"
+                    cancelText="Cancelar"
+                    onConfirmPress={this.handleCreatePress}
+                    onCancelPress={this.handleCancelPress}
+                    style={{
+                        marginTop: 10,
+                        alignSelf: 'flex-end',
+                    }}
+                />
+            </View>
+            </>
         );
     }
 }
