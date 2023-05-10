@@ -4,6 +4,8 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 import styles from '../src/styles/styles';
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
+import { googleSignIn } from '../src/GoogleAccount';
+
 
 
 export default class RegisterScreen1 extends Component {
@@ -29,7 +31,6 @@ export default class RegisterScreen1 extends Component {
                 blocked: false,
                 is_trainer: this.props.route.params.trainer,
                 is_athlete: this.props.route.params.athlete,
-                is_admin: false,
                 password: this.state.password
             }
             await register(data);
@@ -37,6 +38,18 @@ export default class RegisterScreen1 extends Component {
             if (this.userIsLogged()) {
                 this.props.navigation.replace('HomeScreen');
             }
+        }
+    }
+
+    async handleGoogleSignIn() {
+        const phone_number = '0123456789';
+        const is_athlete = this.props.route.params.athlete;
+        const is_trainer = this.props.route.params.trainer;
+
+        await googleSignIn(phone_number, is_athlete, is_trainer);
+
+        if (this.userIsLogged()) {
+            this.props.navigation.replace('HomeScreen');
         }
     }
 
@@ -86,6 +99,13 @@ export default class RegisterScreen1 extends Component {
                     }} 
                 />
 
+                <ButtonStandard
+                    onPress={() => this.handleGoogleSignIn()}
+                    title="Sign In con Google"
+                    marginTop={30}
+                    marginBottom={10}
+                />
+
                 {this.state.errorMessage && (
                     <Text style={styles.error}>{this.state.errorMessage}</Text>
                 )}
@@ -97,7 +117,7 @@ export default class RegisterScreen1 extends Component {
                         this.setState({ fullName: input }) 
                     }}
                     style={{
-                        marginTop: 25,
+                        marginTop: 5,
                     }} 
                 />
 

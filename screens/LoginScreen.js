@@ -12,7 +12,7 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 
 import { FingerprintInput } from '../src/components/FingerprintInput';
 
-// import GoogleSingInButton from '../src/components/GoogleSignInButton';
+// import { googleLogIn } from '../src/GoogleAccount';
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -32,12 +32,24 @@ export default class LoginScreen extends Component {
             alert("Complete todos los campos para continuar");
         } else {
             await logIn(this.state.email, this.state.password);
-
-            if (this.alreadyLogged) {
+            
+            if (this.alreadyLogged()) {
                 this.props.navigation.replace('HomeScreen');
             }
         }
     }
+
+    {/* 
+    async handleGoogleLogIn () {
+        this.setState({ loading: true })
+        await googleLogIn();
+        if (this.alreadyLogged()) {
+            this.props.navigation.replace('HomeScreen');
+        } else {
+            this.setState({ loading: false })
+        }
+    }
+    */}
 
     componentDidMount() {
         tokenManager._loadTokens().then(() => {
@@ -70,7 +82,14 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
 
-                    {/* <GoogleSingInButton /> */}
+                    {/* 
+                    <ButtonStandard
+                        onPress={() => this.handleGoogleLogIn()}
+                        title="Log In con Google"
+                        marginTop={30}
+                        marginBottom={10}
+                    />
+                    */}
 
                     <DividerWithMiddleText 
                         text="o"
