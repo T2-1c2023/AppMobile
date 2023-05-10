@@ -1,6 +1,22 @@
 import * as ImagePicker from 'expo-image-picker';
 import storage from '@react-native-firebase/storage';
 
+// Lets user pick image from library, returns uri of selected image
+export async function selectImage() {
+   const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1
+   });
+
+   if (!result.canceled) {
+      return result.assets[0].uri;
+   }
+}
+
+
+//---------------------------------------------------------------------------------------------------------
+// Código de prueba (funciona)
+
 export async function uploadImage() {
    // Let user pick image from library
    let result = await ImagePicker.launchImageLibraryAsync({

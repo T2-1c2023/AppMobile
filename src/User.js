@@ -22,7 +22,6 @@ export async function register(data) {
       });
 }
 
-// TODO: revisar que pasa cuando se ingresa con un mail/contraseña inválido. Revisar api en el doc
 export async function logIn(mail, password) {
     const data = {
         mail: mail,

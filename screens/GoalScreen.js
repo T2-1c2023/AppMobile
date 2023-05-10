@@ -14,6 +14,7 @@ export default class GoalScreen extends Component {
             title: '',
             description: '',
             metric: '',
+            imagesUri: null
         }
     }
 
@@ -33,6 +34,7 @@ export default class GoalScreen extends Component {
             });
     }
 
+    // TODO: redirigir
     handleCancelPress() {
         alert('Cancel pressed')
     }
@@ -70,9 +72,10 @@ export default class GoalScreen extends Component {
                         marginTop: 5,
                     }}
                 />
-
+                
                 <MultimediaInput
-                    ids={['1', '2', '3', '4', '5', '6', '7', '8', '9']}
+                    // TODO: creo que no hace falta enviar esto xq el upload esta en este componente
+                    // ids={['1', '2', '3', '4', '5', '6', '7', '8', '9']}
                 />
 
                 <TextBox 

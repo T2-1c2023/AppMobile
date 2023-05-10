@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import Styles from '../src/styles/styles';
 import { tokenManager } from '../src/TokenManager';
 //import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import jwt_decode from 'jwt-decode';
-import { uploadImage } from '../services/Media'; 
+import jwt_decode from 'jwt-decode'; 
 
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
         this.handleLogout = this.handleLogout.bind(this);
         this.state = {
-            data: null,
-            image: null
+            data: null
         }
     }
 
@@ -21,12 +19,6 @@ class HomeScreen extends Component {
         const data = jwt_decode(encoded_jwt);
         this.setState({ data: data });
         console.log(data);
-    }
-
-    async handleImageUpload() {
-        const imageUri = await uploadImage();
-        console.log('Home:' + imageUri);
-        this.setState({ image: imageUri });
     }
 
     async handleLogout() {
@@ -63,15 +55,6 @@ class HomeScreen extends Component {
                         <Text style={styles_hs.text}>Role: {this.getRole()}</Text>
                     </>
                 )}
-
-                {this.state.image && <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />}
-
-                <Button 
-                    title="Subir imágen"
-                    onPress={this.handleImageUpload = this.handleImageUpload.bind(this)}
-                >
-
-                </Button>
 
                 <Button
                     title="Logout"
