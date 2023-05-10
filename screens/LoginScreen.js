@@ -12,7 +12,7 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 
 import { FingerprintInput } from '../src/components/FingerprintInput';
 
-import { googleLogIn } from '../src/GoogleAccount';
+// import { googleLogIn } from '../src/GoogleAccount';
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -39,6 +39,7 @@ export default class LoginScreen extends Component {
         }
     }
 
+    {/* 
     async handleGoogleLogIn () {
         this.setState({ loading: true })
         await googleLogIn();
@@ -48,6 +49,7 @@ export default class LoginScreen extends Component {
             this.setState({ loading: false })
         }
     }
+    */}
 
     componentDidMount() {
         tokenManager._loadTokens().then(() => {
@@ -80,12 +82,14 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
 
+                    {/* 
                     <ButtonStandard
                         onPress={() => this.handleGoogleLogIn()}
                         title="Log In con Google"
                         marginTop={30}
                         marginBottom={10}
                     />
+                    */}
 
                     <DividerWithMiddleText 
                         text="o"
