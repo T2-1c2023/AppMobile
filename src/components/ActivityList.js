@@ -209,7 +209,7 @@ export default class ActivityList extends Component {
                         onChange={this.props.onChange}
                         />
                 )}
-            {this.uploadActivity()}
+            {this.props.activities.length < this.props.maxActivities && this.uploadActivity()}
             </View>
         )
     }

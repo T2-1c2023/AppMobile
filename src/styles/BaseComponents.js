@@ -44,7 +44,7 @@ export const DividerWithLeftText = (props) => {
             <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
             { ( props.maxCounter != undefined && props.counter != undefined ) &&
                 <>
-                <Text style={{ marginHorizontal: 10 }}>{props.counter + '/20'}</Text>
+                <Text style={{ marginHorizontal: 10 }}>{props.counter + '/' + props.maxCounter}</Text>
                 <Divider style={{ flex: 1, height: 1, maxWidth: 20, backgroundColor: '#9D9D9D' }} />
                 </>
             }

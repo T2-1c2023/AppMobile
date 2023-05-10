@@ -7,13 +7,13 @@ import ActivityList from '../src/components/ActivityList.js'
 
 import axios from 'axios';
 
+const MAX_ACTIVITIES = 20;
 
 export default class TrainingActivitiesScreen extends Component {
     constructor(props) {
         super(props)
         this.handleContinuePress = this.handleContinuePress.bind(this)
         this.refreshActivities = this.refreshActivities.bind(this)
-        this.maxActivities = 20
         this.state = {
             activities: [],
         }
@@ -49,7 +49,7 @@ export default class TrainingActivitiesScreen extends Component {
 
                 <DividerWithLeftText
                     text="Lista de actividades"
-                    maxCounter={this.maxActivities}
+                    maxCounter={MAX_ACTIVITIES}
                     counter = {this.state.activities.length}
                     style={{
                         marginTop: 10,
@@ -57,6 +57,7 @@ export default class TrainingActivitiesScreen extends Component {
                 />
 
                 <ActivityList
+                    maxActivities={MAX_ACTIVITIES}
                     activities={this.state.activities}
                     onChange={this.refreshActivities}
                     style={{
