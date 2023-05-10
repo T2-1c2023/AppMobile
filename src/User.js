@@ -24,7 +24,6 @@ export async function register(data) {
 
 // TODO: revisar que pasa cuando se ingresa con un mail/contraseña inválido. Revisar api en el doc
 export async function logIn(mail, password) {
-    console.log('Enviando request para conectar usuario')
     const data = {
         mail: mail,
         password: password
@@ -32,13 +31,13 @@ export async function logIn(mail, password) {
     await axios.post(API_GATEWAY_URL + '/login', data)
       .then(async (response) => {
         if (response.status === 200) {
-            const token = response.headers.authorization;
+            const token = response.data.token;
             await tokenManager.updateTokens(token);
         }
       })
       .catch((error) => {
         handleLogInError(error);
-      })
+      });
 }
 
 // TODO: ver manejo de nº de teléfono
@@ -98,7 +97,7 @@ function handleRegisterError(error) {
 function handleLogInError(error) {
   if (error.response && error.response.status === 401) {
     console.error('Password is incorrect')
-  } else if (error.respose && error.response.status === 404) {
+  } else if (error.response && error.response.status === 404) {
     console.error("Mail isn't registered")
   } else if (error.response && error.response.status === 400) {
     console.error('Bad Request');

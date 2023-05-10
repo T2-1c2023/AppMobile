@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, ActivityIndicator, View, Image } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, Image, Text } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen1 from './screens/RegisterScreen1';
@@ -10,6 +10,12 @@ import PassRecoveryScreen from './screens/PassRecoveryScreen';
 import PassRecoveryConfirmationScreen from './screens/PassRecoveryConfirmationScreen';
 import EnrollmentScreen from './screens/EnrollmentScreen';
 import ProfileSelectionScreen from './screens/ProfileSelectionScreen';
+import GoalScreen from './screens/GoalScreen';
+import PlaygroundScreen from './screens/PlaygroundScreen';
+import GoalsListScreen from './screens/GoalsListScreen';
+import NewTrainingScreen from './screens/NewTrainingScreen';
+import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
+import TrainingsListScreen from './screens/TrainingsListScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -46,12 +52,14 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"ImageUploadTest"}>
-            <Stack.Screen
-              name="ImageUploadTest"
-              component={ImageUploadTest}
-            />
-            
+          <Stack.Navigator initialRouteName={"TrainingActivitiesScreen"}
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#CCC2DC',
+              },
+              headerTitleAlign: 'center'
+            }}
+          >
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
@@ -89,6 +97,71 @@ export default class App extends Component {
               name="EnrollmentScreen"
               component={EnrollmentScreen}
             />
+            <Stack.Screen
+              name="PlaygroundScreen"
+              component={PlaygroundScreen}
+            />
+            <Stack.Screen
+              name="GoalScreen"
+              component={GoalScreen}
+              // options={({ route }) => ({ title: route.params.title })}
+              
+              //temporal
+              //--------
+              options={() => ({ title: 'Nueva meta' })}
+              //--------
+            />
+            <Stack.Screen
+              name="GoalsListScreen"
+              component={GoalsListScreen}
+              
+              //temporal
+              //--------
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
+                    Definicion muscular - Cuerpo 
+                    {'\n'}
+                    Metas
+                  </Text>
+                )
+              })}
+              //--------
+            />
+            <Stack.Screen
+              name="NewTrainingScreen"
+              component={NewTrainingScreen}
+              options={() => ({ title: 'Nuevo entrenamiento' })}
+            />
+
+            <Stack.Screen
+              name="TrainingActivitiesScreen"
+              component={TrainingActivitiesScreen}
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
+                    Definicion muscular - Cuerpo 
+                    {'\n'}
+                    Actividades
+                  </Text>
+                )
+              })}
+            />
+
+            <Stack.Screen
+              name="TrainingsListScreen"
+              component={TrainingsListScreen}
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
+                    Titulo
+                    {'\n'}
+                    Subtitulo
+                  </Text>
+                )
+              })}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
