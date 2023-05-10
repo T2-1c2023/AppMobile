@@ -21,6 +21,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 
+import ImageUploadTest from './screens/ImageUploadTest';
 
 
 const Stack = createNativeStackNavigator();

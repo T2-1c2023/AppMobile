@@ -1,41 +1,41 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
-import Styles from '../src/styles/styles';
-import { tokenManager } from '../src/TokenManager';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import jwt_decode from 'jwt-decode';
-import { uploadImage } from '../services/Media'; 
+import { uploadImage, downloadImage } from '../services/Media'; 
 
-class HomeScreen extends Component {
+class ImageUploadTest extends Component {
     constructor(props) {
         super(props)
-        this.handleLogout = this.handleLogout.bind(this);
         this.state = {
             data: null,
-            image: null
+            imageId: null,
+            imageURI: null
         }
     }
 
     componentDidMount() {
-        const encoded_jwt = tokenManager.getAccessToken();
-        const data = jwt_decode(encoded_jwt);
-        this.setState({ data: data });
-        console.log(data);
-    }
-
-    async handleImageUpload() {
-        const imageUri = await uploadImage();
-        console.log('Home:' + imageUri);
-        this.setState({ image: imageUri });
-    }
-
-    async handleLogout() {
-        const isSignedInGoogle = await GoogleSignin.isSignedIn();
-        if (isSignedInGoogle) {
-            await GoogleSignin.signOut();
+        const data = {
+            fullname: 'Nombre',
+            mail: 'un mail',
+            is_athlete: true,
+            is_trainer: false
         }
-        await tokenManager.unloadTokens()
-        this.props.navigation.replace('LoginScreen')
+
+        this.setState({ data: data })
+    }
+
+    handleImageUpload = async () => {
+        const imageId = await uploadImage();
+        console.log('Id foto firebase:' + imageId);
+        this.setState({ imageId: imageId});
+
+        // Acá guardaría el id de firebase en el back end
+    }
+
+    handleImageDownload = async () => {
+        console.log('Check:' + this.state.imageId);
+        const uri = await downloadImage(this.state.imageId);
+        console.log('Link descarga:' + uri);
+        this.setState({ imageURI: uri });
     }
 
     getRole() {
@@ -50,7 +50,6 @@ class HomeScreen extends Component {
           return 'N/A';
         }
     }
-      
 
     render() {
         const { fullname, mail } = this.state.data || {};
@@ -64,25 +63,25 @@ class HomeScreen extends Component {
                     </>
                 )}
 
-                {this.state.image && <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />}
+                {this.state.imageURI && <Image source={{ uri: this.state.imageURI }} style={{ width: 200, height: 200 }} />}
 
                 <Button 
                     title="Subir imágen"
-                    onPress={this.handleImageUpload = this.handleImageUpload.bind(this)}
+                    onPress={this.handleImageUpload}
                 >
-
                 </Button>
 
                 <Button
-                    title="Logout"
-                    onPress={this.handleLogout}>
+                    title="Descargar imagen"
+                    onPress={this.handleImageDownload}
+                >
                 </Button>
             </View>
         );
     }
 }
 
-export default HomeScreen;
+export default ImageUploadTest;
 
 const styles_hs = StyleSheet.create({
     container: {
