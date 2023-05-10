@@ -51,7 +51,6 @@ export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete,
   }
 
   console.log('Enviando request de registro de usuario con google');
-
   await axios.post(API_GATEWAY_URL + '/register/oauth', data)
     .then(async (response) => {
       if (response.status === 200) {

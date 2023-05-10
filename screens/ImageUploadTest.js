@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
-import Styles from '../src/styles/styles';
-import { tokenManager } from '../src/TokenManager';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import jwt_decode from 'jwt-decode';
 import { uploadImage } from '../services/Media'; 
 
-class HomeScreen extends Component {
+class ImageUploadTest extends Component {
     constructor(props) {
         super(props)
-        this.handleLogout = this.handleLogout.bind(this);
         this.state = {
             data: null,
             image: null
@@ -17,25 +12,20 @@ class HomeScreen extends Component {
     }
 
     componentDidMount() {
-        const encoded_jwt = tokenManager.getAccessToken();
-        const data = jwt_decode(encoded_jwt);
-        this.setState({ data: data });
-        console.log(data);
+        const data = {
+            fullname: 'Nombre',
+            mail: 'un mail',
+            is_athlete: true,
+            is_trainer: false
+        }
+
+        this.setState({ data: data })
     }
 
     async handleImageUpload() {
         const imageUri = await uploadImage();
         console.log('Home:' + imageUri);
         this.setState({ image: imageUri });
-    }
-
-    async handleLogout() {
-        const isSignedInGoogle = await GoogleSignin.isSignedIn();
-        if (isSignedInGoogle) {
-            await GoogleSignin.signOut();
-        }
-        await tokenManager.unloadTokens()
-        this.props.navigation.replace('LoginScreen')
     }
 
     getRole() {
@@ -50,7 +40,6 @@ class HomeScreen extends Component {
           return 'N/A';
         }
     }
-      
 
     render() {
         const { fullname, mail } = this.state.data || {};
@@ -72,17 +61,12 @@ class HomeScreen extends Component {
                 >
 
                 </Button>
-
-                <Button
-                    title="Logout"
-                    onPress={this.handleLogout}>
-                </Button>
             </View>
         );
     }
 }
 
-export default HomeScreen;
+export default ImageUploadTest;
 
 const styles_hs = StyleSheet.create({
     container: {
