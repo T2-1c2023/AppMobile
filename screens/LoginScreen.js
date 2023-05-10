@@ -39,7 +39,7 @@ export default class LoginScreen extends Component {
         }
     }
 
-    {/* 
+    /* 
     async handleGoogleLogIn () {
         this.setState({ loading: true })
         await googleLogIn();
@@ -49,7 +49,7 @@ export default class LoginScreen extends Component {
             this.setState({ loading: false })
         }
     }
-    */}
+    */
 
     componentDidMount() {
         tokenManager._loadTokens().then(() => {
@@ -82,7 +82,7 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
 
-                    {/* 
+                    {/*                     
                     <ButtonStandard
                         onPress={() => this.handleGoogleLogIn()}
                         title="Log In con Google"
