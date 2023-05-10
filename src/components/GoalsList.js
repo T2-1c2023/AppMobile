@@ -8,7 +8,7 @@ class Goal extends Component {
         this.handleLongPress = this.handleLongPress.bind(this)
         this.handlePress = this.handlePress.bind(this)
         this.state = {
-            selected: false,
+            selected: this.props.selected,
         }
     }
 
@@ -22,7 +22,14 @@ class Goal extends Component {
     }
 
     handleLongPress() {
-        this.setState({selected: !this.state.selected})
+        const selected = !this.state.selected
+        this.setState({ selected })
+
+        if (selected) {
+            this.props.onSelection(this.props.goal.id)
+        } else {
+            this.props.onDeselection(this.props.goal.id)
+        }
     }
 
     handlePress() {
@@ -35,7 +42,7 @@ class Goal extends Component {
                 elevation={3}
                 style={this.state.selected? goalsStyles.cardSelected : goalsStyles.card}
                 onLongPress={this.handleLongPress}
-                onPress={this.handlePress}
+                onPress={this.props.selectionMode? this.handleLongPress : this.handlePress}
             >
                 <View style={{ position: 'relative' }}>
                     {(this.props.goal.image_ids != undefined && this.props.goal.image_ids.length > 0) ?
@@ -71,7 +78,7 @@ class Goal extends Component {
                 <Text 
                     variant="bodySmall"
                     numberOfLines={4}
-                >
+                    >
                     {this.props.goal.description}
                 </Text>
                 </Card.Content>
@@ -94,14 +101,30 @@ export default class GoalsList extends Component {
                     width: '50%',
                 }}>
                     {goals_left.map((goal) => 
-                        <Goal goal={goal} key={goal.goal_id} onPress={this.props.onGoalPress}/>
+                        <Goal 
+                            goal={goal} 
+                            key={goal.id} 
+                            onPress={this.props.onPress} 
+                            onSelection={this.props.onSelection}
+                            onDeselection={this.props.onDeselection}
+                            selectionMode = {this.props.selectedGoalsIds != 0}
+                            selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                        />
                     )}
                 </View>
                 <View style={{
                     width: '50%',
                 }}>
                     {goals_right.map((goal) => 
-                        <Goal goal={goal} key={goal.goal_id} onPress={this.props.onGoalPress}/>
+                        <Goal 
+                            goal={goal} 
+                            key={goal.id} 
+                            onPress={this.props.onPress}
+                            onSelection={this.props.onSelection}
+                            onDeselection={this.props.onDeselection}
+                            selectionMode = {this.props.selectedGoalsIds != 0}
+                            selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                        />
                     )}
                 </View>
             </View>
