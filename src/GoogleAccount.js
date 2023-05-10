@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+/*import Constants from 'expo-constants';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { registerGoogleAcc, logInGoogleAcc } from './User';
 import auth from '@react-native-firebase/auth'
@@ -61,4 +61,4 @@ export async function googleLogIn() {
         console.log(error);
         console.log(error.code);
     }
-}
+}*/

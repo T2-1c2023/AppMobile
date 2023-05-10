@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import Styles from '../src/styles/styles';
 import { tokenManager } from '../src/TokenManager';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+//import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import jwt_decode from 'jwt-decode';
 import { uploadImage } from '../services/Media'; 
 
@@ -30,10 +30,10 @@ class HomeScreen extends Component {
     }
 
     async handleLogout() {
-        const isSignedInGoogle = await GoogleSignin.isSignedIn();
-        if (isSignedInGoogle) {
+        //const isSignedInGoogle = await GoogleSignin.isSignedIn();
+        /*if (isSignedInGoogle) {
             await GoogleSignin.signOut();
-        }
+        }*/
         await tokenManager.unloadTokens()
         this.props.navigation.replace('LoginScreen')
     }
