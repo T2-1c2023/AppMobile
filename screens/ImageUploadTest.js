@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
-import { uploadImage } from '../services/Media'; 
+import { uploadImage, downloadImage } from '../services/Media'; 
 
 class ImageUploadTest extends Component {
     constructor(props) {
         super(props)
         this.state = {
             data: null,
-            image: null
+            imageId: null,
+            imageURI: null
         }
     }
 
@@ -22,10 +23,19 @@ class ImageUploadTest extends Component {
         this.setState({ data: data })
     }
 
-    async handleImageUpload() {
-        const imageUri = await uploadImage();
-        console.log('Home:' + imageUri);
-        this.setState({ image: imageUri });
+    handleImageUpload = async () => {
+        const imageId = await uploadImage();
+        console.log('Id foto firebase:' + imageId);
+        this.setState({ imageId: imageId});
+
+        // Acá guardaría el id de firebase en el back end
+    }
+
+    handleImageDownload = async () => {
+        console.log('Check:' + this.state.imageId);
+        const uri = await downloadImage(this.state.imageId);
+        console.log('Link descarga:' + uri);
+        this.setState({ imageURI: uri });
     }
 
     getRole() {
@@ -53,13 +63,18 @@ class ImageUploadTest extends Component {
                     </>
                 )}
 
-                {this.state.image && <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />}
+                {this.state.imageURI && <Image source={{ uri: this.state.imageURI }} style={{ width: 200, height: 200 }} />}
 
                 <Button 
                     title="Subir imágen"
-                    onPress={this.handleImageUpload = this.handleImageUpload.bind(this)}
+                    onPress={this.handleImageUpload}
                 >
+                </Button>
 
+                <Button
+                    title="Descargar imagen"
+                    onPress={this.handleImageDownload}
+                >
                 </Button>
             </View>
         );
