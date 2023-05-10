@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { TextBox } from '../styles/BaseComponents';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
 
 const MIN_TITLE_LENGTH = 5
 
@@ -62,7 +63,14 @@ class Activity extends Component {
     }
 
     handleTrashPress() {
-        alert('Trash Pressed')
+        const activityId = this.props.activity.id
+        axios.delete('https://trainings-g6-1c-2023.onrender.com/activities/' + activityId)
+            .then(response => {
+                this.props.onChange()
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
     }
 
     render = () => {
@@ -122,17 +130,22 @@ export default class ActivityList extends Component {
     handleSubmitPress() {
         if (this.state.newActivityTitle.length >= MIN_TITLE_LENGTH) {
             
-            // Reemplazar por llamado a la api para subir actividad
-            // ----------------------------------------------------
-            alert('Submit Pressed with title: ' + this.state.newActivityTitle)
-            // ----------------------------------------------------
-            
-            // reset title
-            this.setState({ newActivityTitle: '' })
+            const body = {
+                title: this.state.newActivityTitle,
+                multimedia_id: this.state.newActivityImageId,
+            }
 
+            axios.post('https://trainings-g6-1c-2023.onrender.com/trainings/1/activities', body)
+                .then(response => {
+                    // reset title
+                    this.setState({ newActivityTitle: '' })
 
-            // execute callback from parent component to update activity list
-            this.props.onChange()
+                    // execute callback from parent component to update activity list
+                    this.props.onChange()
+                })
+                .catch(error => {
+                    console.log(error)
+                })
         } else {
             alert('El título debe tener al menos ' + MIN_TITLE_LENGTH + ' caracteres')
         }
@@ -161,8 +174,8 @@ export default class ActivityList extends Component {
                 <View style = {{flex: 0.5, alignItems: 'center', justifyContent: 'center'}}>
                     <TextBox
                         onChangeText={(newActivityTitle) => this.setState({ newActivityTitle })}
-                        // value={this.state.newActivityTitle}
                         maxLength={25}
+                        value={this.state.newActivityTitle}
                         style={{
                             marginTop: 5,
                         }}
@@ -190,7 +203,11 @@ export default class ActivityList extends Component {
         return (
             <View style={this.props.style}>
                 {this.props.activities.map((activity) =>
-                    <Activity activity={activity} key={activity.id} />
+                    <Activity 
+                        key={activity.id} 
+                        activity={activity} 
+                        onChange={this.props.onChange}
+                        />
                 )}
             {this.uploadActivity()}
             </View>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import { DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
-import { ConfirmationButtons } from '../src/styles/BaseComponents';
+import { ConfirmationButtons, ButtonStandard } from '../src/styles/BaseComponents';
 import ActivityList from '../src/components/ActivityList.js'
 
 import axios from 'axios';
@@ -11,8 +11,7 @@ import axios from 'axios';
 export default class TrainingActivitiesScreen extends Component {
     constructor(props) {
         super(props)
-        this.handleConfirmationPress = this.handleConfirmationPress.bind(this)
-        this.handleCancelPress = this.handleCancelPress.bind(this)
+        this.handleContinuePress = this.handleContinuePress.bind(this)
         this.refreshActivities = this.refreshActivities.bind(this)
         this.maxActivities = 20
         this.state = {
@@ -24,11 +23,8 @@ export default class TrainingActivitiesScreen extends Component {
         this.refreshActivities();
     }
 
-    handleConfirmationPress() {
-    }
-
-    handleCancelPress() {
-        alert('Cancel pressed')
+    handleContinuePress() {
+        alert("Continue pressed");
     }
 
     refreshActivities() {
@@ -68,13 +64,11 @@ export default class TrainingActivitiesScreen extends Component {
                     }}
                 />
 
-                <ConfirmationButtons 
-                    confirmationText="Confirmar actividades"
-                    cancelText="Cancelar"
-                    onConfirmPress={this.handleConfirmationPress}
-                    onCancelPress={this.handleCancelPress}
+                <ButtonStandard
+                    onPress={this.handleContinuePress}
+                    title="Continuar"
                     style={{
-                        marginTop: 20,
+                        marginTop: 15,
                     }}
                 />
             </View>

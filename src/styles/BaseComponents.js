@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image } from 'react-native';
 import * as reactNative from 'react-native';
 import { Text, Divider, Button, TextInput, IconButton } from 'react-native-paper';
@@ -56,9 +56,10 @@ export const DividerWithLeftText = (props) => {
 export const ButtonStandard = (props) => {
     return (
         <View style={props.style}>
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={[{ display: 'flex', flexDirection: 'row' }, styles.buttonStandard]}>
                 <Button
                     mode="contained"
+                    buttonColor='#21005D'
                     onPress={props.onPress}
                     disabled={props.disabled}
                 >
@@ -143,7 +144,13 @@ export const TextBox = (props) => {
         props.onChangeText(newText)
     }
 
+    useEffect(() => {
+        setText(props.value || '');
+      }, [props.value]);
+
     const textStyle = props.flexible? styles.flexibleTextBox : styles.textBox;
+
+    const counterStyle = props.flexible? styles.flexibleTextBoxCounter : styles.texBoxCounter;
 
     return (
         <View style={[{ width: '100%', alignItems: 'center'}, props.style]}>
@@ -155,6 +162,7 @@ export const TextBox = (props) => {
             <reactNative.TextInput
                 multiline = {props.singleline? false : true}
                 onChangeText={(newText) => handleChange(newText)}
+                value={props.value}
                 maxLength={props.maxLength}
                 placeholder={props.placeholder? props.placeholder : "Escribe aquí..."}
                 selectionColor="grey"
@@ -162,7 +170,7 @@ export const TextBox = (props) => {
                     { marginTop: 10 }
                 ]}
             />
-            <Text style={{ alignSelf: 'flex-end', marginRight: 25 }}>
+            <Text style={counterStyle}>
                 {text.length}/{props.maxLength}
             </Text>
         </View>

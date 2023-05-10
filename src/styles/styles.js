@@ -68,6 +68,11 @@ export default StyleSheet.create({
         textAlignVertical: 'top',
     },
 
+    texBoxCounter: { 
+        alignSelf: 'flex-end', 
+        marginRight: 25
+    },
+
     flexibleTextBox: {
         color: '#605D64',
         borderWidth: 1,
@@ -79,6 +84,10 @@ export default StyleSheet.create({
         backgroundColor: 'transparent',
         minHeight: 40,
         textAlignVertical: 'top',
+    },
+
+    flexibleTextBoxCounter: {
+        alignSelf: 'flex-end',
     },
 
     daysWord: { 
@@ -127,5 +136,8 @@ export default StyleSheet.create({
 
     cancelButton: {
         backgroundColor: 'grey',
+    },
+
+    buttonStandard: {
     },
 });
