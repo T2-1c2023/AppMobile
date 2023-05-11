@@ -4,6 +4,7 @@ import { DaysInput, DividerWithLeftText, TextBox, ButtonStandard, ConfirmationBu
 import MultimediaInput from '../src/components/MultimediaInput';
 import styles from '../src/styles/styles';
 import axios from 'axios';
+import { uploadImageFirebase } from '../services/Media';
 
 export default class GoalScreen extends Component {
     constructor(props) {
@@ -14,24 +15,51 @@ export default class GoalScreen extends Component {
             title: '',
             description: '',
             metric: '',
-            imagesUri: null
+            mediaLocalUris: []
         }
     }
 
-    handleCreatePress() {
-        const body = {
-            "trainer_id": 1,
-            "title": "TEST2",
-            "description": "TEST2",
-            "objective": "TEST2"
-        }
+    updateMediaUris = (uris) => {
+        this.setState((prevState) => ({
+            mediaLocalUris: uris
+        }), () => {
+            console.log('Imagenes locales cargadas (goalScreen):', this.state.mediaLocalUris);
+        });
+    }
 
-        axios.post('https://trainings-g6-1c-2023.onrender.com/trainers/1/goals', body)
-            .then(function (response) {
-                console.log(response.data);
-            }).catch(function (error) {
-                console.log(error);
-            });
+    handleCreatePress() {
+        // TODO: cargar datos a firebase storage y obtener ids
+        const { mediaLocalUris } = this.state;
+
+        console.log('Quiero subir: ' + mediaLocalUris);
+
+        const uploadPromises = mediaLocalUris.map((localUri) => {
+            return uploadImageFirebase(localUri);
+        });
+
+        Promise.all(uploadPromises)
+            .then((ids) => {
+                console.log('IDs cargadas en firebase:', ids);
+
+                // TODO: agregar los ids cuando se actualize el back
+                const body = {
+                    "trainer_id": 1,
+                    "title": "TEST2",
+                    "description": "TEST2",
+                    "objective": "TEST2",
+                    "images": ids
+                }
+        
+                axios.post('https://trainings-g6-1c-2023.onrender.com/trainers/1/goals', body)
+                    .then(function (response) {
+                        console.log(response.data);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+            })
+            .catch((error) => {
+                console.error('Error al cargar imágenes:' + error);
+            })
     }
 
     // TODO: redirigir
@@ -74,8 +102,7 @@ export default class GoalScreen extends Component {
                 />
                 
                 <MultimediaInput
-                    // TODO: creo que no hace falta enviar esto xq el upload esta en este componente
-                    // ids={['1', '2', '3', '4', '5', '6', '7', '8', '9']}
+                    onUpload={this.updateMediaUris}
                 />
 
                 <TextBox 

@@ -13,6 +13,18 @@ export async function selectImage() {
    }
 }
 
+export async function uploadImageFirebase(uri) {
+   try {
+      // Image id for firebase storage
+      const imageId = Date.now().toString();
+      const storageRef = storage().ref().child(`images/${imageId}`);
+      await storageRef.putFile(uri);
+      // For future requests of image stored in firebase storage
+      return imageId;
+   } catch (error) {
+      console.error(error);
+   }
+}
 
 //---------------------------------------------------------------------------------------------------------
 // Código de prueba (funciona)
