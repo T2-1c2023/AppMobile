@@ -6,9 +6,15 @@ import { TextBox } from '../styles/BaseComponents';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import StarsScore from './StarsScore';
 
+
 class Training extends Component {
     constructor(props) {
         super(props)
+        this.handleTrainingPress = this.handleTrainingPress.bind(this)
+    }
+
+    handleTrainingPress() {
+        this.props.onTrainingPress(this.props.training.id)
     }
 
     getSeverityIcon(severity) {
@@ -27,6 +33,10 @@ class Training extends Component {
     render = () => {
         const training = this.props.training
         return (
+            <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={this.handleTrainingPress}
+            >
             <View style={trainingStyles.trainingContainer}>
                 
                 {/* type and severity */}
@@ -63,7 +73,7 @@ class Training extends Component {
                 {/* end-divider */}
                 <View style={{ height: 2, backgroundColor: 'grey'}} />
             </View>
-            
+            </TouchableOpacity>
         )
     }
 }
@@ -83,6 +93,7 @@ export default class TrainingsList extends Component {
                         <Training
                             key={training.id}
                             training={training}
+                            onTrainingPress={(training_id) => this.props.onTrainingPress(training_id)}
                         />
                     )
                 })}
@@ -107,7 +118,7 @@ const trainingStyles = StyleSheet.create({
     severityIcon: {
         maxWidth: 50,
         aspectRatio: 479/239,
-        marginRight: 5,
+        marginRight: 8,
         marginBottom: 1,
         justifyContent: 'flex-end',
     },

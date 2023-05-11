@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { IconButton } from 'react-native-paper'
+import Icon from '@mdi/react';
+import { mdiStarOutline } from '@mdi/js';
+import { mdiStar } from '@mdi/js';
 
 
 export default class StarsScore extends Component {
@@ -14,13 +17,18 @@ export default class StarsScore extends Component {
         const isActive = starPosition <= score;
 
         return (
-            <IconButton
+            <View
+                style={starsStyles.starContainer}
                 key={key}
-                icon={isActive ? 'star' : 'star-outline'}
-                iconColor={isActive ? '#21005D' : 'gray'}
-                size={15}
-                style={starPosition != 5 ? starsStyles.star : starsStyles.borderStar}
-            />
+            >
+                <IconButton
+                    key={key}
+                    icon={isActive ? 'star' : 'star-outline'}
+                    iconColor={isActive ? '#21005D' : 'gray'}
+                    size={15}
+                    style={starPosition != 5 ? starsStyles.star : starsStyles.borderStar}
+                />
+            </View>
         )
     }
 
@@ -33,6 +41,7 @@ export default class StarsScore extends Component {
             >
                 {stars.map((starPosition, index) => this.icon(starPosition, this.props.score, index))}
                 
+                <View style={starsStyles.rightBorder}/>
             </View>
         )
     }
@@ -46,13 +55,20 @@ const starsStyles = StyleSheet.create({
     },
     
     star: {
-        // backgroundColor: '#CCC2DC',
-        marginRight: -25,
-        marginTop: -5,
     },
 
     borderStar: {
-        marginRight: -5,
-        marginTop: -5,
+    },
+
+    starContainer: {
+        width: 13,
+        height: 13,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 5,
+    },
+
+    rightBorder: {
+        width: 3,
     }
 })

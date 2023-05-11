@@ -13,6 +13,8 @@ import axios from 'axios';
 export default class TrainingsListScreen extends Component {
     constructor(props) {
         super(props)
+        this.handleTrainingPress = this.handleTrainingPress.bind(this)
+        this.handleFilterPress = this.handleFilterPress.bind(this)
         this.state = {
             trainings: [],
         }
@@ -20,6 +22,26 @@ export default class TrainingsListScreen extends Component {
 
     componentDidMount() {
         this.refreshActivities();
+    }
+
+    handleTrainingPress(id) {
+        alert('training with id ' + id + ' pressed')
+    }
+
+    handleFilterPress() {
+        alert('filter pressed')
+
+        // agregar logica de pedido de filtrado a usuario
+
+        // reemplazar por request con query params
+        axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/')
+            .then(response => {
+                const trainings = response.data;
+                this.setState({ trainings });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     refreshActivities() {
@@ -46,7 +68,8 @@ export default class TrainingsListScreen extends Component {
             
             <View style={styles.container}>
                 <SearchInputWithIcon
-                    onIconPress={() => alert('Icon pressed')}
+                    filter
+                    onIconPress={this.handleFilterPress}
                     onSubmit={this.handleSearch}
                     placeholder="Buscar por título"
                     style={{
@@ -56,6 +79,10 @@ export default class TrainingsListScreen extends Component {
 
                 <TrainingsList
                     trainings={this.state.trainings}
+                    onTrainingPress={this.handleTrainingPress}
+                    style={{
+                        marginTop: 15,
+                    }}
                 />
 
             </View>
