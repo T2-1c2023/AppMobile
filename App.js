@@ -52,7 +52,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}
+          <Stack.Navigator initialRouteName={"TrainingsListScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
