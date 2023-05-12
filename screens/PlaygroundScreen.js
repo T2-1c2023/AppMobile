@@ -8,7 +8,7 @@ export default class GoalScreen extends Component {
         super(props)
     }
     componentDidMount() {
-        this.props.navigation.navigate('GoalScreen',  { title: 'Nueva meta' })
+        // this.props.navigation.navigate('GoalScreen',  { title: 'Nueva meta' })
     }
 
     render() {
@@ -16,12 +16,52 @@ export default class GoalScreen extends Component {
             <View style={styles.container}>
 
                 <ButtonStandard
-                    title="Button"
+                    title="Nueva meta"
                     style={{
-                        marginTop: 70,
+                        marginTop: 10,
                     }}
                     onPress={() => {
-                        this.props.navigation.navigate('GoalScreen',  { title: 'Nueva meta' })
+                        this.props.navigation.push('GoalScreen',  { title: 'Nueva meta' })
+                    }}
+                />
+
+                <ButtonStandard
+                    title="Lista de metas"
+                    style={{
+                        marginTop: 10,
+                    }}
+                    onPress={() => {
+                        this.props.navigation.push('GoalsListScreen',  { title: 'Nueva meta' })
+                    }}
+                />
+
+                <ButtonStandard
+                    title="Nuevo entrenamiento"
+                    style={{
+                        marginTop: 10,
+                    }}
+                    onPress={() => {
+                        this.props.navigation.push('NewTrainingScreen',  { title: 'Nueva meta' })
+                    }}
+                />
+
+                <ButtonStandard
+                    title="Actividades"
+                    style={{
+                        marginTop: 10,
+                    }}
+                    onPress={() => {
+                        this.props.navigation.push('TrainingActivitiesScreen',  { title: 'Nueva meta' })
+                    }}
+                />
+
+                <ButtonStandard
+                    title="Lista de entrenamientos"
+                    style={{
+                        marginTop: 10,
+                    }}
+                    onPress={() => {
+                        this.props.navigation.push('TrainingsListScreen',  { title: 'Nueva meta' })
                     }}
                 />
 

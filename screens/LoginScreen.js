@@ -34,7 +34,7 @@ export default class LoginScreen extends Component {
             await logIn(this.state.email, this.state.password);
             
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('HomeScreen');
+                this.props.navigation.replace('PlaygroundScreen');
             }
         }
     }
@@ -54,7 +54,7 @@ export default class LoginScreen extends Component {
     componentDidMount() {
         tokenManager._loadTokens().then(() => {
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('HomeScreen')
+                this.props.navigation.replace('PlaygroundScreen')
             } else {
                 this.setState({ loading: false })
             }
