@@ -49,8 +49,8 @@ export default class NewTrainingScreen extends Component {
         console.log(body)
     }
 
-    handleCancelPress() {
-        alert('Cancel pressed')
+    handleCancelPress = async () => {
+        this.props.navigation.goBack();
     }
 
     render() {

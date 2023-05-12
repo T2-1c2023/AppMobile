@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Styles from '../src/styles/styles';
 import { tokenManager } from '../src/TokenManager';
-//import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import jwt_decode from 'jwt-decode'; 
 
 class HomeScreen extends Component {
@@ -22,10 +22,10 @@ class HomeScreen extends Component {
     }
 
     async handleLogout() {
-        //const isSignedInGoogle = await GoogleSignin.isSignedIn();
-        /*if (isSignedInGoogle) {
+        const isSignedInGoogle = await GoogleSignin.isSignedIn();
+        if (isSignedInGoogle) {
             await GoogleSignin.signOut();
-        }*/
+        }
         await tokenManager.unloadTokens()
         this.props.navigation.replace('LoginScreen')
     }
@@ -43,6 +43,18 @@ class HomeScreen extends Component {
         }
     }
       
+    // TODO: hace que todos vuelvan al homescreen al cancelar
+    handleGoalScreen = async () => {
+        this.props.navigation.navigate('GoalScreen');
+    }
+
+    handleGoalsListScreen = async () => {
+        this.props.navigation.navigate('GoalsListScreen');
+    }
+
+    handleNewTrainingScreen = async () => {
+        this.props.navigation.navigate('NewTrainingScreen');
+    }
 
     render() {
         const { fullname, mail } = this.state.data || {};

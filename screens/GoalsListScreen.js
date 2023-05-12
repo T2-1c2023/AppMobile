@@ -93,6 +93,10 @@ export default class GoalsListScreen extends Component {
             });
     }
 
+    handleCancelPress = async () => {
+        this.props.navigation.goBack();
+    }
+
     render() {
         return (
             <>

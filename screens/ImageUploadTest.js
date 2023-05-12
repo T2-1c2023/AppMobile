@@ -51,6 +51,19 @@ class ImageUploadTest extends Component {
         }
     }
 
+    // TODO: hace que todos vuelvan al homescreen al cancelar
+    handleGoalScreen = async () => {
+        this.props.navigation.navigate('GoalScreen');
+    }
+
+    handleGoalsListScreen = async () => {
+        this.props.navigation.navigate('GoalsListScreen');
+    }
+
+    handleNewTrainingScreen = async () => {
+        this.props.navigation.navigate('NewTrainingScreen');
+    }
+
     render() {
         const { fullname, mail } = this.state.data || {};
         return (
@@ -62,6 +75,21 @@ class ImageUploadTest extends Component {
                         <Text style={styles_hs.text}>Role: {this.getRole()}</Text>
                     </>
                 )}
+
+                <Button 
+                    title="Crear Meta (entrenador)"
+                    onPress={this.handleGoalScreen}
+                />
+
+                <Button 
+                    title="Listado de Metas (entrenador)"
+                    onPress={this.handleGoalsListScreen}
+                />
+
+                <Button 
+                    title="Nuevo Entrenamiento"
+                    onPress={this.handleNewTrainingScreen}
+                />
 
                 {this.state.imageURI && <Image source={{ uri: this.state.imageURI }} style={{ width: 200, height: 200 }} />}
 

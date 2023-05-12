@@ -4,7 +4,7 @@ import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithL
 import styles from '../src/styles/styles';
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
-// import { googleSignIn } from '../src/GoogleAccount';
+import { googleSignIn } from '../src/GoogleAccount';
 
 
 
@@ -41,17 +41,17 @@ export default class RegisterScreen1 extends Component {
         }
     }
 
-    // async handleGoogleSignIn() {
-    //     const phone_number = '0123456789';
-    //     const is_athlete = this.props.route.params.athlete;
-    //     const is_trainer = this.props.route.params.trainer;
+    async handleGoogleSignIn() {
+        const phone_number = '0123456789';
+        const is_athlete = this.props.route.params.athlete;
+        const is_trainer = this.props.route.params.trainer;
 
-    //     await googleSignIn(phone_number, is_athlete, is_trainer);
+        await googleSignIn(phone_number, is_athlete, is_trainer);
 
-    //     if (this.userIsLogged()) {
-    //         this.props.navigation.replace('HomeScreen');
-    //     }
-    // }
+        if (this.userIsLogged()) {
+            this.props.navigation.replace('HomeScreen');
+        }
+    }
 
     userIsLogged() {
         return tokenManager.getAccessToken() != null
@@ -99,12 +99,12 @@ export default class RegisterScreen1 extends Component {
                     }} 
                 />
 
-                {/* <ButtonStandard
+                <ButtonStandard
                     onPress={() => this.handleGoogleSignIn()}
                     title="Sign In con Google"
                     marginTop={30}
                     marginBottom={10}
-                /> */}
+                />
 
                 {this.state.errorMessage && (
                     <Text style={styles.error}>{this.state.errorMessage}</Text>

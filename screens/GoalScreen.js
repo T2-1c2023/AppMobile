@@ -62,9 +62,8 @@ export default class GoalScreen extends Component {
             })
     }
 
-    // TODO: redirigir
     handleCancelPress() {
-        alert('Cancel pressed')
+        this.props.navigation.goBack();
     }
 
     render() {

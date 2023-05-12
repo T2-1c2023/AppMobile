@@ -52,7 +52,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"GoalScreen"}
+          <Stack.Navigator initialRouteName={"ImageUploadTest"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
