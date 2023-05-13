@@ -16,12 +16,11 @@ import GoalsListScreen from './screens/GoalsListScreen';
 import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
-
-import ImageUploadTest from './screens/ImageUploadTest';
 
 
 const Stack = createNativeStackNavigator();
@@ -52,7 +51,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}
+          <Stack.Navigator initialRouteName={"ChangePasswordScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -161,7 +160,11 @@ export default class App extends Component {
                 )
               })}
             />
-
+            <Stack.Screen
+              name="ChangePasswordScreen"
+              component={ChangePasswordScreen}
+              options={{ title: "Cambio de contraseña" }}
+              />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
