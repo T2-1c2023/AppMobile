@@ -17,6 +17,8 @@ export default class TrainingsListScreen extends Component {
         super(props)
         this.handleTrainingPress = this.handleTrainingPress.bind(this)
         this.handleFilterPress = this.handleFilterPress.bind(this)
+        this.handleSetFilters = this.handleSetFilters.bind(this)
+        this.handleSearch = this.handleSearch.bind(this)
         this.state = {
             trainings: [],
             filteredTypeKeySelected: 0,
@@ -39,6 +41,14 @@ export default class TrainingsListScreen extends Component {
         this.refreshTrainingsTypes();
     }
 
+    handleSetFilters() {
+        this.setState({
+            filteredTypeKeyApplied: this.state.filteredTypeKeySelected,
+            filteredLevelKeyApplied: this.state.filteredLevelKeySelected,
+            visibleFilter: false,
+        })
+    }
+
     handleTrainingPress(id) {
         alert('training with id ' + id + ' pressed')
     }
@@ -58,6 +68,7 @@ export default class TrainingsListScreen extends Component {
                 console.log(error);
             });
     }
+
 
     refreshActivities() {
         axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/')
@@ -84,8 +95,31 @@ export default class TrainingsListScreen extends Component {
             })
     }
 
-    handleSearch() {
+    handleSearch(searchText) {
 
+        console.log("searching for: ")
+        console.log(searchText)
+
+        console.log("for training type: ") 
+        console.log(this.state.filteredTypeKeySelected)
+        console.log(this.state.filteredTypeKeyApplied)
+        
+        console.log("for training level: ")
+        console.log(this.state.filteredLevelKeySelected)
+        console.log(this.state.filteredLevelKeyApplied)
+        
+    }
+
+    getTrainingTypeKeyValue() {
+        return this.state.trainingTypes.find((trainingType) => {
+            return trainingType.key == this.state.filteredTypeKeyApplied
+        })
+    }
+
+    getTrainingLevelKeyValue() {
+        return this.levels.find((level) => {
+            return level.key == this.state.filteredLevelKeyApplied
+        })
     }
 
     render() {
@@ -116,6 +150,9 @@ export default class TrainingsListScreen extends Component {
 
                 <Modal 
                     isVisible={this.state.visibleFilter}
+                    animationIn="slideInDown"
+                    animationOut="slideOutUp"
+                    animationInTiming={100}
                 >
                     <ScrollView
                         >
@@ -143,10 +180,10 @@ export default class TrainingsListScreen extends Component {
                         />
 
                         <SelectList
-                            setSelected={(trainingTypeId) => this.setState({ trainingTypeId })} 
+                            setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
                             data={this.state.trainingTypes}
                             save="key"
-                            defaultOption={{"key": 0, "value": "Todos"}}
+                            defaultOption={this.getTrainingTypeKeyValue()}
                             placeholder="Tipo de entrenamiento"
                             notFoundText="No se encontraron resultados"
                             searchPlaceholder="Buscar"
@@ -162,9 +199,9 @@ export default class TrainingsListScreen extends Component {
                         />
 
                         <SelectList
-                            setSelected={(trainingTypeId) => this.setState({ trainingTypeId })} 
+                            setSelected={(filteredLevelKeySelected) => this.setState({ filteredLevelKeySelected })} 
                             data={this.levels}
-                            defaultOption={{"key": 0, "value": "Todos"}}
+                            defaultOption={this.getTrainingLevelKeyValue()}
                             save="key"
                             placeholder="Nivel de entrenamiento"
                             notFoundText="No se encontraron resultados"
@@ -180,8 +217,8 @@ export default class TrainingsListScreen extends Component {
                             }}
                         >
                             <ConfirmationButtons
-                                onConfirm={() => this.setState({ visibleFilter: false })}
-                                onCancel={() => this.setState({ visibleFilter: false })}
+                                onConfirmPress={this.handleSetFilters}
+                                onCancelPress={() => this.setState({ visibleFilter: false })}
                                 confirmationText="Aplicar"
                                 cancelText="Cancelar"
                                 style={{
