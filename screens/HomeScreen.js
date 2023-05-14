@@ -5,24 +5,16 @@ import { ButtonStandard } from '../src/styles/BaseComponents';
 import { tokenManager } from '../src/TokenManager';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import jwt_decode from 'jwt-decode';
-// import { createDrawerNavigator } from '@react-navigation/drawer'; 
 
-// const Drawer = createDrawerNavigator();
+import { createDrawerNavigator } from '@react-navigation/drawer'; 
 
-class HomeScreen extends Component {
+const Drawer = createDrawerNavigator();
+
+// Agregar en otro .js
+class MainContent extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.handleLogout = this.handleLogout.bind(this);
-        this.state = {
-            data: null
-        }
-    }
-
-    componentDidMount() {
-        const encoded_jwt = tokenManager.getAccessToken();
-        const data = jwt_decode(encoded_jwt);
-        this.setState({ data: data });
-        console.log(data);
     }
 
     async handleLogout() {
@@ -35,7 +27,7 @@ class HomeScreen extends Component {
     }
 
     getRole() {
-        const { is_trainer, is_athlete } = this.state.data;
+        const { is_trainer, is_athlete } = this.props.data;
         if (is_trainer && is_athlete) {
           return 'Trainer and Athlete';
         } else if (is_trainer) {
@@ -59,6 +51,72 @@ class HomeScreen extends Component {
         this.props.navigation.navigate('NewTrainingScreen');
     }
 
+    render() {
+        const { fullname, mail } = this.props.data || {};
+        return(    
+            <View style={Styles.container}>
+                    {this.props.data && (
+                        <>
+                            <Image
+                                source={require('../assets/images/user_predet_image.png')}
+                                style={{... styles_hs.userImage, marginTop: 40}}
+                            />
+                            <Text style={{... styles_hs.text, marginTop: 40}}>Welcome {fullname}!</Text>
+                            <Text style={styles_hs.text}>Email: {mail}</Text>
+                            <Text style={{... styles_hs.text, marginBottom: 40}}>Role: {this.getRole()}</Text>
+                        </>
+                    )}
+
+                    <ButtonStandard 
+                        title="Crear Meta"
+                        onPress={this.handleGoalScreen}
+                    />
+
+                    <ButtonStandard 
+                        title="Listado de Metas"
+                        onPress={this.handleGoalsListScreen}
+                        style={{marginTop: 20}}
+                    />
+
+                    <ButtonStandard 
+                        title="Nuevo Entrenamiento"
+                        onPress={this.handleNewTrainingScreen}
+                        style={{marginTop: 20}}
+                    />
+
+                    <ButtonStandard
+                        title="Logout"
+                        onPress={this.handleLogout}
+                        style={{marginTop: 20}}
+                    />
+                </View>
+        );
+    }
+}
+
+function Test({ navigation }) {
+    return (
+        <View style={Styles.container}>
+            <Text>Hola</Text>
+        </View>
+    )
+}
+
+class HomeScreen extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: null
+        }
+    }
+
+    componentDidMount() {
+        const encoded_jwt = tokenManager.getAccessToken();
+        const data = jwt_decode(encoded_jwt);
+        this.setState({ data: data });
+        console.log(data);
+    }
+
     // TODO: el homescreen donde muestre info del usuario y una barra lateral para acceder a las otras partes.
 
     // TODO: hacerlo como el menú lateral en figma 
@@ -70,45 +128,28 @@ class HomeScreen extends Component {
 
     // TODO: mostrar de mejor forma que tipo de usuario sos
 
+    /*
+        TODO:
+        Crear meta esta en 'listar metas'. Es para los dos tipos de usuarios
+        listado de metas va para los dos tipos de usuarios
+        nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
+
+        Usar api gateway en vez de servicio de usuarios
+
+        Botón de ver perfiles (WIP)
+
+        Deshardcodear nº de entrenador
+    */
+
+    // TODO: mover botónes al sidebar
     render() {
-        const { fullname, mail } = this.state.data || {};
         return (
-            <View style={Styles.container}>
-                {this.state.data && (
-                    <>
-                        <Image
-                            source={require('../assets/images/user_predet_image.png')}
-                            style={{... styles_hs.userImage, marginTop: 40}}
-                        />
-                        <Text style={{... styles_hs.text, marginTop: 40}}>Welcome {fullname}!</Text>
-                        <Text style={styles_hs.text}>Email: {mail}</Text>
-                        <Text style={{... styles_hs.text, marginBottom: 40}}>Role: {this.getRole()}</Text>
-                    </>
-                )}
-
-                <ButtonStandard 
-                    title="Crear Meta (entrenador)"
-                    onPress={this.handleGoalScreen}
-                />
-
-                <ButtonStandard 
-                    title="Listado de Metas (entrenador)"
-                    onPress={this.handleGoalsListScreen}
-                    style={{marginTop: 20}}
-                />
-
-                <ButtonStandard 
-                    title="Nuevo Entrenamiento"
-                    onPress={this.handleNewTrainingScreen}
-                    style={{marginTop: 20}}
-                />
-
-                <ButtonStandard
-                    title="Logout"
-                    onPress={this.handleLogout}
-                    style={{marginTop: 20}}
-                />
-            </View>
+            <Drawer.Navigator>
+                <Drawer.Screen name="Home">
+                    {() => <MainContent data={this.state.data} navigation={this.props.navigation} />}
+                </Drawer.Screen>
+                <Drawer.Screen name="Test" component={Test} />
+            </Drawer.Navigator>
         );
     }
 }
