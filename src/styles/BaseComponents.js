@@ -12,6 +12,14 @@ export const TextHeader = (props) => {
     )
 }
 
+export const TextSubheader = (props) => {
+    return (
+        <Text variant="displaySmall" style={[styles.textHeader, props.style]}>
+            {props.body}
+        </Text>
+    )
+}
+
 export const TextDetails = (props) => {
     return (
         <View style={props.style}>
