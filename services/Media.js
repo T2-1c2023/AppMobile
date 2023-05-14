@@ -63,5 +63,4 @@ export async function downloadImage(firebaseId) {
       console.error(error);
       return null;
    }
-   
 }
