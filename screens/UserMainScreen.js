@@ -46,14 +46,9 @@ export default class UserMainScreen extends Component {
                             />
                             <Text style={{... styles_hs.text, marginTop: 40}}>Welcome {fullname}!</Text>
                             <Text style={styles_hs.text}>Email: {mail}</Text>
-                            <Text style={{... styles_hs.text, marginBottom: 40}}>Role: {this.getRole()}</Text>
+                            <Text style={{... styles_hs.text, marginBottom: 20}}>Role: {this.getRole()}</Text>
                         </>
                     )}
-
-                    <ButtonStandard 
-                        title="Crear Meta"
-                        onPress={this.handleGoalScreen}
-                    />
 
                     <ButtonStandard 
                         title="Listado de Metas"

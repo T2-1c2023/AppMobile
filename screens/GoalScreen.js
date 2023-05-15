@@ -27,31 +27,34 @@ export default class GoalScreen extends Component {
         });
     }
 
-    handleCreatePress() {
-        // TODO: cargar datos a firebase storage y obtener ids
+    async handleCreatePress() {
         const { mediaLocalUris } = this.state;
-
-        console.log('Quiero subir: ' + mediaLocalUris);
+        const data = this.props.route.params.data;
 
         const uploadPromises = mediaLocalUris.map((localUri) => {
             return uploadImageFirebase(localUri);
         });
 
-        Promise.all(uploadPromises)
+        await Promise.all(uploadPromises)
             .then((ids) => {
                 console.log('IDs cargadas en firebase:', ids);
 
-                // TODO: agregar los ids cuando se actualize el back
                 const body = {
-                    "trainer_id": 1,
-                    "title": "TEST2",
-                    "description": "TEST2",
-                    "objective": "TEST2",
-                    "images": ids
+                    "trainer_id": data.id,
+                    "title": this.state.title,
+                    "description": this.state.description,
+                    "objective": this.state.metric,
+                    "multimedia_ids": ids
                 }
+
+                console.log('Cargando Meta con: ');
+                console.log(body);
+
+                const url = "https://trainings-g6-1c-2023.onrender.com/trainers/" + data.id + "/goals";
         
-                axios.post('https://trainings-g6-1c-2023.onrender.com/trainers/1/goals', body)
+                axios.post(url, body)
                     .then(function (response) {
+                        console.log('Éxito');
                         console.log(response.data);
                     }).catch(function (error) {
                         console.log(error);
@@ -60,6 +63,9 @@ export default class GoalScreen extends Component {
             .catch((error) => {
                 console.error('Error al cargar imágenes:' + error);
             })
+
+        // TODO: mostrar alguna ventana que indique si la creación fue exitosa o no    
+        this.props.navigation.goBack();
     }
 
     handleCancelPress() {
