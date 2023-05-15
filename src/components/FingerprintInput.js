@@ -9,7 +9,8 @@ export class FingerprintInput extends Component {
     }
     
     handleOnPress = () => {
-        console.log("Action on button press - to be implemented")
+        // TODO: validar fingerprint
+        this.props.onValidFingerprint();
     }
 
     render = () => {

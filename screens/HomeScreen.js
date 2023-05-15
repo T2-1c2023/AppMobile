@@ -70,8 +70,6 @@ class HomeScreen extends Component {
 
     /*
         TODO:
-        Crear meta esta en 'listar metas'. Es para los dos tipos de usuarios
-        listado de metas va para los dos tipos de usuarios
         nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
 
         Usar api gateway en vez de servicio de usuarios

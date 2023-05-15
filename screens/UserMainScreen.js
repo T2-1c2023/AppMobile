@@ -49,18 +49,6 @@ export default class UserMainScreen extends Component {
                             <Text style={{... styles_hs.text, marginBottom: 20}}>Role: {this.getRole()}</Text>
                         </>
                     )}
-
-                    <ButtonStandard 
-                        title="Listado de Metas"
-                        onPress={this.handleGoalsListScreen}
-                        style={{marginTop: 20}}
-                    />
-
-                    <ButtonStandard 
-                        title="Nuevo Entrenamiento"
-                        onPress={this.handleNewTrainingScreen}
-                        style={{marginTop: 20}}
-                    />
                 </View>
         );
     }
