@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import Styles from '../src/styles/styles';
-import { ButtonStandard } from '../src/styles/BaseComponents';
 
 export default class UserMainScreen extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            profilePic: null
+        }
+    }
+
+    componentDidMount() {
+        // TODO: Set profile picture
+        // get user by id from back
+        // if image != null, then its a firebase id
+        // Obtain image url from firebase
+        // Set profile pic to obtained url
     }
 
     getRole() {
@@ -19,18 +29,6 @@ export default class UserMainScreen extends Component {
         } else {
           return 'N/A';
         }
-    }
-      
-    handleGoalScreen = async () => {
-        this.props.navigation.navigate('GoalScreen');
-    }
-
-    handleGoalsListScreen = async () => {
-        this.props.navigation.navigate('GoalsListScreen');
-    }
-
-    handleNewTrainingScreen = async () => {
-        this.props.navigation.navigate('NewTrainingScreen');
     }
 
     render() {

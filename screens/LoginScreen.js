@@ -72,6 +72,7 @@ export default class LoginScreen extends Component {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#0000ff" />
+                    <Text style={{marginTop: 30}}>Login in please wait</Text>
                 </View>
             )
         } else {

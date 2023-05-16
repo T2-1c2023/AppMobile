@@ -75,8 +75,6 @@ class HomeScreen extends Component {
         Usar api gateway en vez de servicio de usuarios
 
         Botón de ver perfiles (WIP)
-
-        Deshardcodear nº de entrenador
     */
 
     // TODO: (no prioritario) mejorar visualmente el sidebar https://www.youtube.com/watch?v=M4WNSjTWFDo

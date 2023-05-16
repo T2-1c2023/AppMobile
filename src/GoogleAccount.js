@@ -50,7 +50,6 @@ export async function googleLogIn() {
         await auth().signInWithCredential(googleCredential)
             .then(async (userCredential) => {
                 const firebaseToken = await userCredential.user.getIdToken();
-                console.log(firebaseToken);
                 await logInGoogleAcc(firebaseToken);
             })
             .catch((error) => {
