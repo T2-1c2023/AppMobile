@@ -23,7 +23,7 @@ export default class GoalScreen extends Component {
         this.setState((prevState) => ({
             mediaLocalUris: uris
         }), () => {
-            console.log('Imagenes locales cargadas (goalScreen):', this.state.mediaLocalUris);
+            console.log('Imágenes locales cargadas (goalScreen):', this.state.mediaLocalUris);
         });
     }
 
@@ -50,7 +50,7 @@ export default class GoalScreen extends Component {
                     "images": ids
                 }
         
-                axios.post('https://trainings-g6-1c-2023.onrender.com/trainers/1/goals', body)
+                axios.post(API_GATEWAY_URL + 'trainers/1/goals', body)
                     .then(function (response) {
                         console.log(response.data);
                     }).catch(function (error) {

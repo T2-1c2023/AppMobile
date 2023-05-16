@@ -8,7 +8,7 @@ const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export async function register(data) {
     console.log('Enviando request para registrar usuario')
-    await axios.post(API_GATEWAY_URL + '/register', data)
+    await axios.post(API_GATEWAY_URL + 'register', data)
       .then(async (response) => {
         // TODO: en google docs aparece como 201 pero funciona con 200
         if (response.status === 200) {
@@ -27,7 +27,7 @@ export async function logIn(mail, password) {
         mail: mail,
         password: password
     }
-    await axios.post(API_GATEWAY_URL + '/login', data)
+    await axios.post(API_GATEWAY_URL + 'login', data)
       .then(async (response) => {
         if (response.status === 200) {
             const token = response.data.token;
@@ -49,7 +49,7 @@ export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete,
   }
 
   console.log('Enviando request de registro de usuario con google');
-  await axios.post(API_GATEWAY_URL + '/register/oauth', data)
+  await axios.post(API_GATEWAY_URL + 'register/oauth', data)
     .then(async (response) => {
       if (response.status === 200) {
         console.log("Respuesta exitosa")
@@ -66,7 +66,7 @@ export async function logInGoogleAcc(firebaseToken) {
   const data = {
     token: firebaseToken,
   }
-  await axios.post(API_GATEWAY_URL + '/login/oauth', data)
+  await axios.post(API_GATEWAY_URL + 'login/oauth', data)
     .then(async (response) => {
       if (response.status === 200) {
         const token = response.data.token;

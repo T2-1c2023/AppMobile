@@ -5,7 +5,12 @@ import styles from '../src/styles/styles';
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import GoalsList from '../src/components/GoalsList';
 import { ConfirmationButtons } from '../src/styles/BaseComponents';
+import { tokenManager } from '../src/TokenManager';
+import jwt_decode from 'jwt-decode';
 import axios from 'axios';
+import Constants from 'expo-constants'
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class GoalsListScreen extends Component {
     constructor(props) {
@@ -21,6 +26,8 @@ export default class GoalsListScreen extends Component {
             days: 0,
             goals: [],
             selectedGoalsIds: [],
+            trainerData: {},
+            trainingData: props.route.params.trainingData,
         }
     }
 
@@ -33,7 +40,7 @@ export default class GoalsListScreen extends Component {
         }
 
         axios.put(
-            "https://trainings-g6-1c-2023.onrender.com/trainings/1/goals/" + goal_id.toString(), 
+            API_GATEWAY_URL + "trainings/" + this.state.trainerData.id + "/goals/" + goal_id.toString(), 
             body)
             .then(response => {
                 console.log(ids)
@@ -57,9 +64,22 @@ export default class GoalsListScreen extends Component {
     }
 
     componentDidMount() {
-        const trainerGoalsPromise = axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
+        const encoded_jwt = tokenManager.getAccessToken();
+        const trainerData = jwt_decode(encoded_jwt);
+        this.setState({ trainerData });
+        
+        console.log(tokenManager.getAccessToken());
+        const trainerGoalsPromise = axios.get(API_GATEWAY_URL + "trainers/" + trainerData.id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
             
-        const trainingGoalsPromise = axios.get("https://trainings-g6-1c-2023.onrender.com/trainings/1/goals")
+        const trainingGoalsPromise = axios.get(API_GATEWAY_URL + "trainings/" + this.state.trainingData.id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
         
         Promise.all([trainerGoalsPromise, trainingGoalsPromise])
             .then(responses => {
@@ -82,7 +102,7 @@ export default class GoalsListScreen extends Component {
 
 
     handleSearch (queryText) {
-        axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
+        axios.get(API_GATEWAY_URL + "trainers/" + this.state.trainerData.id +"/goals")
             .then(response => {
                 const goals = response.data;
                 const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
@@ -91,6 +111,10 @@ export default class GoalsListScreen extends Component {
             .catch(function (error) {
                 console.log(error);
             });
+    }
+
+    handleCreatePress = async () => {
+
     }
 
     handleCancelPress = async () => {
