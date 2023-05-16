@@ -44,7 +44,7 @@ class Training extends Component {
                     <Text 
                         style={trainingStyles.typeText}
                     >
-                        {"training name: " + training.type_id}
+                        {training.type}
                     </Text>
                     <Image 
                         source={this.getSeverityIcon(training.severity)}

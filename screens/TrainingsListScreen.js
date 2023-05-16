@@ -10,6 +10,8 @@ import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText}  from '../src/styles/BaseComponents';
 
+import { IconButton } from 'react-native-paper'
+
 import axios from 'axios';
 
 export default class TrainingsListScreen extends Component {
@@ -39,6 +41,16 @@ export default class TrainingsListScreen extends Component {
     componentDidMount() {
         this.refreshActivities();
         this.refreshTrainingsTypes();
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <IconButton
+                icon={'plus'}
+                iconColor='black'
+                size={30}
+                onPress={() => console.log('Pressed')}
+              />
+            ),
+          });
     }
 
     handleSetFilters() {
@@ -169,7 +181,7 @@ export default class TrainingsListScreen extends Component {
                         }}
                     >
                         <TextSubheader 
-                            body="Filtros de busqueda"
+                            body="Filtros de búsqueda"
                         />
 
                         <TextDetails 

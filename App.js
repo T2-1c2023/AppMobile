@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, ActivityIndicator, View, Image, Text } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, Image, Text, Button } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen1 from './screens/RegisterScreen1';
@@ -157,7 +157,7 @@ export default class App extends Component {
                     {'\n'}
                     Subtitulo
                   </Text>
-                )
+                ),
               })}
             />
             <Stack.Screen
