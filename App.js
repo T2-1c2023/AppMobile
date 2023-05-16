@@ -17,10 +17,12 @@ import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import TrainingScreen from './screens/TrainingScreen'; 
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -51,7 +53,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"TrainingsListScreen"}
+          <Stack.Navigator initialRouteName={"TrainingScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -164,7 +166,19 @@ export default class App extends Component {
               name="ChangePasswordScreen"
               component={ChangePasswordScreen}
               options={{ title: "Cambio de contraseña" }}
-              />
+            />
+
+            <Stack.Screen
+              name='TrainingScreen'
+              component={TrainingScreen}
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center', width: 250 }}>
+                    Definicion muscular - Cuerpo
+                  </Text>
+                ),
+              })}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

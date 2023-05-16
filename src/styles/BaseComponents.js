@@ -26,7 +26,10 @@ export const TextDetails = (props) => {
             <Text
                 numberOfLines={props.numberOfLines}
                 variant="labelMedium"
-                style={props.warning ? styles.textWarning : styles.textDetails}>
+                style={props.warning ? styles.textWarning : 
+                    props.alignLeft ? styles.textDetailsLeft : styles.textDetails 
+                }
+            >
                 {props.body}
             </Text>
         </View>
@@ -55,6 +58,15 @@ export const DividerWithLeftText = (props) => {
                 <Text style={{ marginHorizontal: 10 }}>{props.counter + '/' + props.maxCounter}</Text>
                 <Divider style={{ flex: 1, height: 1, maxWidth: 20, backgroundColor: '#9D9D9D' }} />
                 </>
+            }
+
+            {props.editButtonPress &&
+                <IconButton
+                    icon="pencil"
+                    color="#000000"
+                    size={20}
+                    onPress={() => props.editButtonPress()}
+                />
             }
         </View>
     )

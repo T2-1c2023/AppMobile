@@ -50,6 +50,13 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
 
+    textDetailsLeft: {
+        color: '#605D64',
+        width: 350,
+        textAlign: 'left',
+        fontSize: 14,
+    },
+
     textWarning: {
         color: 'red',
         width: 250,

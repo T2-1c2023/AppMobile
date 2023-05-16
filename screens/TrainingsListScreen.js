@@ -41,6 +41,12 @@ export default class TrainingsListScreen extends Component {
     componentDidMount() {
         this.refreshActivities();
         this.refreshTrainingsTypes();
+
+        
+        // reemplazar true por consulta al token o al contexto sobre si el usuario es trainer y sobre si 
+        trainingCreationAvailable = true
+
+
         this.props.navigation.setOptions({
             headerRight: () => (
                 <IconButton
