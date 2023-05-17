@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, ActivityIndicator, View, Image, Text, Button } from 'react-native';
@@ -16,14 +17,15 @@ import GoalsListScreen from './screens/GoalsListScreen';
 import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
+
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import TrainingScreen from './screens/TrainingScreen'; 
+import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
+import UserMainScreen from './screens/UserMainScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
-
-
 
 const Stack = createNativeStackNavigator();
 
@@ -162,10 +164,21 @@ export default class App extends Component {
                 ),
               })}
             />
+
             <Stack.Screen
               name="ChangePasswordScreen"
               component={ChangePasswordScreen}
               options={{ title: "Cambio de contraseña" }}
+            />
+
+            <Stack.Screen 
+              name="GoalsTrainingsListScreen"
+              component={GoalsTrainingsListScreen}
+            />
+
+            <Stack.Screen 
+              name="UserMainScreen"
+              component={UserMainScreen}
             />
 
             <Stack.Screen

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { selectImage } from '../../services/Media';
 
 export default class MultimediaInput extends Component {
     constructor(props) {
@@ -8,54 +9,26 @@ export default class MultimediaInput extends Component {
         this.handleUploadPress = this.handleUploadPress.bind(this)
         this.handleImagePress = this.handleImagePress.bind(this)
 
-        {/* ---------------------------------------- */ }
-        this.colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'black', 'white', 'gray', 'brown', 'cyan', 'magenta', 'lime', 'olive', 'maroon', 'navy', 'teal', 'silver']
-        {/* ---------------------------------------- */ }
+        this.state = {
+            localImagesUris: [] 
+        }
     }
 
-    getImageById(id) {
-
-        {/* Reemplazar por lógica de muestreo de imagen por id */ }
-        {/* ---------------------------------------- */ }
-        const index = parseInt(id);
-        return this.colors[index];
-        {/* ---------------------------------------- */ }
+    // TODO: mostrar la imagen en grande y opción de eliminarla.
+    handleImagePress = (localPath) => {
+        alert('Image Pressed: ' + localPath);
     }
 
-    item(id) {
-        return (
-            <View style={multimediaStyles.item}>
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => this.handleImagePress(id)}
-                >
-                    {/* Reemplazar por lógica de muestreo de imagen por id */}
-                    {/* ---------------------------------------- */}
+    handleUploadPress = async () => {
+        const localImageUri = await selectImage();
+        
+        this.setState((prevState) => ({
+            localImagesUris: [...prevState.localImagesUris, localImageUri]
+        }));
 
-                    <View style={{
-                        flex: 1,
-                        backgroundColor: this.getImageById(id),
-                        borderBottomEndRadius: 10,
-                        borderTopEndRadius: 10,
-                        borderBottomLeftRadius: 10,
-                        borderTopLeftRadius: 10,
-                    }}
-                    >
-                    </View>
-
-                    {/* ---------------------------------------- */}
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    handleImagePress(id) {
-        alert('Image Pressed with id: ' + id)
-    }
-
-    handleUploadPress() {
-        alert('Upload Pressed')
-    }
+        // Update Uris on GoalScreen
+        this.props.onUpload(this.state.localImagesUris);
+    };
 
     uploadItem() {
         return (
@@ -73,11 +46,18 @@ export default class MultimediaInput extends Component {
                 <View style={multimediaStyles.itemContainer}>
                     {this.uploadItem()}
                 </View>
-                {this.props.ids.map((id) => (
-                    <View key={id} style={multimediaStyles.itemContainer}>
-                        {this.item(id)}
-                    </View>
-                ))}
+                {
+                    this.state.localImagesUris.map((localUri) => 
+                        <View key={localUri} style={multimediaStyles.itemContainer}>
+                            <TouchableOpacity onPress={() => this.handleImagePress(localUri)}>
+                                <Image 
+                                    source={{ uri: localUri }} 
+                                    style={multimediaStyles.containedImage}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    )
+                }
             </ScrollView>
         )
     }
@@ -119,5 +99,14 @@ const multimediaStyles = StyleSheet.create({
         borderBottomLeftRadius: 10,
         borderTopLeftRadius: 10,
         borderWidth: 1,
+    },
+
+    containedImage: {
+        width: 100, 
+        height: 100, 
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
     }
 })

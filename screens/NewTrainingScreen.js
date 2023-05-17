@@ -5,9 +5,12 @@ import styles from '../src/styles/styles';
 import { SelectList } from 'react-native-dropdown-select-list'
 import LevelInput from '../src/components/LevelInput';
 import { ConfirmationButtons } from '../src/styles/BaseComponents';
-
+import { tokenManager } from '../src/TokenManager';
+import jwt_decode from 'jwt-decode';
 import axios from 'axios';
+import Constants from 'expo-constants'
 
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class NewTrainingScreen extends Component {
     constructor(props) {
@@ -20,15 +23,25 @@ export default class NewTrainingScreen extends Component {
             description: '',
             trainingTypeId: '',
             level: 'basic',
+            trainerData: {},
         }
     }
 
     async getTrainingsTypes() {
-        const response = await axios.get('https://trainings-g6-1c-2023.onrender.com/training-types')       
+        const response = await axios.get(API_GATEWAY_URL + 'training-types', {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
+        console.log(response.data);     
         return response.data
     }
 
     async componentDidMount() {
+        const encoded_jwt = tokenManager.getAccessToken();
+        const trainerData = jwt_decode(encoded_jwt);
+        this.setState({ trainerData });
+        
         const data = await this.getTrainingsTypes()
 
         const trainingTypes = data.map((trainingType) => {
@@ -38,19 +51,37 @@ export default class NewTrainingScreen extends Component {
         this.setState({ trainingTypes  })
     }
 
-    handleCreatePress() {
+    async handleCreatePress() {
         const body = {
-            "trainer_id": 1,
+            "trainer_id": this.state.trainerData.id,
             "title": this.state.title,
             "description": this.state.description,
             "type_id": this.state.trainingTypeId,
             "level": this.state.level,
         }
-        console.log(body)
+
+        await axios.post(API_GATEWAY_URL + 'trainings', body, {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerData.id } });
+                }
+            })
+            .catch((error) => {
+                this.handleNewTrainingError(error);
+            }
+        );
     }
 
-    handleCancelPress() {
-        alert('Cancel pressed')
+    handleCancelPress = async () => {
+        this.props.navigation.goBack();
+    }
+
+    handleNewTrainingError(error) {
+        console.log(error);//TO_DO
     }
 
     render() {

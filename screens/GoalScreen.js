@@ -4,6 +4,11 @@ import { DaysInput, DividerWithLeftText, TextBox, ButtonStandard, ConfirmationBu
 import MultimediaInput from '../src/components/MultimediaInput';
 import styles from '../src/styles/styles';
 import axios from 'axios';
+import { uploadImageFirebase } from '../services/Media';
+import Constants from 'expo-constants'
+import { tokenManager } from '../src/TokenManager';
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class GoalScreen extends Component {
     constructor(props) {
@@ -14,27 +19,64 @@ export default class GoalScreen extends Component {
             title: '',
             description: '',
             metric: '',
+            mediaLocalUris: []
         }
     }
 
-    handleCreatePress() {
-        const body = {
-            "trainer_id": 1,
-            "title": "TEST2",
-            "description": "TEST2",
-            "objective": "TEST2"
-        }
+    updateMediaUris = (uris) => {
+        this.setState((prevState) => ({
+            mediaLocalUris: uris
+        }), () => {
+            console.log('Imágenes locales cargadas (goalScreen):', this.state.mediaLocalUris);
+        });
+    }
 
-        axios.post('https://trainings-g6-1c-2023.onrender.com/trainers/1/goals', body)
-            .then(function (response) {
-                console.log(response.data);
-            }).catch(function (error) {
-                console.log(error);
-            });
+    async handleCreatePress() {
+        console.log(tokenManager.getAccessToken());//TO_DO quitar
+        const { mediaLocalUris } = this.state;
+        const data = this.props.route.params.data;
+
+        const uploadPromises = mediaLocalUris.map((localUri) => {
+            return uploadImageFirebase(localUri);
+        });
+
+        await Promise.all(uploadPromises)
+            .then((ids) => {
+                console.log('IDs cargadas en firebase:', ids);
+
+                const body = {
+                    "trainer_id": data.id,
+                    "title": this.state.title,
+                    "description": this.state.description,
+                    "objective": this.state.metric,
+                    "multimedia_ids": ids
+                }
+
+                console.log('Cargando Meta con: ');
+                console.log(body);
+        
+                axios.post(API_GATEWAY_URL + 'trainers/' + data.id + '/goals', body, {
+                    headers: {
+                        Authorization: tokenManager.getAccessToken()
+                    }
+                    })
+                    .then(function (response) {
+                        console.log('Éxito');
+                        console.log(response.data);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+            })
+            .catch((error) => {
+                console.error('Error al cargar imágenes:' + error);
+            })
+
+        // TODO: mostrar alguna ventana que indique si la creación fue exitosa o no    
+        this.props.navigation.goBack();
     }
 
     handleCancelPress() {
-        alert('Cancel pressed')
+        this.props.navigation.goBack();
     }
 
     render() {
@@ -70,9 +112,9 @@ export default class GoalScreen extends Component {
                         marginTop: 5,
                     }}
                 />
-
+                
                 <MultimediaInput
-                    ids={['1', '2', '3', '4', '5', '6', '7', '8', '9']}
+                    onUpload={this.updateMediaUris}
                 />
 
                 <TextBox 

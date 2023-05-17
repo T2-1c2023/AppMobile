@@ -41,8 +41,7 @@ export default class PassRecoveryScreen extends Component {
                 <InputData
                     placeholder="Correo electrónico"
                     onChangeText={(email) => {
-                        this.setState({ email },
-                            () => console.log('email: ', this.state.email))
+                        this.setState({ email })
                     }}
                 />
 
@@ -53,7 +52,9 @@ export default class PassRecoveryScreen extends Component {
                     }}
                     disabled={(this.state.email === '' || !this.validateEmail(this.state.email))}
                     onPress={() => {
-                        console.log(this.state.email)
+                        console.log('To be Implemented');
+                        console.log('Enviando a' + this.state.email);
+                        this.props.navigation.replace('PassRecoveryConfirmationScreen');
                     }}
                 />
 

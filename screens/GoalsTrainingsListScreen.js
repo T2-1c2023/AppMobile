@@ -5,14 +5,13 @@ import { ButtonStandard } from '../src/styles/BaseComponents';
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import GoalsList from '../src/components/GoalsList';
 import { tokenManager } from '../src/TokenManager';
-import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 import Constants from 'expo-constants'
 import { ActivityIndicator } from 'react-native-paper';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-export default class GoalsListScreen extends Component {
+export default class GoalsTrainingsListScreen extends Component {
     constructor(props) {
         super(props)
         this.handlePress = this.handlePress.bind(this)
@@ -30,17 +29,37 @@ export default class GoalsListScreen extends Component {
         }
     }
 
-    handleSelection(goal_id) {  //TO_DO ver si se puede quitar esta función
+    handleSelection(goal_id) {
         const ids = [...this.state.selectedGoalsIds, goal_id]
 
         const body = {
-            training_id: 1,
+            training_id: this.props.route.params.trainingData.id,
             goal_id: goal_id
         }
+        // TODO: acá debería pegarle al api gateway
+        axios.put(
+            API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
+            body, 
+            {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
+            .then(response => {
+                console.log(ids)
+                this.setState({ selectedGoalsIds: ids })
+            })
+            .catch(error => {
+                console.log(error)
+            })
+
     }
 
-    handleDeselection(goal_id) {  //TO_DO ver si se puede quitar esta función
-        
+    handleDeselection(goal_id) {
+        const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
+
+        console.log(ids)
+        this.setState({ selectedGoalsIds: ids })
     }
 
     handlePress = (goal) => {
@@ -49,21 +68,41 @@ export default class GoalsListScreen extends Component {
 
     fetchData = async () => {
 
-        console.log("data " + JSON.stringify(this.props.data));
-        await axios.get(API_GATEWAY_URL + "trainers/" + this.props.data.id + "/goals", {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-             })
-            .then((response) => {
-                this.setState({ goals: response.data});
-                console.log(response.data);
-            }) 
-            .catch((error) => {
-                console.error(error);
-            })
+        console.log(this.props);
+        const trainerGoalsPromise = axios.get(API_GATEWAY_URL + "trainers/" + this.props.route.params.trainingData.trainer_id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
+            
+        const trainingGoalsPromise = axios.get(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
 
-        this.setState({ loading: false });
+        // TODO: al seleccionar una foto salta [AxiosError: Request failed with status code 401]
+        
+        this.setState({ loading: true });
+
+        await Promise.all([trainerGoalsPromise, trainingGoalsPromise])
+            .then(responses => {
+                const goals = responses[0].data;
+                const selectedGoalsIds = responses[1].data.map(goal => goal.id);
+
+                goals.sort(( a, b) => 
+                    selectedGoalsIds.includes(a.id) ? -1 
+                    : 
+                    selectedGoalsIds.includes(b.id) ? 1 : 0
+                )
+
+                this.setState({ goals, selectedGoalsIds });
+            }).catch(function (error) {
+                console.log(error);
+            }
+            );
+
+            this.setState({ loading: false });
     }
 
     componentDidMount() {
@@ -72,23 +111,19 @@ export default class GoalsListScreen extends Component {
     }
 
     handleSearch (queryText) {
-        console.log(API_GATEWAY_URL + "trainers/" + this.props.data.id +"/goals");
-        axios.get(API_GATEWAY_URL + "trainers/" + this.props.data.id +"/goals", {
+        axios.get(API_GATEWAY_URL + "trainers/" + rops.route.params.trainingData.trainer_id +"/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
-            })
+        })
             .then(response => {
                 const goals = response.data;
-                console.log("goals " + goals);
                 const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
                 this.setState({ goals: filteredGoals })
             })
             .catch(function (error) {
                 console.log(error);
             });
-
-            
     }
 
 
@@ -104,7 +139,7 @@ export default class GoalsListScreen extends Component {
                 
                 <SearchInputWithIcon
                     onIconPress={
-                        () => this.props.navigation.navigate('GoalScreen', { data: this.props.data })
+                        () => this.props.navigation.navigate('GoalScreen', { data: tokenManager.getAccessToken() })
                     }
                     onSubmit={this.handleSearch}
                     placeholder="Buscar por título"
@@ -137,6 +172,12 @@ export default class GoalsListScreen extends Component {
                     <ButtonStandard 
                         title="Refresh"
                         onPress={this.fetchData}
+                        style={{marginTop: 20}}
+                    />
+
+                    <ButtonStandard 
+                        title="Continuar"
+                        onPress={() => this.props.navigation.replace('HomeScreen')}
                         style={{marginTop: 20}}
                     />
                 </View>

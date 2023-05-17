@@ -4,8 +4,13 @@ import { IconButton } from 'react-native-paper';
 import { TextBox } from '../styles/BaseComponents';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
+import Constants from 'expo-constants';
+import { tokenManager } from '../TokenManager';
 
 const MIN_TITLE_LENGTH = 5
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+
 
 class Activity extends Component {
     constructor(props) {
@@ -64,7 +69,11 @@ class Activity extends Component {
 
     handleTrashPress() {
         const activityId = this.props.activity.id
-        axios.delete('https://trainings-g6-1c-2023.onrender.com/activities/' + activityId)
+        axios.delete(API_GATEWAY_URL + 'activities/' + activityId, {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
             .then(response => {
                 this.props.onChange()
             })
@@ -138,7 +147,11 @@ export default class ActivityList extends Component {
                 multimedia_id: this.state.newActivityImageId,
             }
 
-            axios.post('https://trainings-g6-1c-2023.onrender.com/trainings/1/activities', body)
+            axios.post(API_GATEWAY_URL + 'trainings/' + this.props.trainingId + '/activities', body, {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
                 .then(response => {
                     // reset title
                     this.setState({ newActivityTitle: '' })
