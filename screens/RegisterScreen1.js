@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+// Visuals
 import { View, Text } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage, TextDetails } from '../src/styles/BaseComponents';
+import { ActivityIndicator } from 'react-native-paper';
 import styles from '../src/styles/styles';
+// Register logic
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
 import { googleSignIn } from '../src/GoogleAccount';
@@ -13,6 +16,7 @@ export default class RegisterScreen1 extends Component {
         super(props)
         this.handleProceed = this.handleProceed.bind(this)
         this.state = {
+            loading: false,
             fullName: '',
             email: '',
             password: '',
@@ -23,6 +27,8 @@ export default class RegisterScreen1 extends Component {
     handleProceed = async () => {
         // TODO: ver manejo de nº de telefono
         if (this.validateFields()) {
+            this.setState({ loading: true });
+            
             this.setState({ errorMessage: undefined}) 
             const data = {
                 fullname: this.state.fullName,
@@ -34,14 +40,18 @@ export default class RegisterScreen1 extends Component {
                 password: this.state.password
             }
             await register(data);
-           
+
             if (this.userIsLogged()) {
                 this.props.navigation.replace('HomeScreen');
             }
+
+            this.setState({ loading: false });
         }
     }
 
     async handleGoogleSignIn() {
+        this.setState({ loading: true });
+
         const phone_number = '0123456789';
         const is_athlete = this.props.route.params.athlete;
         const is_trainer = this.props.route.params.trainer;
@@ -51,6 +61,8 @@ export default class RegisterScreen1 extends Component {
         if (this.userIsLogged()) {
             this.props.navigation.replace('HomeScreen');
         }
+
+        this.setState({ loading: false });
     }
 
     userIsLogged() {
@@ -83,85 +95,94 @@ export default class RegisterScreen1 extends Component {
     };
 
     render() {
-        return (
-            <View style={styles.container}>
-                <LoginImage />
+        if (this.state.loading) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#21005D" />
+                    <Text style={{marginTop: 30}}>Creating account, please wait</Text>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.container}>
+                    <LoginImage />
 
-                <TextHeader 
-                    body="Ingresa tus datos"
-                />
-                <Text>{this.generateRoleText()}</Text>
+                    <TextHeader 
+                        body="Ingresa tus datos"
+                    />
+                    <Text>{this.generateRoleText()}</Text>
 
-                <DividerWithMiddleText 
-                    text="o"
-                    style={{
-                        marginTop: 5,
-                    }} 
-                />
+                    <DividerWithMiddleText 
+                        text="o"
+                        style={{
+                            marginTop: 5,
+                        }} 
+                    />
 
-                <ButtonStandard
-                    onPress={() => this.handleGoogleSignIn()}
-                    title="Sign In con Google"
-                    marginTop={30}
-                    marginBottom={10}
-                />
+                    <ButtonStandard
+                        onPress={() => this.handleGoogleSignIn()}
+                        title="Sign In con Google"
+                        marginTop={30}
+                        marginBottom={10}
+                    />
 
-                {this.state.errorMessage && (
-                    <Text style={styles.error}>{this.state.errorMessage}</Text>
-                )}
+                    {this.state.errorMessage && (
+                        <Text style={styles.error}>{this.state.errorMessage}</Text>
+                    )}
 
-                <InputData 
-                    placeholder="Nombre y apellido"
-                    maxLength={30} 
-                    onChangeText={(input) => { 
-                        this.setState({ fullName: input }) 
-                    }}
-                    style={{
-                        marginTop: 5,
-                    }} 
-                />
+                    <InputData 
+                        placeholder="Nombre y apellido"
+                        maxLength={30} 
+                        onChangeText={(input) => { 
+                            this.setState({ fullName: input }) 
+                        }}
+                        style={{
+                            marginTop: 5,
+                        }} 
+                    />
 
-                <InputData 
-                    placeholder="Correo electrónico" 
-                    maxLength={30}
-                    onChangeText={(input) => { 
-                        this.setState({ email: input }) 
-                    }}
-                    style={{
-                        marginTop: 5,
-                    }} 
-                />
+                    <InputData 
+                        placeholder="Correo electrónico" 
+                        maxLength={30}
+                        onChangeText={(input) => { 
+                            this.setState({ email: input }) 
+                        }}
+                        style={{
+                            marginTop: 5,
+                        }} 
+                    />
 
-                <InputData 
-                    placeholder="Contraseña" 
-                    onChangeText={(input) => { 
-                        this.setState({ password: input }) 
-                    }}
-                    style={{
-                        marginTop: 5,
-                    }} 
-                />
+                    <InputData 
+                        placeholder="Contraseña" 
+                        onChangeText={(input) => { 
+                            this.setState({ password: input }) 
+                        }}
+                        style={{
+                            marginTop: 5,
+                        }} 
+                    />
 
-                <ButtonStandard
-                    title="Siguiente"
-                    onPress={this.handleProceed}
-                    style={{
-                        marginTop: 25,
-                    }}
-                />
+                    <ButtonStandard
+                        title="Siguiente"
+                        onPress={this.handleProceed}
+                        style={{
+                            marginTop: 25,
+                        }}
+                    />
 
-                <TextWithLink
-                    text="¿Ya tienes cuenta?"
-                    linkedText="Inicia sesión"
-                    onPress={() => 
-                        this.props.navigation.replace('LoginScreen')
-                    }
-                    style={{
-                        marginTop: 10,
-                    }}
-                />
+                    <TextWithLink
+                        text="¿Ya tienes cuenta?"
+                        linkedText="Inicia sesión"
+                        onPress={() => 
+                            this.props.navigation.replace('LoginScreen')
+                        }
+                        style={{
+                            marginTop: 10,
+                        }}
+                    />
 
-            </View>
-        )
+                </View>
+            )
+        }
     }
 }

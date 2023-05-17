@@ -26,6 +26,8 @@ export default class LoginScreen extends Component {
     }
 
     async handleLogin() {
+        this.setState({ loading: true });
+
         const { email, password } = this.state;
         
         if (!email || !password ) {
@@ -34,9 +36,11 @@ export default class LoginScreen extends Component {
             await logIn(this.state.email, this.state.password);
             
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('PlaygroundScreen');
+                this.props.navigation.replace('HomeScreen');
             }
         }
+
+        this.setState({ loading: false });
     }
  
     async handleGoogleLogIn () {
@@ -52,7 +56,7 @@ export default class LoginScreen extends Component {
     componentDidMount() {
         tokenManager._loadTokens().then(() => {
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('PlaygroundScreen')
+                this.props.navigation.replace('HomeScreen');
             } else {
                 this.setState({ loading: false })
             }
@@ -71,7 +75,7 @@ export default class LoginScreen extends Component {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator size="large" color="#21005D" />
                     <Text style={{marginTop: 30}}>Login in please wait</Text>
                 </View>
             )
@@ -112,6 +116,8 @@ export default class LoginScreen extends Component {
                             marginTop: 5,
                         }} 
                     />
+
+                    {/* TODO: hacer que se vea donde escribís */}
 
                     <InputData
                         placeholder='Correo electrónico'

@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import axios from 'axios'
 import { tokenManager } from './TokenManager'
 import Constants from 'expo-constants'
@@ -7,12 +8,10 @@ const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 // TODO: usar constantes para los errores
 
 export async function register(data) {
-    console.log('Enviando request para registrar usuario')
     await axios.post(API_GATEWAY_URL + 'register', data)
       .then(async (response) => {
         // TODO: en google docs aparece como 201 pero funciona con 200
         if (response.status === 200) {
-            console.log('Usuario registrado con éxito');
             const token = response.data.token;
             await tokenManager.updateTokens(token);
         }
@@ -48,11 +47,9 @@ export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete,
     is_trainer: is_trainer
   }
 
-  console.log('Enviando request de registro de usuario con google');
   await axios.post(API_GATEWAY_URL + 'register/oauth', data)
     .then(async (response) => {
       if (response.status === 200) {
-        console.log("Respuesta exitosa")
         const token = response.data.token;
         await tokenManager.updateTokens(token);
       }
@@ -71,7 +68,6 @@ export async function logInGoogleAcc(firebaseToken) {
       if (response.status === 200) {
         const token = response.data.token;
         await tokenManager.updateTokens(token);
-        console.log('Usuario logeado con éxito');
       }
     })
     .catch((error) => {
@@ -79,57 +75,61 @@ export async function logInGoogleAcc(firebaseToken) {
     });
 }
 
+// Error handling --------------------------------------------------------------------------------------------------
+
 // Errors when user tries to register with mail/password
 function handleRegisterError(error) {
   if (error.response && error.response.status === 409) {
-    console.error('Correo electrónico ya registrado');
+    Alert.alert('Email already registered', 'Please try signing in or use a different email address.');
   } else if (error.response && error.response.status === 400) {
-    console.error('Bad Request');
+    Alert.alert('Bad Request');
   }
   else {
-    console.error('Error creating user');
-    console.error('Status code:', error.response ? error.response.status : 'desconocido');
+    Alert.alert('Failed to create account', 'Unkown error. Please check your connection or try again later\n\
+                Status code:', error.response.status);
   }
 }
 
 // Errors when user logs in with mail/password
 function handleLogInError(error) {
   if (error.response && error.response.status === 401) {
-    console.error('Password is incorrect')
+    Alert.alert('Incorrect Password', 'Please try again');
   } else if (error.response && error.response.status === 404) {
-    console.error("Mail isn't registered")
+    Alert.alert("Email not found", 'Verify the email address and try again ' + 
+                "or create a new account if you don't have one");
   } else if (error.response && error.response.status === 400) {
-    console.error('Bad Request');
+    Alert.alert('Invalid email format', 'Your email should look something ' +
+                'like this:\nexample@example.com');
   } else {
-    console.error('Failed to login');
-    console.error('Status code:', error.response ? error.response.status : 'desconocido');
+    Alert.alert('Failed to login', 'Unkown error. Please check your connection or try again later\n\
+                Status code:', error.response.status);
   }
 }
 
 function handleRegisterGoogleError(error) {
   if (error.response && error.response.status === 409) {
-    console.error('Mail already registered');
+    Alert.alert('Email already registered', 'Please try signing in or use a different email address.');
   } else if (error.response && error.response.status === 400) {
-    console.error('Bad Request');
+    Alert.alert('Bad Request');
   } else if (error.response && error.response.status === 401) {
-    console.error('Unauthorized Request');
+    Alert.alert('Unauthorized Request');
   }
   else {
-    console.error('Error creating user');
-    console.error('Status code:', error.response ? error.response.status : 'desconocido');
+    Alert.alert('Failed to create account', 'Unkown error. Please check your connection or try again later\n\
+                Status code:', error.response.status);
   }
 }
 
 function handleLogInGoogleError(error) {
   if (error.response && error.response.status === 404) {
-    console.error("Mail isn't registered");
+    Alert.alert("Google Account isn't registered", "Create a new account if you don't have one");
   } else if (error.response && error.response.status === 400) {
-    console.error('Bad Request');
+    Alert.alert("Bad Request");
   } else if (error.response && error.response.status === 401) {
-    console.error('Unauthorized Request');
+    Alert.alert("Unauthorized request");
   }
   else {
-    console.error('Error creating user');
-    console.error('Status code:', error.response ? error.response.status : 'desconocido');
+    Alert.alert('Failed to login', 'Unkown error. Please check your connection or try again later\n\
+                Status code:', error.response.status);
   }
 }
