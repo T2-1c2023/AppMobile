@@ -91,16 +91,16 @@ export const DividerWithLeftText = (props) => {
     )
 }
 
-
 export const ButtonStandard = (props) => {
     return (
         <View style={props.style}>
             <View style={[{ display: 'flex', flexDirection: 'row' }, styles.buttonStandard]}>
                 <Button
                     mode="contained"
-                    buttonColor='#21005D'
+                    buttonColor={props.warningTheme? '#8A1919' : '#21005D'}
                     onPress={props.onPress}
                     disabled={props.disabled}
+                    icon={props.icon}
                 >
                     {props.title}
                 </Button>
