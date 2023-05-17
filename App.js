@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, ActivityIndicator, View, Image, Text } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, Image, Text, Button } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen1 from './screens/RegisterScreen1';
@@ -17,13 +17,15 @@ import GoalsListScreen from './screens/GoalsListScreen';
 import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
+
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import TrainingScreen from './screens/TrainingScreen'; 
 import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
 import UserMainScreen from './screens/UserMainScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
-
 
 const Stack = createNativeStackNavigator();
 
@@ -53,7 +55,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}
+          <Stack.Navigator initialRouteName={"TrainingScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -159,18 +161,37 @@ export default class App extends Component {
                     {'\n'}
                     Subtitulo
                   </Text>
-                )
+                ),
               })}
             />
+
+            <Stack.Screen
+              name="ChangePasswordScreen"
+              component={ChangePasswordScreen}
+              options={{ title: "Cambio de contraseña" }}
+            />
+
             <Stack.Screen 
               name="GoalsTrainingsListScreen"
               component={GoalsTrainingsListScreen}
             />
+
             <Stack.Screen 
               name="UserMainScreen"
               component={UserMainScreen}
             />
 
+            <Stack.Screen
+              name='TrainingScreen'
+              component={TrainingScreen}
+              options={() => ({
+                headerTitle: () => (
+                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center', width: 250 }}>
+                    Aumentar fuerza de brazos
+                  </Text>
+                ),
+              })}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

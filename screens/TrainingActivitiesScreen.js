@@ -80,6 +80,7 @@ export default class TrainingActivitiesScreen extends Component {
                     style={{
                         marginTop: 5,
                     }}
+                    editionMode
                 />
 
                 <ButtonStandard

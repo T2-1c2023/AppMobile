@@ -107,13 +107,16 @@ class Activity extends Component {
 
                 {/* trash button */}
                 <View style = {{flex: 0.2, justifyContent: 'center'}}>
-                    <IconButton
-                        icon="trash-can-outline"
-                        iconColor='red'
-                        size={40}
-                        onPress={this.handleTrashPress}
-                        style={ activityStyles.trashButton }
-                    />
+                    {
+                    this.props.editionMode &&
+                        <IconButton
+                            icon="trash-can-outline"
+                            iconColor='red'
+                            size={40}
+                            onPress={this.handleTrashPress}
+                            style={ activityStyles.trashButton }
+                        />
+                    }
                 </View>
 
             </View>
@@ -220,9 +223,13 @@ export default class ActivityList extends Component {
                         key={activity.id} 
                         activity={activity} 
                         onChange={this.props.onChange}
+                        editionMode={this.props.editionMode}
                         />
                 )}
-            {this.props.activities.length < this.props.maxActivities && this.uploadActivity()}
+            {
+            this.props.editionMode && this.props.activities.length < this.props.maxActivities && 
+                this.uploadActivity()
+            }
             </View>
         )
     }
