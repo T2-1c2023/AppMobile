@@ -33,10 +33,9 @@ class HomeScreen extends Component {
     componentDidMount() {
         // Decode the token data for the first and only time
         const encoded_jwt = tokenManager.getAccessToken();
-        console.log(encoded_jwt);
         const data = jwt_decode(encoded_jwt);
         this.setState({ data: data });
-        console.log(data);
+
     }
 
     handleLogout = async () => {
@@ -61,9 +60,6 @@ class HomeScreen extends Component {
         )
     }
 
-    // TODO: hacerlo como el menú lateral en figma 
-    // https://www.figma.com/proto/jiVNEnqmSViteDehnJC59D/Prototipo?type=design&node-id=35-727&scaling=scale-down&page-id=22%3A517&starting-point-node-id=23%3A3165
-    
     // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
 
     // TODO: mostrar la foto de perfil del usuario o una predeterminada si no hay
@@ -74,14 +70,11 @@ class HomeScreen extends Component {
         TODO:
         nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
 
-        Usar api gateway en vez de servicio de usuarios
-
         Botón de ver perfiles (WIP)
     */
 
     // TODO: (no prioritario) mejorar visualmente el sidebar https://www.youtube.com/watch?v=M4WNSjTWFDo
 
-    // TODO: mover botónes al sidebar
     render() {
         return (
             <Drawer.Navigator drawerContent={this.CustomDrawerContent} initialRouteName="Mi Perfil">

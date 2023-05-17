@@ -1,17 +1,12 @@
-import React, { Component, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { tokenManager, constante } from '../src/TokenManager';
-import { logIn } from '../src/User';
-
-import { ActivityIndicator, MD2Colors, Text, Divider, Button, TextInput } from 'react-native-paper';
-
-import { useTheme } from 'react-native-paper';
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
-
 import { FingerprintInput } from '../src/components/FingerprintInput';
-
+// Login logic
+import { tokenManager } from '../src/TokenManager';
+import { logIn } from '../src/User';
 import { googleLogIn } from '../src/GoogleAccount';
 
 export default class LoginScreen extends Component {
