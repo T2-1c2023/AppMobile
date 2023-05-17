@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text } from 'react-native';
-import { DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
+import { View, ScrollView, Text, Image, StyleSheet } from 'react-native';
+import { DividerWithLeftText, TextBox, TextLinked} from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { ConfirmationButtons, ButtonStandard } from '../src/styles/BaseComponents';
 import ActivityList from '../src/components/ActivityList.js'
@@ -23,17 +23,14 @@ export default class TrainingScreen extends Component {
         this.handleDataEditPress = this.handleDataEditPress.bind(this)
         this.handleActivityEditPress = this.handleActivityEditPress.bind(this)
         this.state = {
-            training: '',
-            title: '',
-            description: '',
-            activities: [],
+            training: {
+                title: '',
+                description: '',
+                location: '',
+                activities: [],
+            },
+            
         }
-        this.levels=[
-            {"key": 0, "value": "Todos"}, 
-            {"key": 1, "value": "Básico"},
-            {"key": 2, "value": "Intermedio"},
-            {"key": 3, "value": "Avanzado"},
-        ]
     }
 
     componentDidMount() {
@@ -49,10 +46,7 @@ export default class TrainingScreen extends Component {
         axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/' + training_id)
             .then(response => {
                 const training = response.data;
-                const activities = training.activities;
-                const title = training.title;
-                const description = training.description;
-                this.setState({ training, activities, title, description });
+                this.setState({ training });
             })
             .catch(function (error) {
                 console.log(error);
@@ -67,16 +61,43 @@ export default class TrainingScreen extends Component {
         alert("Edit pressed for data");
     }
 
-    getTrainingTypeKeyValue() {
-        return this.state.trainingTypes.find((trainingType) => {
-            return trainingType.key == this.state.filteredTypeKeyApplied
-        })
+    getUriById(image_id) {
+
+        //reemplazar por logica de obtener imagen a partir de id
+        //----------------
+        return 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg'
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/220px-Cat_November_2010-1a.jpg'
+        //----------------
     }
 
-    getTrainingLevelKeyValue() {
-        return this.levels.find((level) => {
-            return level.key == this.state.filteredLevelKeyApplied
-        })
+    renderFooter() {
+        return (
+            <View style={{flexDirection: 'row', width: '100%', marginTop: 10, marginBottom: 30, alignItems: 'center'}}>
+                <View style={{flex: 0.4, alignItems: 'center'}}>
+                    <Text style={trainigStyles.creatorTitle}>Creador</Text>
+                    <Image
+                        source={{ uri: this.getUriById(1) }}
+                        style={ trainigStyles.creatorImage }
+                        resizeMode= 'contain'
+                    />
+                    <Text style={trainigStyles.creatorName}>Sebastian Capelli</Text>
+                </View>
+                <View style={{ flex: 0.3 }}/>
+                <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center'}}>
+                    <TextLinked
+                        linkedText="Ver metas del entrenamiento"
+                        onPress={() => alert("Ver metas del entrenamiento")}
+                        style={{
+                            marginRight: 20,
+                        }}
+                    />
+                </View>
+            </View>
+        )
+    }
+
+    canEdit() {
+        return false
     }
 
     render() {
@@ -89,15 +110,15 @@ export default class TrainingScreen extends Component {
             <View style={styles.container}>
 
                 <DividerWithLeftText
-                    text={this.state.title}
+                    text={this.state.training.title}
                     style={{
                         marginTop: 10,
                     }}
-                    editButtonPress = {this.handleDataEditPress}
+                    editButtonPress = {this.canEdit()? this.handleDataEditPress : null}
                 />
 
                 <TextDetails
-                    body={this.state.description}
+                    body={this.state.training.description}
                     style={{
                         marginTop: 5,
                         width: '90%',
@@ -105,24 +126,35 @@ export default class TrainingScreen extends Component {
                     alignLeft
                 />
 
-                <TrainingData/>
+                <TrainingData
+                    training={this.state.training}
+                    canRate= {true}
+                    style={{
+                        marginTop: 20,
+                    }}
+                />
 
                 <DividerWithLeftText
                     text="Lista de actividades"
                     maxCounter={MAX_ACTIVITIES}
-                    counter = {this.state.activities.length}
+                    counter = {this.state.training.activities.length}
+                    style={{
+                        marginTop: 20,
+                    }}
+                    editButtonPress = {this.canEdit()? this.handleActivityEditPress : null }
+                />
+                
+                <ActivityList
+                    activities={this.state.training.activities}
+                    onChange={this.refreshActivities}
                     style={{
                         marginTop: 10,
                     }}
-                    editButtonPress = {this.handleActivityEditPress}
-                />
-                <ActivityList
-                    activities={this.state.activities}
-                    onChange={this.refreshActivities}
-                    style={{
-                        marginTop: 5,
-                    }}
-                />
+                    />
+
+                <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey'}} />
+
+                {this.renderFooter()}
 
             </View>
               
@@ -130,3 +162,24 @@ export default class TrainingScreen extends Component {
         );
     }
 }
+
+const trainigStyles = StyleSheet.create({
+    creatorTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'grey',
+    }, 
+
+    creatorImage: {
+        height: 100,
+        width: 100,
+        borderRadius: 100,
+    },
+
+    creatorName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+
+    },
+
+})

@@ -60,8 +60,16 @@ class Training extends Component {
                     <Text style={trainingStyles.titleText} multiline>
                         {training.title}
                     </Text>
+
+                    <View style={{flexGrow: 1,flexDirection: 'row'}}>
+                    
+                    </View>
                     <StarsScore
-                        score={training.score} 
+                        score={training.score}
+                        style={{
+                            alignSelf: 'flex-start',
+                            marginRight: 3,
+                        }}
                     />
                 </View>
 

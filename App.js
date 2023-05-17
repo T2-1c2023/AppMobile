@@ -174,7 +174,7 @@ export default class App extends Component {
               options={() => ({
                 headerTitle: () => (
                   <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center', width: 250 }}>
-                    Definicion muscular - Cuerpo
+                    Aumentar fuerza de brazos
                   </Text>
                 ),
               })}

@@ -50,8 +50,6 @@ export default class StarsScore extends Component {
 const starsStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        flex:1,
     },
     
     star: {

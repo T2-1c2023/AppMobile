@@ -36,6 +36,25 @@ export const TextDetails = (props) => {
     )
 }
 
+export const DividerWithMultipleTexts = (props) => {
+    const renderDividersAndTexts = () => {
+      return props.texts.map((text, index) => (
+        <React.Fragment key={index}>
+          <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
+          <Text style={{ marginHorizontal: 10 }}>{text}</Text>
+        </React.Fragment>
+      ));
+    };
+  
+    return (
+      <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
+        {renderDividersAndTexts()}
+        <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
+      </View>
+    );
+  };
+    
+
 export const DividerWithMiddleText = (props) => {
     return (
         <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
@@ -198,14 +217,37 @@ export const TextBox = (props) => {
 }
 
 export const TextWithLink = (props) => {
+
+    const textDetailsStyle = props.notFixedWidth? styles.textDetailsNotFixedWidth : styles.textDetails;
+
     return (
-        <Text style={[styles.textDetails, props.style]}>
+        <Text style={[textDetailsStyle, props.style]}>
             {props.text + " "}
             <Text onPress={props.onPress} style={styles.textLinked}>
                 {props.linkedText}
             </Text>
         </Text>
 
+    )
+}
+
+export const TextWithLinkFlexible = (props) => {
+    return (
+        <Text style={[styles.textDetailsFlexible, props.style]}>
+            {props.text + " "}
+            <Text onPress={props.onPress} style={styles.textLinked}>
+                {props.linkedText}
+            </Text>
+        </Text>
+
+    )
+}
+
+export const TextLinked = (props) => {
+    return (
+        <Text onPress={props.onPress} style={[styles.textLinked, props.style]}>
+            {props.linkedText}
+        </Text>
     )
 }
 

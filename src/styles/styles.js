@@ -49,6 +49,11 @@ export default StyleSheet.create({
         width: 250,
         textAlign: 'center',
     },
+    
+    textDetailsNotFixedWidth: {
+        color: '#605D64',
+        textAlign: 'center',
+    },
 
     textDetailsLeft: {
         color: '#605D64',
