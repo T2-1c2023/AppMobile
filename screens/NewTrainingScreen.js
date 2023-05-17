@@ -32,7 +32,8 @@ export default class NewTrainingScreen extends Component {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
-        })       
+        })
+        console.log(response.data);     
         return response.data
     }
 
@@ -66,7 +67,7 @@ export default class NewTrainingScreen extends Component {
             })
             .then(async (response) => {
                 if (response.status === 201) {
-                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data });
+                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerData.id } });
                 }
             })
             .catch((error) => {

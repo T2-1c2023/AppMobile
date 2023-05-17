@@ -17,6 +17,8 @@ import GoalsListScreen from './screens/GoalsListScreen';
 import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
+import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
+import UserMainScreen from './screens/UserMainScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -165,6 +167,14 @@ export default class App extends Component {
             <Stack.Screen 
               name="ImageUploadTest"
               component={ImageUploadTest}
+            />
+            <Stack.Screen 
+              name="GoalsTrainingsListScreen"
+              component={GoalsTrainingsListScreen}
+            />
+            <Stack.Screen 
+              name="UserMainScreen"
+              component={UserMainScreen}
             />
 
           </Stack.Navigator>

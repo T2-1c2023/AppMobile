@@ -59,6 +59,10 @@ export default class LoginScreen extends Component {
         })
     }
 
+    navigateToEnrollmentScreen = () => {
+        this.props.navigation.navigate('EnrollmentScreen');
+    }
+
     alreadyLogged() {
         return tokenManager.getAccessToken() != null
     }
@@ -68,6 +72,7 @@ export default class LoginScreen extends Component {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#0000ff" />
+                    <Text style={{marginTop: 30}}>Login in please wait</Text>
                 </View>
             )
         } else {
@@ -95,9 +100,7 @@ export default class LoginScreen extends Component {
                     />
 
                     <FingerprintInput 
-                        onValidFingerprint={() => {
-                            console.log("Action on valid fingerprint - to be implemented")
-                        }}
+                        onValidFingerprint={this.navigateToEnrollmentScreen}
                         style={{ 
                             marginTop: 10
                         }}
@@ -134,7 +137,7 @@ export default class LoginScreen extends Component {
                     <TextWithLink
                         text="¿Olvidaste tu contraseña?"
                         linkedText="Restaurala"
-                        onPress={() => console.log("to be implemented")}
+                        onPress={() => this.props.navigation.navigate('PassRecoveryScreen')}
                         style={{
                             marginTop: 10,
                         }}

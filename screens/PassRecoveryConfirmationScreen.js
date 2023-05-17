@@ -23,6 +23,14 @@ export default class PassRecoveryConfirmationScreen extends Component {
 
                 <TextDetails
                     numberOfLines={3}
+                    body="To be implemented..."
+                    style={{
+                        marginTop: 20,
+                    }}
+                />
+
+                <TextDetails
+                    numberOfLines={3}
                     body="Hemos enviado las instrucciones para restaurar tu contraseña a tu dirección de correo electrónico registrada."
                     style={{
                         marginTop: 20,
