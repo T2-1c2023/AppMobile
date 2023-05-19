@@ -69,14 +69,14 @@ export default class TrainingsListScreen extends Component {
             filteredLevelKeyApplied: this.state.filteredLevelKeySelected,
             visibleFilter: false,
         }, () => {
+            let params = {};
+            if (this.state.filteredTypeKeyApplied !== 0) { params.type_id = this.state.filteredTypeKeyApplied }
+            if (this.state.filteredLevelKeyApplied !== 0) { params.severity = this.state.filteredLevelKeyApplied }  
             axios.get(API_GATEWAY_URL + 'trainings/', {
                     headers: {
                         Authorization: tokenManager.getAccessToken()
                     },
-                    params: {
-                        type_id: this.state.filteredTypeKeyApplied,
-                        severity: this.state.filteredLevelKeyApplied
-                    }
+                    params: params
                 })
                 .then(response => {
                     console.log("recibí response"); //debug
