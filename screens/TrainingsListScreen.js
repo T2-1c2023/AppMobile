@@ -48,7 +48,7 @@ export default class TrainingsListScreen extends Component {
 
         
         // reemplazar true por consulta al token o al contexto sobre si el usuario es trainer y sobre si 
-        trainingCreationAvailable = true
+        trainingCreationAvailable = jwt_decode(this.token).is_trainer;
 
 
         this.props.navigation.setOptions({
@@ -108,14 +108,13 @@ export default class TrainingsListScreen extends Component {
 
     refreshActivities() {
         console.log("refresh activities");
+        const decodedToken = jwt_decode(this.token);
+        const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {}
         axios.get(API_GATEWAY_URL + 'trainings/', {
             headers: {
                 Authorization: tokenManager.getAccessToken()
-            }               
-            /*params: { //to_do van acá? quizá si es entrenador hay que mandar 
-                    answer: { toJSON: () => 42 },
-                    time: moment('2016-06-01')
-            }*/
+            },             
+            params: params 
             })
             .then(response => {
                 console.log("recibí response activities"); //debug

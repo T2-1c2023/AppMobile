@@ -38,7 +38,7 @@ export default class TrainingScreen extends Component {
                 location: '',
                 activities: [],
             },
-            
+            trainer: {},
         }
     }
 
@@ -201,10 +201,27 @@ export default class TrainingScreen extends Component {
                 console.log(training);//debug
                 console.log(this.props.route.params.userData);
                 this.setState({ training });
+                this.loadTrainerInfo(training.trainer_id);
             })
             .catch(function (error) {
                 console.log('loadTrainingInfo ' + error);
             });
+    }
+
+    loadTrainerInfo(trainer_id) {
+        axios.get(API_GATEWAY_URL + 'users/' + trainer_id, {
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
+        .then(response => {
+            const trainer = response.data;
+            this.setState({ trainer });
+            return response.data
+        })
+        .catch(function (error) {
+            console.log('TRAINER ' + error);
+        });
     }
 
     handleActivityEditPress() {
@@ -253,7 +270,7 @@ export default class TrainingScreen extends Component {
                         style={ trainigStyles.creatorImage }
                         resizeMode= 'contain'
                     />
-                    <Text style={trainigStyles.creatorName}>Sebastian Capelli</Text>
+                    <Text style={trainigStyles.creatorName}>{this.state.trainer.fullname}</Text>
                 </View>
                 <View style={{ flex: 0.3 }}/>
                 <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center'}}>
