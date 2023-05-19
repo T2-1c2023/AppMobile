@@ -18,7 +18,7 @@ class Training extends Component {
     }
 
     getSeverityIcon(severity) {
-        switch (severity) {
+        switch (this.severityIntToStr(severity)) {
             case 'basic':
                 return require('../../assets/images/level-basic.png')
             case 'intermediate':
@@ -27,6 +27,19 @@ class Training extends Component {
                 return require('../../assets/images/level-advanced.png')
             default:
                 return require('../../assets/images/level-basic.png')
+        }
+    }
+
+    severityIntToStr(severity) {
+        switch (severity) {
+            case 1:
+                return 'basic'
+            case 2:
+                return 'intermediate'
+            case 3:
+                return 'advanced'
+            default:
+                return 'basic'
         }
     }
 
