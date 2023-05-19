@@ -67,8 +67,6 @@ export default class GoalsTrainingsListScreen extends Component {
     }
 
     fetchData = async () => {
-
-        console.log(this.props);
         const trainerGoalsPromise = axios.get(API_GATEWAY_URL + "trainers/" + this.props.route.params.trainingData.trainer_id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
@@ -126,6 +124,9 @@ export default class GoalsTrainingsListScreen extends Component {
             });
     }
 
+    canEdit() {
+        return this.props.route.params.trainingData.trainer_id === jwt_decode(tokenManager.getAccessToken()).id
+    }
 
     render() {
         return (
@@ -137,16 +138,18 @@ export default class GoalsTrainingsListScreen extends Component {
             
             <View style={styles.container}>
                 
-                <SearchInputWithIcon
-                    onIconPress={
-                        () => this.props.navigation.navigate('GoalScreen', { data: tokenManager.getAccessToken() })
-                    }
-                    onSubmit={this.handleSearch}
-                    placeholder="Buscar por título"
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
+                { this.canEdit() &&
+                    <SearchInputWithIcon
+                        onIconPress={
+                            () => this.props.navigation.navigate('GoalScreen', { data: jwt_decode(tokenManager.getAccessToken()) })
+                        }
+                        onSubmit={this.handleSearch}
+                        placeholder="Buscar por título"
+                        style={{
+                            marginTop: 20,
+                        }}
+                    />
+                }
 
                 {this.state.loading ? 
                     <View style={{marginTop: 80}}>

@@ -98,6 +98,7 @@ export default class TrainingScreen extends Component {
         console.log(this.props.route.params.trainingId);
         //console.log(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions');
         //axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+        //TO_DO llamar al api gateway
         axios.post('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
                 Authorization: this.props.route.params.token
@@ -140,6 +141,7 @@ export default class TrainingScreen extends Component {
         //axios.delete(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
         console.log('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions');
         console.log(this.props.route.params.token)
+        //TO_DO llamar al api gateway
         await axios.delete('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
                 Authorization: this.props.route.params.token
@@ -247,7 +249,7 @@ export default class TrainingScreen extends Component {
         });
     }
 
-    handleBackToTrainings() {
+    handleBackToTrainings() {   //TO_DO usar esta para volver a trainings
         this.props.navigation.navigate('TrainingsListScreen')
     }
 
@@ -276,7 +278,8 @@ export default class TrainingScreen extends Component {
                 <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center'}}>
                     <TextLinked
                         linkedText="Ver metas del entrenamiento"
-                        onPress={() => alert("Ver metas del entrenamiento")}
+                        onPress={() => this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.training, from:'TrainingScreen' })}
+                        //onPress={() => console.log(this.state.training) }
                         style={{
                             marginRight: 20,
                         }}
@@ -383,8 +386,10 @@ export default class TrainingScreen extends Component {
                 }
 
                 <ButtonStandard 
-                    onPress={this.handleBackToTrainings}
-                    title={"Volver a entrenamientos"}
+                    //TO_DO debería volver a la pantalla TrainingsListScreen, pero ahí no me aparece la barra lateral para ir después adonde quiera,
+                    //quedo atrapado o tener que ir atrás, atrás, atrás, así que por ahora hago que vuelva a HomeScreen
+                    onPress={() =>  this.props.navigation.replace('HomeScreen')}
+                    title={"Volver a Home"}
                     style={{
                         marginTop: 5,
                     }}
