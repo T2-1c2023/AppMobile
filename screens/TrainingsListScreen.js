@@ -9,10 +9,13 @@ import TrainingsList from '../src/components/TrainingsList';
 import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText}  from '../src/styles/BaseComponents';
-
 import { IconButton } from 'react-native-paper'
-
 import axios from 'axios';
+import Constants from 'expo-constants'
+import { tokenManager } from '../src/TokenManager';
+import jwt_decode from 'jwt-decode';
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingsListScreen extends Component {
     constructor(props) {
@@ -36,6 +39,7 @@ export default class TrainingsListScreen extends Component {
             {"key": 2, "value": "Intermedio"},
             {"key": 3, "value": "Avanzado"},
         ]
+        this.token = tokenManager.getAccessToken()
     }
 
     componentDidMount() {
@@ -53,7 +57,7 @@ export default class TrainingsListScreen extends Component {
                 icon={'plus'}
                 iconColor='black'
                 size={30}
-                onPress={() => console.log('Pressed')}
+                onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })} //debug
               />
             ),
           });
@@ -64,33 +68,57 @@ export default class TrainingsListScreen extends Component {
             filteredTypeKeyApplied: this.state.filteredTypeKeySelected,
             filteredLevelKeyApplied: this.state.filteredLevelKeySelected,
             visibleFilter: false,
-        })
+        }, () => {
+            axios.get(API_GATEWAY_URL + 'trainings/', {
+                    headers: {
+                        Authorization: tokenManager.getAccessToken()
+                    },
+                    params: {
+                        type_id: this.state.filteredTypeKeyApplied,
+                        severity: this.state.filteredLevelKeyApplied
+                    }
+                })
+                .then(response => {
+                    console.log("recibí response"); //debug
+                    console.log("response.data: " + response.data);//debug
+                    const trainings = response.data;
+                    this.setState({ trainings });
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            }
+        )
+
+        
     }
 
     handleTrainingPress(id) {
-        alert('training with id ' + id + ' pressed')
+        this.props.navigation.navigate('TrainingScreen', { userData: jwt_decode(this.token), token:this.token, trainingId: id });
     }
 
     handleFilterPress() {
+        console.log("filter press");
         // agregar logica de pedido de filtrado a usuario
         this.setState({ visibleFilter: true })
 
-
-        // reemplazar por request con query params
-        axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/')
-            .then(response => {
-                const trainings = response.data;
-                this.setState({ trainings });
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        
     }
 
 
     refreshActivities() {
-        axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/')
+        console.log("refresh activities");
+        axios.get(API_GATEWAY_URL + 'trainings/', {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }               
+            /*params: { //to_do van acá? quizá si es entrenador hay que mandar 
+                    answer: { toJSON: () => 42 },
+                    time: moment('2016-06-01')
+            }*/
+            })
             .then(response => {
+                console.log("recibí response activities"); //debug
                 const trainings = response.data;
                 this.setState({ trainings });
             })
@@ -100,7 +128,11 @@ export default class TrainingsListScreen extends Component {
     }
 
     refreshTrainingsTypes() {
-        axios.get('https://trainings-g6-1c-2023.onrender.com/training-types')
+        axios.get(API_GATEWAY_URL + 'training-types', {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
             .then(response => {
                 const trainingTypes = response.data.map((trainingType) => {
                     return {"key": trainingType.id, "value": trainingType.description}
@@ -198,7 +230,8 @@ export default class TrainingsListScreen extends Component {
                         />
 
                         <SelectList
-                            setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
+                            //setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
+                            setSelected={(filteredTypeKeySelected) => { this.setState({ filteredTypeKeySelected });console.log("filteredTypeKeySelected: " + filteredTypeKeySelected) } }//debug
                             data={this.state.trainingTypes}
                             save="key"
                             defaultOption={this.getTrainingTypeKeyValue()}

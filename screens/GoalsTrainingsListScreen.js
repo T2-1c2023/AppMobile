@@ -8,6 +8,7 @@ import { tokenManager } from '../src/TokenManager';
 import axios from 'axios';
 import Constants from 'expo-constants'
 import { ActivityIndicator } from 'react-native-paper';
+import jwt_decode from 'jwt-decode';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -36,7 +37,6 @@ export default class GoalsTrainingsListScreen extends Component {
             training_id: this.props.route.params.trainingData.id,
             goal_id: goal_id
         }
-        // TODO: acá debería pegarle al api gateway
         axios.put(
             API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
             body, 
@@ -111,7 +111,7 @@ export default class GoalsTrainingsListScreen extends Component {
     }
 
     handleSearch (queryText) {
-        axios.get(API_GATEWAY_URL + "trainers/" + rops.route.params.trainingData.trainer_id +"/goals", {
+        axios.get(API_GATEWAY_URL + "trainers/" + props.route.params.trainingData.trainer_id +"/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
@@ -177,7 +177,8 @@ export default class GoalsTrainingsListScreen extends Component {
 
                     <ButtonStandard 
                         title="Continuar"
-                        onPress={() => this.props.navigation.replace('HomeScreen')}
+                        onPress={() => this.props.navigation.replace('TrainingScreen',
+                            {token:tokenManager.getAccessToken(), userData:jwt_decode(tokenManager.getAccessToken()), trainingId:this.props.route.params.trainingData.id})}
                         style={{marginTop: 20}}
                     />
                 </View>

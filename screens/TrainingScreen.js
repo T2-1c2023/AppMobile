@@ -9,6 +9,7 @@ import TrainingsList from '../src/components/TrainingsList';
 import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText}  from '../src/styles/BaseComponents';
+import Constants from 'expo-constants'
 
 import { IconButton } from 'react-native-paper'
 
@@ -17,12 +18,17 @@ import axios from 'axios';
 
 const MAX_ACTIVITIES = 20;
 
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+
 export default class TrainingScreen extends Component {
     constructor(props) {
         super(props)
         this.handleDataEditPress = this.handleDataEditPress.bind(this)
         this.handleActivityEditPress = this.handleActivityEditPress.bind(this)
         this.handleFavoriteButtonPress = this.handleFavoriteButtonPress.bind(this)
+        this.handleDeletePress = this.handleDeletePress.bind(this)
+        this.handleBackToTrainings = this.handleBackToTrainings.bind(this)
+        this.handleSubscribeButtonPress = this.handleSubscribeButtonPress.bind(this)
         this.state = {
             isInFavorites: false,
             isSubscribed: false,
@@ -44,7 +50,7 @@ export default class TrainingScreen extends Component {
             this.checkFavoriteStatus();
         })
         .catch(function (error) {
-            console.log(error);
+            console.log('handleFavoriteButtonPress' + error);
         });
     }
 
@@ -75,62 +81,129 @@ export default class TrainingScreen extends Component {
             })
         }
         ).catch(function (error) {
-            console.log(error);
+            console.log('checkFavoriteStatus ' + error);
         });
     }
 
-    handleSubscribeButtonPress() {
-        alert("Logica de suscribirse - TBD")
+    async handleSubscribeButtonPress() {
+        if (!this.state.isSubscribed) {
+            this.subscribe();
+        } else {
+            this.unsubscribe();
+        }
+    }
 
-        const isSubscribed = !this.state.isSubscribed
-        this.changeSubscribedStatus(isSubscribed).then(() => {
-            this.checkSubscriptionStatus();
+    async subscribe() {
+        const body = {training_id: this.props.route.params.trainingId}
+        console.log(this.props.route.params.trainingId);
+        //console.log(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions');
+        //axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+        axios.post('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
+        .then(response => {
+            const isSubscribed = true;
+            this.setState({ isSubscribed });
         })
         .catch(function (error) {
-            console.log(error);
+            console.log('subscribe ' + error);
         });
     }
 
-    async changeSubscribedStatus(isSubscribed) {
-        //TODO: enviarla al back la actualizacion de la suscripcion de la actividad
-        // await axios.post(...)
-        return
+    async unsubscribe() {
+        //////////////////////////  TO_DO borrar
+        console.log('-------------------');
+        await axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
+        .then(response => {
+            /*const isSubscribed = false;
+            this.setState({ isSubscribed });*/
+            console.log("getter " + JSON.stringify(response.data));
+            console.log('------------------');
+        })
+        .catch(function (error) {
+            console.log('getter ' + error);
+            if( error.response ){
+                console.log(error.response.data); // => the response payload 
+            }
+        });
+        /////////////////////////////////
+
+
+        const body = {training_id: this.props.route.params.trainingId}
+        console.log(JSON.stringify(body));
+        //axios.delete(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+        console.log('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions');
+        console.log(this.props.route.params.token)
+        await axios.delete('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
+        .then(response => {
+            const isSubscribed = false;
+            this.setState({ isSubscribed });
+        })
+        .catch(function (error) {
+            console.log('unsubscribe ' + error);
+            if( error.response ){
+                console.log(error.response.data); // => the response payload 
+            }
+        });
     }
 
-    async isSubscribed() {
-        //TODO: preguntarle al back si el usuario está suscripto
-        // await axios.get(...)
-        return false
-    }
-
-    checkSubscriptionStatus() {
-        this.isSubscribed().then((isSubscribed) => {
-            this.setState({isSubscribed})
+    async checkSubscriptionStatus() {
+        if (!this.props.route.params.userData.is_athlete) {
+            console.log("no es atleta");
+            const isSubscribed = false;
+            this.setState({ isSubscribed });
+            console.log("seteo");
+        } else {
+            //axios.get(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', {
+            axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', {
+                headers: {
+                    Authorization: this.props.route.params.token
+                }
+            })
+            .then(response => {
+                const subscribedTrainings = response.data;
+                console.log(subscribedTrainings);//debug
+                const isSubscribed = (subscribedTrainings.filter(t => t.id === this.props.route.params.trainingId).length > 0);
+                console.log("isSubscribed " + isSubscribed);
+                this.setState({ isSubscribed });
+            })
+            .catch(function (error) {
+                console.log('isSubscribed' + error);
+            });
         }
-        ).catch(function (error) {
-            console.log(error);
-        });
     }
 
     componentDidMount() {
         this.loadTrainingInfo();
         this.checkFavoriteStatus();
         this.checkSubscriptionStatus();
+        console.log(this.props.route.params.trainingId);//debug
     }
 
-    loadTrainingInfo() {
-
-        // sacar id desde el parametro o desde el "contexto"
-        // const training_id = this.props.training_id
-        const training_id = 1
-        
-        axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/' + training_id)
+    loadTrainingInfo() {     
+        axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
+                headers: {
+                    Authorization: this.props.route.params.token
+                }
+            })
             .then(response => {
                 const training = response.data;
+                console.log(training);//debug
+                console.log(this.props.route.params.userData);
                 this.setState({ training });
             })
             .catch(function (error) {
-                console.log(error);
+                console.log('loadTrainingInfo ' + error);
             });
     }
 
@@ -140,6 +213,25 @@ export default class TrainingScreen extends Component {
 
     handleDataEditPress() {
         alert("Edit pressed for data");
+    }
+
+    handleDeletePress() {
+        axios.delete(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
+        .then(response => {
+            alert('Entrenamiento eliminado');
+            this.props.navigation.replace('TrainingsListScreen');
+        })
+        .catch(function (error) {
+            console.log('handleDeletePress ' + error);
+        });
+    }
+
+    handleBackToTrainings() {
+        this.props.navigation.navigate('TrainingsListScreen')
     }
 
     getUriById(image_id) {
@@ -178,15 +270,15 @@ export default class TrainingScreen extends Component {
     }
 
     canEdit() {
-        return false
+        return this.state.training.trainer_id === this.props.route.params.userData.id
     }
 
     canSubscribe() {
-        return true
+        return this.props.route.params.userData.is_athlete
     }
     
     canDelete() {
-        return true
+        return this.state.training.trainer_id === this.props.route.params.userData.id
     }
 
     render() {
@@ -250,7 +342,7 @@ export default class TrainingScreen extends Component {
 
                 { this.canSubscribe() &&
                     <ButtonStandard 
-                        onPress={() => alert("Logica de suscripcion - TBD")}
+                        onPress={this.handleSubscribeButtonPress}
                         title={this.state.isSubscribed? "Cancelar suscripción" : "Suscribirse"}
                         style={{
                             marginTop: 20,
@@ -262,7 +354,7 @@ export default class TrainingScreen extends Component {
 
                 { this.canDelete() &&
                     <ButtonStandard 
-                        onPress={() => alert("Logica de eliminar - TBD")}
+                        onPress={this.handleDeletePress}
                         title={"Eliminar entrenamiento"}
                         style={{
                             marginTop: 20,
@@ -272,6 +364,15 @@ export default class TrainingScreen extends Component {
                         warningTheme
                     />
                 }
+
+                <ButtonStandard 
+                    onPress={this.handleBackToTrainings}
+                    title={"Volver a entrenamientos"}
+                    style={{
+                        marginTop: 5,
+                    }}
+                    icon={this.state.isSubscribed? 'bookmark-off' : 'bookmark'}
+                />                
 
             </View>
             </ScrollView>

@@ -10,7 +10,7 @@ import UserMainScreen from './UserMainScreen';
 // Temporary (Test)
 import { View, Text } from 'react-native';
 import Styles from '../src/styles/styles';
-import NewTrainingScreen from './NewTrainingScreen';
+import TrainingsListScreen from './TrainingsListScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -92,7 +92,7 @@ class HomeScreen extends Component {
                     {() => <GoalsListScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
                 <Drawer.Screen name="Entrenamientos" >
-                    {() => <NewTrainingScreen data={this.state.data} navigation={this.props.navigation} />}
+                    {() => <TrainingsListScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
                 <Drawer.Screen name="Seguidos" component={Test} />
             </Drawer.Navigator>

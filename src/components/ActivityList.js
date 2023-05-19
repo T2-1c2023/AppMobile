@@ -73,7 +73,7 @@ class Activity extends Component {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
-        })
+            })
             .then(response => {
                 this.props.onChange()
             })
