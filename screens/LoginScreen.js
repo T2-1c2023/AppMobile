@@ -1,17 +1,12 @@
-import React, { Component, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { tokenManager, constante } from '../src/TokenManager';
-import { logIn } from '../src/User';
-
-import { ActivityIndicator, MD2Colors, Text, Divider, Button, TextInput } from 'react-native-paper';
-
-import { useTheme } from 'react-native-paper';
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
-
 import { FingerprintInput } from '../src/components/FingerprintInput';
-
+// Login logic
+import { tokenManager } from '../src/TokenManager';
+import { logIn } from '../src/User';
 import { googleLogIn } from '../src/GoogleAccount';
 
 export default class LoginScreen extends Component {
@@ -26,6 +21,8 @@ export default class LoginScreen extends Component {
     }
 
     async handleLogin() {
+        this.setState({ loading: true });
+
         const { email, password } = this.state;
         
         if (!email || !password ) {
@@ -37,6 +34,8 @@ export default class LoginScreen extends Component {
                 this.props.navigation.replace('HomeScreen');
             }
         }
+
+        this.setState({ loading: false });
     }
  
     async handleGoogleLogIn () {
@@ -52,7 +51,7 @@ export default class LoginScreen extends Component {
     componentDidMount() {
         tokenManager._loadTokens().then(() => {
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('HomeScreen')
+                this.props.navigation.replace('HomeScreen');
             } else {
                 this.setState({ loading: false })
             }
@@ -71,7 +70,7 @@ export default class LoginScreen extends Component {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator size="large" color="#21005D" />
                     <Text style={{marginTop: 30}}>Login in please wait</Text>
                 </View>
             )
@@ -112,6 +111,8 @@ export default class LoginScreen extends Component {
                             marginTop: 5,
                         }} 
                     />
+
+                    {/* TODO: hacer que se vea donde escribís */}
 
                     <InputData
                         placeholder='Correo electrónico'
