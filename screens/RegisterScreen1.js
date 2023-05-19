@@ -74,7 +74,7 @@ export default class RegisterScreen1 extends Component {
         let errorMessage;
         if (!fullName || !email || !password) {
             errorMessage = 'Complete todos los campos antes de continuar'
-        } else if (password.length <= 8) {
+        } else if (password.length < 8) {
             errorMessage = 'La contraseña debe tener al menos 8 caracteres'
         } 
         this.setState({ errorMessage: errorMessage})
