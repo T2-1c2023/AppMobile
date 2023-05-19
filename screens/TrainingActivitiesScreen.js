@@ -27,6 +27,7 @@ export default class TrainingActivitiesScreen extends Component {
     }
 
     componentDidMount() {
+        console.log("navigation state " + this);
         const encoded_jwt = tokenManager.getAccessToken();
         const trainerData = jwt_decode(encoded_jwt);
         this.setState({ trainerData });

@@ -23,7 +23,7 @@ export default class NewTrainingScreen extends Component {
             description: '',
             trainingTypeId: '',
             level: 'basic',
-            trainerData: {},
+            trainerId: jwt_decode(this.props.route.params.trainerData).id
         }
     }
 
@@ -38,10 +38,7 @@ export default class NewTrainingScreen extends Component {
     }
 
     async componentDidMount() {
-        const encoded_jwt = tokenManager.getAccessToken();
-        const trainerData = jwt_decode(encoded_jwt);
-        this.setState({ trainerData });
-        
+        console.log("navigation state " + JSON.stringify(this.props.navigation.getState()));
         const data = await this.getTrainingsTypes()
 
         const trainingTypes = data.map((trainingType) => {
@@ -53,13 +50,13 @@ export default class NewTrainingScreen extends Component {
 
     async handleCreatePress() {
         const body = {
-            "trainer_id": this.state.trainerData.id,
+            "trainer_id": this.state.trainerId,
             "title": this.state.title,
             "description": this.state.description,
             "type_id": this.state.trainingTypeId,
-            "level": this.state.level,
+            "severity": this.levelStrToInt(this.state.level),
         }
-
+        console.log(body);
         await axios.post(API_GATEWAY_URL + 'trainings', body, {
                 headers: {
                     Authorization: tokenManager.getAccessToken()
@@ -67,7 +64,7 @@ export default class NewTrainingScreen extends Component {
             })
             .then(async (response) => {
                 if (response.status === 201) {
-                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerData.id } });
+                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId } });
                 }
             })
             .catch((error) => {
@@ -82,6 +79,17 @@ export default class NewTrainingScreen extends Component {
 
     handleNewTrainingError(error) {
         console.log(error);//TO_DO
+    }
+
+    levelStrToInt (levelStr) {
+        switch (levelStr) {
+            case 'basic':
+              return 1
+            case 'intermediate':
+              return 2
+            case 'advanced':
+              return 3
+        }
     }
 
     render() {
