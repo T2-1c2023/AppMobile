@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text } from 'react-native';
-import { DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
+import { View, ScrollView } from 'react-native';
+import { DividerWithLeftText } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
-import { ConfirmationButtons, ButtonStandard } from '../src/styles/BaseComponents';
+import { ButtonStandard } from '../src/styles/BaseComponents';
 import ActivityList from '../src/components/ActivityList.js'
-import Constants from 'expo-constants';
+// User information
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
-
+// Requests
+import Constants from 'expo-constants';
 import axios from 'axios';
 
 const MAX_ACTIVITIES = 20;

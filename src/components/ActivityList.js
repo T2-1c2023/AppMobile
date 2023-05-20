@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../TokenManager';
+// Image handling
+import { selectImage, uploadImageFirebase, downloadImage } from '../../services/Media';
 
 const MIN_TITLE_LENGTH = 5
 
@@ -16,16 +18,22 @@ class Activity extends Component {
     constructor(props) {
         super(props)
         this.handleTrashPress = this.handleTrashPress.bind(this)
+        this.state = {
+            imageUri: require('./fiufit.png')
+        }
     }
 
-    getUriById(image_id) {
+    async componentDidMount() {
+        const imageId = this.props.activity.multimedia_id;
+        if (imageId != '') {
+            this.getUriById(this.props.activity.multimedia_id);
+        }
+    }
 
-        //reemplazar por logica de obtener imagen a partir de id
-        //----------------
-        return 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg'
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/220px-Cat_November_2010-1a.jpg'
-        return 'https://play-lh.googleusercontent.com/IeNJWoKYx1waOhfWF6TiuSiWBLfqLb18lmZYXSgsH1fvb8v1IYiZr5aYWe0Gxu-pVZX3=w240-h480-rw'
-        //----------------
+    async getUriById(image_id) {
+        const imageUri = await downloadImage(image_id);
+        if (imageUri != null) 
+            this.setState({ imageUri: {uri: imageUri}});
     }
 
     handleImagePress(id) {
@@ -39,17 +47,11 @@ class Activity extends Component {
                     style={{ flex: 1 }}
                     onPress={() => this.handleImagePress(id)}
                 >
-                    {/* Reemplazar por lógica de muestreo de imagen por id */}
-                    {/* ---------------------------------------- */}
-                    
-
                     <Image
-                        source={{ uri: this.getUriById(id) }}
+                        source={this.state.imageUri}
                         style={ activityStyles.image }
                         resizeMode= 'contain'
                     />
-
-                    {/* ---------------------------------------- */}
                 </TouchableOpacity>
             </View>
         )
@@ -59,7 +61,7 @@ class Activity extends Component {
         return (
         <View style={activityStyles.imageContainer}>
             <Image
-                source={require('./fiufit.png')}
+                source={this.state.imageUri}
                 style={[activityStyles.activityWithoutImage, { alignSelf: 'center' }]}
                 resizeMode='contain'
             />
@@ -80,6 +82,8 @@ class Activity extends Component {
             .catch(function (error) {
                 console.log(error);
             })
+
+        // TODO: eliminar la foto de firebase
     }
 
     render = () => {
@@ -88,7 +92,7 @@ class Activity extends Component {
                 
                 {/* image */}
                 <View style = {{flex: 0.3}}>
-                    {(this.props.activity.image_id != undefined) ?
+                    {(this.props.activity.multimedia_id != '') ?
                         this.activityImage(this.props.activity.multimedia_id)
                         :
                         this.activityWithoutImage()
@@ -131,20 +135,27 @@ export default class ActivityList extends Component {
         this.handleSubmitPress = this.handleSubmitPress.bind(this)
         this.state = {
             newActivityTitle: '',
-            newActivityImageId: '',
+            newActivityImageUri: ''
         }
     }
 
-    handleUploadImagePress() {
-        alert('TO BE IMPLEMENTED')
+    handleUploadImagePress = async () => {
+        const imageLocalUri = await selectImage();
+        if (imageLocalUri != null) {
+            // For local rendering of the image without download from firebase
+            this.setState({newActivityImageUri: imageLocalUri});
+        }
     }
 
-    handleSubmitPress() {
+    async handleSubmitPress() {
         if (this.state.newActivityTitle.length >= MIN_TITLE_LENGTH) {
+            let imageId = '';
+            if (this.state.newActivityImageUri != '')
+                imageId = await uploadImageFirebase(this.state.newActivityImageUri);
             
             const body = {
                 title: this.state.newActivityTitle,
-                multimedia_id: this.state.newActivityImageId,
+                multimedia_id: imageId,
             }
 
             axios.post(API_GATEWAY_URL + 'trainings/' + this.props.trainingId + '/activities', body, {
@@ -154,7 +165,9 @@ export default class ActivityList extends Component {
             })
                 .then(response => {
                     // reset title
-                    this.setState({ newActivityTitle: '' })
+                    this.setState({ newActivityTitle: '' });
+                    // Update uploadImage button to show upload icon again
+                    this.setState({ newActivityImageUri: '' });
 
                     // execute callback from parent component to update activity list
                     this.props.onChange()
@@ -162,6 +175,7 @@ export default class ActivityList extends Component {
                 .catch(error => {
                     console.log(error)
                 })
+        
         } else {
             alert('El título debe tener al menos ' + MIN_TITLE_LENGTH + ' caracteres')
         }
@@ -171,7 +185,14 @@ export default class ActivityList extends Component {
         return (
             <TouchableOpacity onPress={this.handleUploadImagePress}>
                 <View style={activityStyles.uploadImage}>
-                    <Icon name="upload" size={30} color="grey" />
+                    {this.state.newActivityImageUri === '' ? 
+                        <Icon name="upload" size={30} color="grey" />
+                        :
+                        <Image 
+                            source={{ uri: this.state.newActivityImageUri }} 
+                            style={activityStyles.image}    
+                        />
+                    }
                 </View>
             </TouchableOpacity>
         )
@@ -224,7 +245,7 @@ export default class ActivityList extends Component {
                         activity={activity} 
                         onChange={this.props.onChange}
                         editionMode={this.props.editionMode}
-                        />
+                    />
                 )}
             {
             this.props.editionMode && this.props.activities.length < this.props.maxActivities && 
@@ -248,6 +269,7 @@ const activityStyles = StyleSheet.create({
     },
 
     image: {
+        width: 98,
         height: 98,
         overflow: 'hidden',
         borderRadius: 8,
