@@ -14,23 +14,6 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium"
-      },
-      "env": {
-        "FIREBASE_API_KEY": "AIzaSyD4FQ79tPQz70hWShAvVJe3WldnMPYzWFw",
-        "FIREBASE_AUTH_DOMAIN": "fiufit-e6453.firebaseapp.com",
-        "FIREBASE_PROJECT_ID": "fiufit-e6453",
-        "FIREBASE_STORAGE_BUCKETt": "fiufit-e6453.appspot.com",
-        "FIREBASE_MESSAGING_SENDER_ID": "515433769",
-        "FIREBASE_APP_ID": "1:515433769:web:1928526cb512586add4338",
-        "FIREBASE_MEASUREMENT_ID": "G-L48FNVY0WF",
-
-        "CLIENT_ID": "515433769-5dirln5s1j5p21ljgskj2iem5mnj4cp2.apps.googleusercontent.com",
-        "IOS_CLIENT_ID": "515433769-5tsdm43sg2jn3kfooie095humq6802j1.apps.googleusercontent.com",
-        "ANDROID_CLIENT_ID": "515433769-lhbj6odnvl3es8rv2o1bnd1f9v25ogqm.apps.googleusercontent.com",
-
-        "WEB_CLIENT_ID": "515433769-qu7embngtraq2mf6frcifi1kab498pdv.apps.googleusercontent.com",
-
-        "API_GATEWAY_URL": "https://api-gateway-g6-1c-2023.onrender.com/"
       }
     },
     "production": {
