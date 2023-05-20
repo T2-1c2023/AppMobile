@@ -15,6 +15,7 @@ import { IconButton } from 'react-native-paper'
 
 import TrainingData from '../src/components/TrainingData'
 import axios from 'axios';
+import { downloadImage } from '../services/Media';
 
 const MAX_ACTIVITIES = 20;
 
@@ -39,6 +40,7 @@ export default class TrainingScreen extends Component {
                 activities: [],
             },
             trainer: {},
+            trainerProfilePic: require('../assets/images/user_predet_image.png')
         }
     }
 
@@ -217,6 +219,8 @@ export default class TrainingScreen extends Component {
         .then(response => {
             const trainer = response.data;
             this.setState({ trainer });
+            // Update profile picture if needed
+            this.getUriById(trainer.photo_id);
             return response.data
         })
         .catch(function (error) {
@@ -251,13 +255,12 @@ export default class TrainingScreen extends Component {
         this.props.navigation.navigate('TrainingsListScreen')
     }
 
-    getUriById(image_id) {
-
-        //reemplazar por logica de obtener imagen a partir de id
-        //----------------
-        return 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg'
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/220px-Cat_November_2010-1a.jpg'
-        //----------------
+    async getUriById(image_id) {
+        if(image_id != undefined && image_id != '') {
+            const imageUri = await downloadImage(image_id);
+            if (imageUri != null) 
+                this.setState({ trainerProfilePic: {uri: imageUri}}); 
+        }   
     }
 
     renderFooter() {
@@ -266,7 +269,7 @@ export default class TrainingScreen extends Component {
                 <View style={{flex: 0.4, alignItems: 'center'}}>
                     <Text style={trainigStyles.creatorTitle}>Creador</Text>
                     <Image
-                        source={{ uri: this.getUriById(this.state.trainer.photo_id) }}
+                        source={this.state.trainerProfilePic}
                         style={ trainigStyles.creatorImage }
                         resizeMode= 'contain'
                     />

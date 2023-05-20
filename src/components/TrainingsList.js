@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { DividerWithMiddleText } from '../styles/BaseComponents';
-import { IconButton, Divider } from 'react-native-paper';
-import { TextBox } from '../styles/BaseComponents';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import StarsScore from './StarsScore';
 
 
