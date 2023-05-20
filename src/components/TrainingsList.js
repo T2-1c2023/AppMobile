@@ -45,12 +45,14 @@ class Training extends Component {
 
     render = () => {
         const training = this.props.training
+        
         return (
             <TouchableOpacity
                 style={{ flex: 1 }}
                 onPress={this.handleTrainingPress}
+                disabled={this.props.training.blocked}
             >
-            <View style={trainingStyles.trainingContainer}>
+            <View style={[trainingStyles.trainingContainer, {opacity: this.props.training.blocked ? 0.3 : 1}]}>
                 
                 {/* type and severity */}
                 <View style={{ flexDirection: 'row' }}>
@@ -115,6 +117,7 @@ export default class TrainingsList extends Component {
                             key={training.id}
                             training={training}
                             onTrainingPress={(training_id) => this.props.onTrainingPress(training_id)}
+
                         />
                     )
                 })}

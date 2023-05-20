@@ -230,8 +230,7 @@ export default class TrainingsListScreen extends Component {
                         />
 
                         <SelectList
-                            //setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
-                            setSelected={(filteredTypeKeySelected) => { this.setState({ filteredTypeKeySelected });console.log("filteredTypeKeySelected: " + filteredTypeKeySelected) } }//debug
+                            setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
                             data={this.state.trainingTypes}
                             save="key"
                             defaultOption={this.getTrainingTypeKeyValue()}

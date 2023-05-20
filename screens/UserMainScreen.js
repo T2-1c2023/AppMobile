@@ -121,7 +121,7 @@ export default class UserMainScreen extends Component {
                                     <Ionicons name="pencil" size={24} color="white" />
                                 </View>
                             </TouchableOpacity>
-                            <Text style={{... styles_hs.text, marginTop: 40}}>Welcomee {fullname}!</Text>
+                            <Text style={{... styles_hs.text, marginTop: 40}}>Welcome {fullname}!</Text>
                             <Text style={styles_hs.text}>Email: {mail}</Text>
                             <Text style={{... styles_hs.text, marginBottom: 20}}>Role: {this.getRole()}</Text>
                         </>

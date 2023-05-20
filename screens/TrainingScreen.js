@@ -266,7 +266,7 @@ export default class TrainingScreen extends Component {
                 <View style={{flex: 0.4, alignItems: 'center'}}>
                     <Text style={trainigStyles.creatorTitle}>Creador</Text>
                     <Image
-                        source={{ uri: this.getUriById(1) }}
+                        source={{ uri: this.getUriById(this.state.trainer.photo_id) }}
                         style={ trainigStyles.creatorImage }
                         resizeMode= 'contain'
                     />
