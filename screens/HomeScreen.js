@@ -35,7 +35,7 @@ class HomeScreen extends Component {
         const encoded_jwt = tokenManager.getAccessToken();
         const data = jwt_decode(encoded_jwt);
         this.setState({ data: data });
-
+        console.log(encoded_jwt)
     }
 
     handleLogout = async () => {

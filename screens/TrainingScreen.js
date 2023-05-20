@@ -96,15 +96,13 @@ export default class TrainingScreen extends Component {
     async subscribe() {
         const body = {training_id: this.props.route.params.trainingId}
         console.log(this.props.route.params.trainingId);
-        //console.log(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions');
-        //axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
-        //TO_DO llamar al api gateway
-        axios.post('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+        axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
                 Authorization: this.props.route.params.token
             }
         })
         .then(response => {
+            console.log("subscribe response " + response);
             const isSubscribed = true;
             this.setState({ isSubscribed });
         })
@@ -278,7 +276,7 @@ export default class TrainingScreen extends Component {
                 <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center'}}>
                     <TextLinked
                         linkedText="Ver metas del entrenamiento"
-                        onPress={() => this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.training, from:'TrainingScreen' })}
+                        onPress={() => this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.training, id:this.props.route.params.userData.id })}
                         //onPress={() => console.log(this.state.training) }
                         style={{
                             marginRight: 20,

@@ -50,18 +50,29 @@ export default class GoalsListScreen extends Component {
     fetchData = async () => {
 
         console.log("data " + JSON.stringify(this.props.data));
-        await axios.get(API_GATEWAY_URL + "trainers/" + this.props.data.id + "/goals", {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-             })
-            .then((response) => {
-                this.setState({ goals: response.data});
-                console.log(response.data);
-            }) 
-            .catch((error) => {
-                console.error(error);
-            })
+        let endpoint;
+        if (this.props.data.is_trainer) {   //TO_DO qué pasa si alguno es entrenador y atleta?
+            endpoint = 'trainers/'
+        } else if (this.props.data.is_athlete) {
+            endpoint = 'athletes/'
+        }
+        console.log(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals")
+        await axios.get(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            },
+            params: {
+                completed: false
+            }
+         })
+        .then((response) => {
+            this.setState({ goals: response.data});
+            console.log(response.data);
+        }) 
+        .catch((error) => {
+            console.error(error);
+        })
+        
 
         this.setState({ loading: false });
     }

@@ -69,7 +69,8 @@ export default class TrainingsListScreen extends Component {
             filteredLevelKeyApplied: this.state.filteredLevelKeySelected,
             visibleFilter: false,
         }, () => {
-            let params = {};
+            const decodedToken = jwt_decode(this.token);
+            const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
             if (this.state.filteredTypeKeyApplied !== 0) { params.type_id = this.state.filteredTypeKeyApplied }
             if (this.state.filteredLevelKeyApplied !== 0) { params.severity = this.state.filteredLevelKeyApplied }  
             axios.get(API_GATEWAY_URL + 'trainings/', {
@@ -109,7 +110,7 @@ export default class TrainingsListScreen extends Component {
     refreshActivities() {
         console.log("refresh activities");
         const decodedToken = jwt_decode(this.token);
-        const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {}
+        const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
         axios.get(API_GATEWAY_URL + 'trainings/', {
             headers: {
                 Authorization: tokenManager.getAccessToken()

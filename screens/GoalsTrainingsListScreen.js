@@ -31,35 +31,39 @@ export default class GoalsTrainingsListScreen extends Component {
     }
 
     handleSelection(goal_id) {
-        const ids = [...this.state.selectedGoalsIds, goal_id]
+        if (this.props.route.params.trainingData.trainer_id === this.props.route.params.id) {
+            console.log("puede");//debug
+            const ids = [...this.state.selectedGoalsIds, goal_id]
 
-        const body = {
-            training_id: this.props.route.params.trainingData.id,
-            goal_id: goal_id
-        }
-        axios.put(
-            API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
-            body, 
-            {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-            })
-            .then(response => {
-                console.log(ids)
-                this.setState({ selectedGoalsIds: ids })
-            })
-            .catch(error => {
-                console.log(error)
-            })
-
+            const body = {
+                training_id: this.props.route.params.trainingData.id,
+                goal_id: goal_id
+            }
+            axios.put(
+                API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
+                body, 
+                {
+                    headers: {
+                        Authorization: tokenManager.getAccessToken()
+                    }
+                })
+                .then(response => {
+                    console.log(ids)
+                    this.setState({ selectedGoalsIds: ids })
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        } else {console.log("no puede")}
     }
 
     handleDeselection(goal_id) {
-        const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
+        if (this.props.route.params.trainingData.trainer_id === this.props.route.params.id) {
+            const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
 
-        console.log(ids)
-        this.setState({ selectedGoalsIds: ids })
+            console.log(ids)
+            this.setState({ selectedGoalsIds: ids })
+        } else {console.log("no puede")}
     }
 
     handlePress = (goal) => {
@@ -73,6 +77,7 @@ export default class GoalsTrainingsListScreen extends Component {
             }
         })
             
+        console.log(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals")
         const trainingGoalsPromise = axios.get(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
