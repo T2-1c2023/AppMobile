@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper';
 export default StyleSheet.create({
     scrollView: {
         backgroundColor: '#DED8E1',
+        flex: 1,
     },
     
     scrollViewWithFooter: {
@@ -15,18 +16,16 @@ export default StyleSheet.create({
 
     footerContainer: {
         flex: 0.1, 
-        // backgroundColor: 'blue'
     },
 
     container: {
         backgroundColor: '#DED8E1',
-        // backgroundColor: 'green',
         flex: 1,
         alignItems: 'center',
     },
     loginImage: {
-        aspectRatio: 488/537, 
-        maxHeight: 140,
+        aspectRatio: 699/699, 
+        height: 140,
     },
 
     fingerprintImage: {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
@@ -81,6 +81,7 @@ export default class LoginScreen extends Component {
             return (
                 <ScrollView 
                     automaticallyAdjustKeyboardInsets={true}
+                    keyboardShouldPersistTaps='handled'
                     style={styles.scrollView}
                 >
                 <View style={styles.container}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import * as reactNative from 'react-native';
 import { Text, Divider, Button, TextInput, IconButton, DefaultTheme } from 'react-native-paper';
 import styles from './styles';
@@ -97,8 +97,13 @@ export const ButtonStandard = (props) => {
             <View style={[{ display: 'flex', flexDirection: 'row' }, styles.buttonStandard]}>
                 <Button
                     mode="contained"
-                    buttonColor={props.warningTheme? '#8A1919' : '#21005D'}
+                    buttonColor={props.warningTheme? '#8A1919' :
+                        props.disabled? 'green' : '#21005D'
+                    }
                     onPress={props.onPress}
+                    style={{backgroundColor: props.warningTheme? '#8A1919' :
+                        props.disabled? 'grey' : '#21005D'
+                    }}
                     disabled={props.disabled}
                     icon={props.icon}
                     textColor='white'
@@ -137,25 +142,38 @@ export const ConfirmationButtons = (props) => {
 
 export const InputData = React.forwardRef((props, ref) => {
     const [text, setText] = useState('');
+    const [textHidden, setTextHidden] = useState(true);
 
     const handleClear = () => {
         setText('');
         props.onChangeText('')
     }
 
+    const handleEyePress = () => {
+        setTextHidden(!textHidden);
+    }
+
     const theme = {
         ...DefaultTheme,
         colors: {
-          ...DefaultTheme.colors,
-          primary: '#21005D', // Color de contorno al estar seleccionado
+            ...DefaultTheme.colors,
+            primary: '#21005D',
         },
-      };
+    }
+
+    const warningTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            primary: 'red',
+        },
+    }
 
     return (
         <View style={props.style}>
             <TextInput
                 ref={ref}
-                theme={theme}
+                theme={props.warningMode? warningTheme : theme}
                 fontStyle={text.length == 0 ? 'italic' : 'normal'}
                 mode='outlined'
                 placeholder={props.placeholder}
@@ -165,9 +183,21 @@ export const InputData = React.forwardRef((props, ref) => {
                     props.onChangeText(newText)
                 }}
                 onSubmitEditing={props.onSubmitEditing}
-                secureTextEntry={props.secureTextEntry}
+                secureTextEntry={props.secureTextEntry && textHidden}
                 value={text}
-                right={<TextInput.Icon icon="close-circle-outline" onPress={handleClear} />}
+                selectionColor="grey"
+                autoCapitalize="none"
+                right={
+                    <TextInput.Icon 
+                        icon={props.secureTextEntry? 
+                            textHidden? "eye-outline" : "eye-off-outline"
+                            :
+                            "close-circle-outline"} 
+                        iconColor="black" 
+                        onPress={props.secureTextEntry? handleEyePress : handleClear}
+                    />
+                    // </TouchableWithoutFeedback>
+                }
                 style={styles.inputData}
             />
         </View>
