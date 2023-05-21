@@ -126,7 +126,7 @@ export default class ProfileHeader extends Component {
                 <View style={profileStyles.secondRowContainer}>
                     {this.renderBottomButtons()}
                 </View>
-                
+
                 {this.renderModal()}
             </View>
         )

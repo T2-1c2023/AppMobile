@@ -12,6 +12,7 @@ import jwt_decode from 'jwt-decode';
 
 import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails} from '../src/styles/BaseComponents';
+import InterestsList from '../src/components/InterestsList';
 
 
 
@@ -198,6 +199,18 @@ export default class UserMainScreen extends Component {
                     />
 
                     {this.renderTitleAndText('Correo electrónico', 'to@be.implemented')}
+
+                    {/* Sección de intereses */}
+                    <DividerWithMultipleTexts
+                        texts={['Intereses']}
+                        style={{
+                            marginTop: 20,
+                            marginHorizontal: 20,
+                        }}
+                    />
+
+                    <InterestsList
+                    />
 
                 </View>
                 </ScrollView>
