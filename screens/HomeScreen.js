@@ -12,6 +12,8 @@ import { View, Text } from 'react-native';
 import Styles from '../src/styles/styles';
 import TrainingsListScreen from './TrainingsListScreen';
 
+import { IconButton } from 'react-native-paper';
+
 const Drawer = createDrawerNavigator();
 
 function Test() {
@@ -35,7 +37,7 @@ class HomeScreen extends Component {
         const encoded_jwt = tokenManager.getAccessToken();
         const data = jwt_decode(encoded_jwt);
         this.setState({ data: data });
-        console.log(encoded_jwt)
+        console.log(data);
     }
 
     handleLogout = async () => {
@@ -62,8 +64,6 @@ class HomeScreen extends Component {
 
     // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
 
-    // TODO: mostrar la foto de perfil del usuario o una predeterminada si no hay
-
     // TODO: mostrar de mejor forma que tipo de usuario sos
 
     /*
@@ -84,7 +84,22 @@ class HomeScreen extends Component {
                 <Drawer.Screen name="Metas">
                     {() => <GoalsListScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
-                <Drawer.Screen name="Entrenamientos" >
+                <Drawer.Screen 
+                    name="Entrenamientos"
+                    options={{
+                        headerRight: () =>
+                            this.state.data.is_trainer ? (
+                                <IconButton
+                                    icon="plus"
+                                    color="black"
+                                    size={30}
+                                    onPress={() => 
+                                        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })
+                                    }
+                                />
+                            ) : null
+                    }}
+                >
                     {() => <TrainingsListScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
                 <Drawer.Screen name="Seguidos" component={Test} />
