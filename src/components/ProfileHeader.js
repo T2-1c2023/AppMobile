@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, Keyboard, Image } from 'react-native';
+import { TextLinked, TextProfileName } from '../styles/BaseComponents';
 import { TextInput } from 'react-native-paper';
 import styles from '../styles/styles';
-
 
 export default class ProfileHeader extends Component {
     constructor(props) {
@@ -13,23 +13,88 @@ export default class ProfileHeader extends Component {
         }
     }
 
+    renderProfilePic() {
+        return (
+            <View style={profileStyles.profilePicContainer}>    
+                <Image
+                    source={this.props.profilePic}
+                    style={profileStyles.profilePic}
+                />
+            </View>
+        )
+    }
+
+    renderRoles() {
+        return (
+            <View style={profileStyles.rolesContainer}>
+                {this.props.isAthlete && (
+                    <Image
+                        source={require('../../assets/images/athlete.png')}
+                        style={profileStyles.athletePic}
+                    />
+                )}
+                {this.props.isTrainer && (
+                    <View style={{position: 'relative'}}>
+                        <Image
+                            source={require('../../assets/images/trainer.png')}
+                            style={profileStyles.trainerPic}
+                        />
+                        {this.props.certifiedTrainer && (
+                            <View style={{position: 'absolute', top: 0, right: -10}}>
+                                <Image
+                                    source={require('../../assets/images/certificate.png')}
+                                    style={profileStyles.certifiedTrainerPic}
+                                />
+                            </View>
+                        )}
+                    </View>
+                )}
+            </View>
+        )
+    }
+
+    renderNameAndRoles() {
+        return (
+            <View style={profileStyles.nameAndRolesContainer}>
+                <View style={{ flex:0.2 }}>
+                    <TextProfileName 
+                        body={this.props.name}
+                    />
+                </View>
+                <View style={{ flex:0.8 }}>
+                    {this.renderRoles()}
+                </View>
+            </View>
+        )
+    }
+    
+    renderBottomButtons() {
+        return <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 0.4, alignItems: 'center' }}>
+                {this.props.bottomLeft}
+            </View>
+
+            <View style={{ flex: 0.2 }}/>
+            
+            <View style={{ flex: 0.4, alignItems: 'center' }}>
+                {this.props.bottomRight}
+            </View>
+        </View>
+    }
+
     render() {
         return (
             <View style={[this.props.style, {width: '100%'}]}>
                 <View style={profileStyles.firstRowContainer}>
                     
-                    {/* Profile picture */}
-                    <View style={{flex:0.4, backgroundColor: 'yellow'}}>    
-                        <Image
-                            source={this.props.profilePic}
-                            style={profileStyles.profilePic}
-                        />
-                    </View>
+                    {this.renderProfilePic()}
                     
-                    
-                    <View style={{flex:0.6, backgroundColor:'blue'}}>
+                    {this.renderNameAndRoles()}
 
-                    </View>
+                </View>
+
+                <View style={profileStyles.secondRowContainer}>
+                    {this.renderBottomButtons()}
                 </View>
             </View>
         )
@@ -46,7 +111,19 @@ const profileStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'green',
+        backgroundColor: 'transparent',
+    },
+
+    secondRowContainer: {
+        marginTop: 10,
+    },
+
+    profilePicContainer: {
+        flex:0.4,
+    },
+
+    nameAndRolesContainer: {
+        flex:0.6,
     },
 
     profilePic: {
@@ -54,5 +131,32 @@ const profileStyles = StyleSheet.create({
         height: 120,
         borderRadius: 140/2,
         alignSelf: 'center',
+    },
+
+    rolesContainer: {
+        flexDirection: 'row',
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center'
+    },
+
+    athletePic: {
+        height: 70,
+        width: undefined,
+        aspectRatio: 422/636,
+        marginHorizontal: 10,
+    },
+
+    trainerPic: {
+        height: 75,
+        width: undefined,
+        aspectRatio: 544/668,
+        marginHorizontal: 10,
+    },
+
+    certifiedTrainerPic: {
+        height: 30,
+        width: undefined,
+        aspectRatio: 512/512,
     },
 })

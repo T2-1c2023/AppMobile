@@ -20,6 +20,14 @@ export const TextSubheader = (props) => {
     )
 }
 
+export const TextProfileName = (props) => {
+    return (
+        <Text variant="titleLarge" style={[styles.textProfileName, props.style]}>
+            {props.body}
+        </Text>
+    )
+}
+
 export const TextDetails = (props) => {
     return (
         <View style={props.style}>

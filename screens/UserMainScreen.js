@@ -11,6 +11,7 @@ import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 
 import ProfileHeader from '../src/components/ProfileHeader';
+import { TextLinked } from '../src/styles/BaseComponents';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -19,6 +20,10 @@ export default class UserMainScreen extends Component {
         super(props);
         this.state = {
             profilePic: require('../assets/images/user_predet_image.png'),
+            name: '',
+            isTrainer: false,
+            isAthlete: false,
+            certifiedTrainer: false,
         }
     }
 
@@ -135,8 +140,25 @@ export default class UserMainScreen extends Component {
 
                     <ProfileHeader
                         profilePic={this.state.profilePic}
-                        leftText="Seguidos"
-                        rightText="Seguidores"
+                        name= 'Sebastian Capelli se ba'
+                        isAthlete= {true}
+                        isTrainer= {true}
+                        certifiedTrainer= {true}
+                        bottomLeft={
+                            <TextLinked
+                                linkedText='Seguidores'
+                                onPress={() => console.log('Goals')} 
+                            />
+                        }
+                        bottomRight={
+                            <TextLinked
+                                linkedText='Seguidos'
+                                onPress={() => console.log('Goals')} 
+                            />
+                        }
+                        style={{ 
+                            marginTop: 15
+                        }}
                     />
                 </View>
                 </ScrollView>
