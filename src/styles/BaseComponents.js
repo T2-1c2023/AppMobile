@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image } from 'react-native';
 import * as reactNative from 'react-native';
-import { Text, Divider, Button, TextInput, IconButton } from 'react-native-paper';
+import { Text, Divider, Button, TextInput, IconButton, DefaultTheme } from 'react-native-paper';
 import styles from './styles';
 
 export const TextHeader = (props) => {
@@ -59,7 +59,7 @@ export const DividerWithMiddleText = (props) => {
     return (
         <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
             <Divider style={{ flex: 1, height: 1, maxWidth: 100 }} />
-            <Text style={{ marginHorizontal: 10 }}>{props.text}</Text>
+            <Text style={{ color: 'black', marginHorizontal: 10 }}>{props.text}</Text>
             <Divider style={{ flex: 1, height: 1, maxWidth: 100 }} />
         </View>
 
@@ -70,11 +70,11 @@ export const DividerWithLeftText = (props) => {
     return (
         <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
             <Divider style={{ flex: 1, height: 1, maxWidth: 20, backgroundColor: '#9D9D9D' }} />
-            <Text style={{ marginHorizontal: 10 }}>{props.text}</Text>
+            <Text style={{ color: 'black', marginHorizontal: 10 }}>{props.text}</Text>
             <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
             { ( props.maxCounter != undefined && props.counter != undefined ) &&
                 <>
-                <Text style={{ marginHorizontal: 10 }}>{props.counter + '/' + props.maxCounter}</Text>
+                <Text style={{ color: 'black', marginHorizontal: 10 }}>{props.counter + '/' + props.maxCounter}</Text>
                 <Divider style={{ flex: 1, height: 1, maxWidth: 20, backgroundColor: '#9D9D9D' }} />
                 </>
             }
@@ -101,6 +101,7 @@ export const ButtonStandard = (props) => {
                     onPress={props.onPress}
                     disabled={props.disabled}
                     icon={props.icon}
+                    textColor='white'
                 >
                     {props.title}
                 </Button>
@@ -117,7 +118,7 @@ export const ConfirmationButtons = (props) => {
                 onPress={props.onConfirmPress}
                 disabled={props.disabled}
                 style={[{marginLeft: 10}, styles.confirmationButton]}
-                
+                textColor='white'
             >
                 {props.confirmationText}
             </Button>
@@ -126,6 +127,7 @@ export const ConfirmationButtons = (props) => {
                 onPress={props.onCancelPress}
                 disabled={props.disabled}
                 style={[{ marginLeft: 10 }, styles.cancelButton]}
+                textColor='white'
             >
                 {props.cancelText}
             </Button>
@@ -133,7 +135,7 @@ export const ConfirmationButtons = (props) => {
     )
 }
 
-export const InputData = (props) => {
+export const InputData = React.forwardRef((props, ref) => {
     const [text, setText] = useState('');
 
     const handleClear = () => {
@@ -141,15 +143,28 @@ export const InputData = (props) => {
         props.onChangeText('')
     }
 
+    const theme = {
+        ...DefaultTheme,
+        colors: {
+          ...DefaultTheme.colors,
+          primary: '#21005D', // Color de contorno al estar seleccionado
+        },
+      };
+
     return (
         <View style={props.style}>
             <TextInput
+                ref={ref}
+                theme={theme}
+                fontStyle={text.length == 0 ? 'italic' : 'normal'}
                 mode='outlined'
                 placeholder={props.placeholder}
+                placeholderTextColor='grey'
                 onChangeText={(newText) => {
                     setText(newText);
                     props.onChangeText(newText)
                 }}
+                onSubmitEditing={props.onSubmitEditing}
                 secureTextEntry={props.secureTextEntry}
                 value={text}
                 right={<TextInput.Icon icon="close-circle-outline" onPress={handleClear} />}
@@ -157,7 +172,7 @@ export const InputData = (props) => {
             />
         </View>
     )
-}
+})
 
 export const DaysInput = (props) => {
     return (

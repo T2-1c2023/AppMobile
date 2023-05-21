@@ -36,6 +36,7 @@ export default StyleSheet.create({
 
     textHeader: {
         textAlign: 'center',
+        color: 'black',
     },
     ImageLoginFingerPrint: {
         aspectRatio: 1/1, 

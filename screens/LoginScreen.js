@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
@@ -13,11 +13,14 @@ export default class LoginScreen extends Component {
     constructor(props) {
         super(props)
         this.handleLogin = this.handleLogin.bind(this);
+
         this.state = {
             loading: true,
             email: '',
             password: '',
         }
+
+        this.passwordInput = React.createRef()
     }
 
     async handleLogin() {
@@ -76,6 +79,10 @@ export default class LoginScreen extends Component {
             )
         } else {
             return (
+                <ScrollView 
+                    automaticallyAdjustKeyboardInsets={true}
+                    style={styles.scrollView}
+                >
                 <View style={styles.container}>
                     <LoginImage />
 
@@ -112,19 +119,19 @@ export default class LoginScreen extends Component {
                         }} 
                     />
 
-                    {/* TODO: hacer que se vea donde escribís */}
-
                     <InputData
                         placeholder='Correo electrónico'
                         maxLength={30}
                         onChangeText={(input) => {
                             this.setState({ email: input })
                         }}
+                        onSubmitEditing={() => { this.passwordInput.current.focus() }}
                         style={{
                             marginTop: 15,
                         }}
                     />
                     <InputData
+                        ref={this.passwordInput}
                         placeholder='Contraseña'
                         secureTextEntry={true}
                         onChangeText={(input) => {
@@ -161,6 +168,7 @@ export default class LoginScreen extends Component {
                         }}
                     />
                 </View>
+                </ScrollView>
             );
         }
     }
