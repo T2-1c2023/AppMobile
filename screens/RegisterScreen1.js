@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Visuals
-import { View, Text, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, Text, ScrollView, Image } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage, TextDetails } from '../src/styles/BaseComponents';
 import { ActivityIndicator, HelperText } from 'react-native-paper';
 import styles from '../src/styles/styles';
@@ -138,10 +138,17 @@ export default class RegisterScreen1 extends Component {
  
                     <ButtonStandard
                         onPress={() => this.handleGoogleSignIn()}
-                        title="Sign In con Google"
+                        title="Registrate con Google"
                         style={{
                             marginTop: 30,
-                        }} 
+                        }}
+                        whiteMode
+                        icon={({ color, size }) => (
+                            <Image
+                                source={require('../assets/images/google-icon.png')}
+                                style={{ width: 30, height: 30 }}
+                            />
+                        )}
                     />
 
                     <DividerWithMiddleText 
@@ -267,6 +274,7 @@ export default class RegisterScreen1 extends Component {
                         }
                         style={{
                             marginTop: 10,
+                            marginBottom: 20,
                         }}
                     />
 

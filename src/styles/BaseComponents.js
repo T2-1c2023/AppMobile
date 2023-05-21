@@ -101,12 +101,18 @@ export const ButtonStandard = (props) => {
                         props.disabled? 'green' : '#21005D'
                     }
                     onPress={props.onPress}
-                    style={{backgroundColor: props.warningTheme? '#8A1919' :
-                        props.disabled? 'grey' : '#21005D'
+                    
+                    style={{
+                        borderColor: 'black',
+                        borderWidth : 1,
+                        backgroundColor:
+                            props.whiteMode? 'white' : 
+                                props.warningTheme? '#8A1919' :
+                                    props.disabled? 'grey' : '#21005D'
                     }}
                     disabled={props.disabled}
                     icon={props.icon}
-                    textColor='white'
+                    textColor={props.whiteMode? 'black' : 'white'}
                 >
                     {props.title}
                 </Button>

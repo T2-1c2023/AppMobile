@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, Image, Text, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import styles from '../src/styles/styles';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
@@ -24,23 +24,32 @@ export default class LoginScreen extends Component {
     }
 
     async handleLogin() {
-        this.setState({ loading: true });
+        this.setState({ loading: true })
 
-        const { email, password } = this.state;
-        
-        if (!email || !password ) {
-            alert("Complete todos los campos para continuar");
-        } else {
-            await logIn(this.state.email, this.state.password);
+        const { email, password } = this.state   
+        const allFieldsAreLoaded = this.allFieldsAreLoaded()
+        const emailIsValid = this.emailIsValid()
+        if (!allFieldsAreLoaded)
+            return
+
+        await logIn(email, password)
             
-            if (this.alreadyLogged()) {
-                this.props.navigation.replace('HomeScreen');
-            }
+        if (this.alreadyLogged()) {
+            this.props.navigation.replace('HomeScreen');
         }
 
         this.setState({ loading: false });
     }
  
+    emailIsValid() {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(this.state.email);
+    }
+
+    allFieldsAreLoaded() {
+        return this.state.email.length > 0 && this.state.password.length > 0
+    }
+
     async handleGoogleLogIn () {
         this.setState({ loading: true })
         await googleLogIn();
@@ -69,6 +78,8 @@ export default class LoginScreen extends Component {
         return tokenManager.getAccessToken() != null
     }
 
+
+
     render() {
         if (this.state.loading) {
             return (
@@ -92,11 +103,20 @@ export default class LoginScreen extends Component {
                         style={styles.textHeader} 
                     />
                    
+                   {/* google-icon.png */}
                     <ButtonStandard
                         onPress={() => this.handleGoogleLogIn()}
-                        title="Log In con Google"
-                        marginTop={30}
-                        marginBottom={10}
+                        title="Inicia sesión con Google"
+                        style={{
+                            marginTop: 15,
+                        }}
+                        whiteMode
+                        icon={({ color, size }) => (
+                            <Image
+                                source={require('../assets/images/google-icon.png')}
+                                style={{ width: 30, height: 30 }}
+                            />
+                        )}
                     />
                     
                     <DividerWithMiddleText 
@@ -153,8 +173,9 @@ export default class LoginScreen extends Component {
                     />
 
                     <ButtonStandard
-                        onPress={() => { this.handleLogin() }}
+                        onPress={this.handleLogin}
                         title="Entrar"
+                        disabled={!(this.allFieldsAreLoaded() && this.emailIsValid())}
                         style={{
                             marginTop: 15,
                         }}
