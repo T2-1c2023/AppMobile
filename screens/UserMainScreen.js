@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
-import Styles from '../src/styles/styles';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import styles from '../src/styles/styles';
 import { Ionicons } from '@expo/vector-icons';
 // Image upload
 import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
@@ -9,6 +9,8 @@ import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
 // for componentDidMount() (TODO: it shouldn't be needed?)
 import jwt_decode from 'jwt-decode';
+
+import ProfileHeader from '../src/components/ProfileHeader';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -108,9 +110,13 @@ export default class UserMainScreen extends Component {
 
     render() {
         const { fullname, mail } = this.props.data || {};
-        return(    
-            <View style={Styles.container}>
-                    {this.props.data && (
+        return(
+            <ScrollView 
+                automaticallyAdjustKeyboardInsets={true}
+                style={styles.scrollView}
+            >
+            <View style={styles.container}>
+                    {/* {this.props.data && (
                         <>
                             <TouchableOpacity onPress={this.handleProfilePicturePress}>
                                 <Image
@@ -125,8 +131,15 @@ export default class UserMainScreen extends Component {
                             <Text style={styles_hs.text}>Email: {mail}</Text>
                             <Text style={{... styles_hs.text, marginBottom: 20}}>Role: {this.getRole()}</Text>
                         </>
-                    )}
+                    )} */}
+
+                    <ProfileHeader
+                        profilePic={this.state.profilePic}
+                        leftText="Seguidos"
+                        rightText="Seguidores"
+                    />
                 </View>
+                </ScrollView>
         );
     }
 }
