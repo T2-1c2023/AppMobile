@@ -8,7 +8,8 @@ import styles from '../src/styles/styles';
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
 import { googleSignIn } from '../src/GoogleAccount';
-
+// Navigation
+import { CommonActions } from '@react-navigation/native';
 
 
 export default class RegisterScreen1 extends Component {
@@ -270,7 +271,14 @@ export default class RegisterScreen1 extends Component {
                         text="¿Ya tienes cuenta?"
                         linkedText="Inicia sesión"
                         onPress={() => 
-                            this.props.navigation.replace('LoginScreen')
+                            this.props.navigation.dispatch(
+                                // Reset del navigation stack para que no se muestre 
+                                // el botón de 'go back' a profile selection screen.
+                                CommonActions.reset({
+                                    index: 0,
+                                    routes: [{ name: 'LoginScreen' }]
+                                })
+                            )
                         }
                         style={{
                             marginTop: 10,
