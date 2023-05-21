@@ -49,7 +49,7 @@ export const DividerWithMultipleTexts = (props) => {
       return props.texts.map((text, index) => (
         <React.Fragment key={index}>
           <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
-          <Text style={{ marginHorizontal: 10 }}>{text}</Text>
+          <Text style={{ marginHorizontal: 10, color: 'black'}}>{text}</Text>
         </React.Fragment>
       ));
     };

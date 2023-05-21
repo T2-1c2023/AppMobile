@@ -11,7 +11,9 @@ import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 
 import ProfileHeader from '../src/components/ProfileHeader';
-import { TextLinked } from '../src/styles/BaseComponents';
+import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails} from '../src/styles/BaseComponents';
+
+import Modal from "react-native-modal";
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -95,6 +97,7 @@ export default class UserMainScreen extends Component {
 
     // Lets user choose a profile picture from library
     handleProfilePicturePress = async () => {
+        
         Alert.alert(
             'Editar foto de perfil', 
             'Desea modificar la foto de perfil?',
@@ -111,6 +114,19 @@ export default class UserMainScreen extends Component {
                 }
             ]
         ); 
+    }
+
+    renderTitleAndText(title, text) {
+        return(
+            <View style={{alignItems: 'center', marginTop: 10}}>
+                <Text style={{color: 'grey', fontWeight: 'bold'}}>
+                    {title}
+                </Text>
+                <Text style={{color: 'black'}}>
+                    {text}
+                </Text>
+            </View>
+        )
     }
 
     render() {
@@ -160,6 +176,29 @@ export default class UserMainScreen extends Component {
                             marginTop: 15
                         }}
                     />
+
+                    {/* Sección de datos personales */}
+                    <DividerWithMultipleTexts
+                        texts={['Datos personales']}
+                        style={{
+                            marginTop: 20,
+                            marginHorizontal: 20,
+                        }}
+                    />
+                    {this.renderTitleAndText('Ubicación', 'To be implemented')}
+                    {this.renderTitleAndText('Teléfono', 'To be implemented')}
+
+                    {/* Sección de contacto */}
+                    <DividerWithMultipleTexts
+                        texts={['Contacto']}
+                        style={{
+                            marginTop: 20,
+                            marginHorizontal: 20,
+                        }}
+                    />
+
+                    {this.renderTitleAndText('Correo electrónico', 'to@be.implemented')}
+
                 </View>
                 </ScrollView>
         );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Keyboard, Image } from 'react-native';
+import { Text, View, StyleSheet, Keyboard, Image, TouchableOpacity, Alert} from 'react-native';
 import { TextLinked, TextProfileName } from '../styles/BaseComponents';
 import { TextInput } from 'react-native-paper';
 import styles from '../styles/styles';
@@ -7,10 +7,16 @@ import styles from '../styles/styles';
 export default class ProfileHeader extends Component {
     constructor(props) {
         super(props)
+        this.handleCertifiedTrainerPress = this.handleCertifiedTrainerPress.bind(this)
         this.p1Ref = React.createRef()
         this.state = {
             pin1: '',
         }
+    }
+
+    handleCertifiedTrainerPress() {
+        
+        
     }
 
     renderProfilePic() {
@@ -41,10 +47,14 @@ export default class ProfileHeader extends Component {
                         />
                         {this.props.certifiedTrainer && (
                             <View style={{position: 'absolute', top: 0, right: -10}}>
-                                <Image
-                                    source={require('../../assets/images/certificate.png')}
-                                    style={profileStyles.certifiedTrainerPic}
-                                />
+                                <TouchableOpacity
+                                    onPress={this.handleCertifiedTrainerPress}
+                                >
+                                    <Image
+                                        source={require('../../assets/images/certificate.png')}
+                                        style={profileStyles.certifiedTrainerPic}
+                                    />
+                                </TouchableOpacity>
                             </View>
                         )}
                     </View>
@@ -85,6 +95,7 @@ export default class ProfileHeader extends Component {
     render() {
         return (
             <View style={[this.props.style, {width: '100%'}]}>
+                {this.handleCertifiedTrainerPress()}
                 <View style={profileStyles.firstRowContainer}>
                     
                     {this.renderProfilePic()}
