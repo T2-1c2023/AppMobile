@@ -13,7 +13,7 @@ import jwt_decode from 'jwt-decode';
 import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails} from '../src/styles/BaseComponents';
 
-import Modal from "react-native-modal";
+
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 

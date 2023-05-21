@@ -4,19 +4,20 @@ import { TextLinked, TextProfileName } from '../styles/BaseComponents';
 import { TextInput } from 'react-native-paper';
 import styles from '../styles/styles';
 
+import Modal from "react-native-modal";
+
 export default class ProfileHeader extends Component {
     constructor(props) {
         super(props)
         this.handleCertifiedTrainerPress = this.handleCertifiedTrainerPress.bind(this)
         this.p1Ref = React.createRef()
         this.state = {
-            pin1: '',
+            modalVisible: false,
         }
     }
 
     handleCertifiedTrainerPress() {
-        
-        
+        this.setState({ modalVisible: true })
     }
 
     renderProfilePic() {
@@ -92,10 +93,28 @@ export default class ProfileHeader extends Component {
         </View>
     }
 
+    renderModal(){
+        return (
+            
+            <Modal
+                isVisible={this.state.modalVisible}
+                animationIn="fadeIn"
+                animationOut="fadeOut"
+                animationInTiming={400}
+                animationOutTiming={400}
+                onBackdropPress={() => this.setState({ modalVisible: false })}
+            >
+                <Image
+                    source={require('../../assets/images/certificateDetails.png')}
+                    style={profileStyles.certificateDetails}
+                />
+            </Modal>
+        )
+    }
+
     render() {
         return (
             <View style={[this.props.style, {width: '100%'}]}>
-                {this.handleCertifiedTrainerPress()}
                 <View style={profileStyles.firstRowContainer}>
                     
                     {this.renderProfilePic()}
@@ -107,6 +126,8 @@ export default class ProfileHeader extends Component {
                 <View style={profileStyles.secondRowContainer}>
                     {this.renderBottomButtons()}
                 </View>
+                
+                {this.renderModal()}
             </View>
         )
     }
@@ -169,5 +190,12 @@ const profileStyles = StyleSheet.create({
         height: 30,
         width: undefined,
         aspectRatio: 512/512,
+    },
+
+    certificateDetails: {
+        height: undefined,
+        width: 200,
+        aspectRatio: 512/512,
+        alignSelf: 'center',
     },
 })
