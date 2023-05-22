@@ -22,6 +22,7 @@ export default StyleSheet.create({
         backgroundColor: '#DED8E1',
         flex: 1,
         alignItems: 'center',
+        marginBottom: 20,
     },
     loginImage: {
         aspectRatio: 699/699, 

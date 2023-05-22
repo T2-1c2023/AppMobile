@@ -11,9 +11,8 @@ import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 
 import ProfileHeader from '../src/components/ProfileHeader';
-import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails} from '../src/styles/BaseComponents';
+import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails } from '../src/styles/BaseComponents';
 import InterestsList from '../src/components/InterestsList';
-
 
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
@@ -21,6 +20,11 @@ const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 export default class UserMainScreen extends Component {
     constructor(props) {
         super(props);
+        this.onPressCreatedTrainings = this.onPressCreatedTrainings.bind(this);
+        this.onPressSubscribedTrainings = this.onPressSubscribedTrainings.bind(this);
+        this.onPressCurrentGoals = this.onPressCurrentGoals.bind(this);
+        this.onPressCompletedGoals = this.onPressCompletedGoals.bind(this);
+
         this.state = {
             profilePic: require('../assets/images/user_predet_image.png'),
             name: '',
@@ -41,12 +45,12 @@ export default class UserMainScreen extends Component {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
-            })
+        })
             .then(async (response) => {
                 if (response.data.photo_id) {
                     const imageUrl = await downloadImage(response.data.photo_id);
                     if (imageUrl) {
-                        this.setState({ profilePic: {uri: imageUrl}});
+                        this.setState({ profilePic: { uri: imageUrl } });
                     }
                 }
             })
@@ -55,16 +59,32 @@ export default class UserMainScreen extends Component {
             });
     }
 
+    onPressCreatedTrainings() {
+        console.log('Created trainings pressed');
+    }
+    
+    onPressSubscribedTrainings() {
+        console.log('Subscribed trainings pressed');
+    }
+    
+    onPressCurrentGoals() {
+        console.log('Current goals pressed');
+    }
+    
+    onPressCompletedGoals() {
+        console.log('Completed goals pressed');
+    }
+
     getRole() {
         const { is_trainer, is_athlete } = this.props.data;
         if (is_trainer && is_athlete) {
-          return 'Trainer and Athlete';
+            return 'Trainer and Athlete';
         } else if (is_trainer) {
-          return 'Trainer';
+            return 'Trainer';
         } else if (is_athlete) {
-          return 'Athlete';
+            return 'Athlete';
         } else {
-          return 'N/A';
+            return 'N/A';
         }
     }
 
@@ -75,9 +95,9 @@ export default class UserMainScreen extends Component {
             this.setState({ profilePic: { uri: imageLocalUri } });
 
             const imageId = await uploadImageFirebase(imageLocalUri);
-            
+
             // Update image id on back end
-            const url = API_GATEWAY_URL + 'users/' + this.props.data.id; 
+            const url = API_GATEWAY_URL + 'users/' + this.props.data.id;
             const body = {
                 photo_id: imageId
             }
@@ -86,7 +106,7 @@ export default class UserMainScreen extends Component {
                 headers: {
                     Authorization: tokenManager.getAccessToken()
                 }
-                })
+            })
                 .then((response) => {
                     console.log(response.data);
                 })
@@ -98,9 +118,9 @@ export default class UserMainScreen extends Component {
 
     // Lets user choose a profile picture from library
     handleProfilePicturePress = async () => {
-        
+
         Alert.alert(
-            'Editar foto de perfil', 
+            'Editar foto de perfil',
             'Desea modificar la foto de perfil?',
             [
                 {
@@ -114,30 +134,171 @@ export default class UserMainScreen extends Component {
                     }
                 }
             ]
-        ); 
+        );
+    }
+
+    renderHeader() {
+        return (
+            <ProfileHeader
+                profilePic={this.state.profilePic}
+                name='Sebastian Capelli'
+                isAthlete={false}
+                isTrainer={true}
+                certifiedTrainer={true}
+                bottomLeft={
+                    <TextLinked
+                        linkedText='Seguidores'
+                        onPress={() => console.log('Goals')}
+                    />
+                }
+                bottomRight={
+                    <TextLinked
+                        linkedText='Seguidos'
+                        onPress={() => console.log('Goals')}
+                    />
+                }
+                style={{
+                    marginTop: 15
+                }}
+            />
+        )
+    }
+
+    renderSectionTitle(title) {
+        return (
+            <DividerWithMultipleTexts
+                texts={[title]}
+                style={{
+                    marginTop: 20,
+                    marginHorizontal: 20,
+                }}
+            />
+        )
     }
 
     renderTitleAndText(title, text) {
-        return(
-            <View style={{alignItems: 'center', marginTop: 10}}>
-                <Text style={{color: 'grey', fontWeight: 'bold'}}>
+        return (
+            <View style={{ alignItems: 'center', marginTop: 10 }}>
+                <Text style={{ color: 'grey', fontWeight: 'bold' }}>
                     {title}
                 </Text>
-                <Text style={{color: 'black'}}>
+                <Text style={{ color: 'black' }}>
                     {text}
                 </Text>
             </View>
         )
     }
 
+    renderPersonalData() {
+        return (
+            <React.Fragment>
+                {this.renderSectionTitle('Datos personales')}
+                
+                {this.renderTitleAndText('Ubicación', 'To be implemented')}
+                {this.renderTitleAndText('Teléfono', 'To be implemented')}
+            </React.Fragment>
+        )
+    }
+
+    renderContactInfo() {
+        return (
+            <React.Fragment>
+                {this.renderSectionTitle('Contacto')}
+                
+                {this.renderTitleAndText('Correo electrónico', 'to@be.implemented')}
+            </React.Fragment>
+        )
+    }
+
+    renderInterests() {
+
+        const interesesHarcodeados = [
+            {
+              "id": 1,
+              "description": "Fuerza"
+            },
+            {
+              "id": 2,
+              "description": "Resistencia"
+            },
+            {
+              "id": 3,
+              "description": "Flexibilidad"
+            },
+            {
+              "id": 4,
+              "description": "Velocidad"
+            },
+          ]
+
+        return (
+            <React.Fragment>
+                {this.renderSectionTitle('Intereses')}
+
+                <InterestsList
+                    interests={interesesHarcodeados}
+                    style={{
+                        marginTop: 10,
+                    }}
+                />
+            </React.Fragment>
+        )
+    }
+
+
+    renderLinkedTexts(texts) {
+        return (
+            <View style={profileStyles.bottomButtons}>
+                <TextLinked
+                    linkedText={texts[0].title}
+                    onPress={texts[0].handler}
+                    multiline
+                    style={{width: 100, textAlign: 'center'}}
+                />
+                <TextLinked
+                    linkedText={texts[1].title}
+                    onPress={texts[1].handler}
+                    multiline
+                    style={{width: 100, textAlign: 'center'}}
+                />
+            </View>
+        )
+    }
+
+    renderTrainingsInfo() {
+        return (
+            <React.Fragment>
+                {this.renderSectionTitle('Entrenamiento')}
+
+                {this.renderLinkedTexts([
+                    {title: 'Ver entrenamientos creados', handler: this.props.onPressCreatedTrainings},
+                    {title: 'Ver entrenamientos suscriptos', handler: this.props.onPressSubscribedTrainings}
+                ])}
+            </React.Fragment>
+        )
+    }
+
+    renderGoalsInfo() {
+        return (
+            <React.Fragment>
+                {this.renderSectionTitle('Metas')}
+                
+                {this.renderLinkedTexts([
+                    {title: 'Ver metas actuales', handler: this.props.onPressCurrentGoals},
+                    {title: 'Ver metas cumplidas', handler: this.props.onPressCompletedGoals}
+                ])}
+            </React.Fragment>
+        )
+    }
+
     render() {
         const { fullname, mail } = this.props.data || {};
-        return(
-            <ScrollView 
+        return (
+            <ScrollView
                 automaticallyAdjustKeyboardInsets={true}
                 style={styles.scrollView}
             >
-            <View style={styles.container}>
+                <View style={styles.container}>
                     {/* {this.props.data && (
                         <>
                             <TouchableOpacity onPress={this.handleProfilePicturePress}>
@@ -155,70 +316,35 @@ export default class UserMainScreen extends Component {
                         </>
                     )} */}
 
-                    <ProfileHeader
-                        profilePic={this.state.profilePic}
-                        name= 'Sebastian Capelli se ba'
-                        isAthlete= {true}
-                        isTrainer= {true}
-                        certifiedTrainer= {true}
-                        bottomLeft={
-                            <TextLinked
-                                linkedText='Seguidores'
-                                onPress={() => console.log('Goals')} 
-                            />
-                        }
-                        bottomRight={
-                            <TextLinked
-                                linkedText='Seguidos'
-                                onPress={() => console.log('Goals')} 
-                            />
-                        }
-                        style={{ 
-                            marginTop: 15
-                        }}
-                    />
+                    {this.renderHeader()}
 
-                    {/* Sección de datos personales */}
-                    <DividerWithMultipleTexts
-                        texts={['Datos personales']}
-                        style={{
-                            marginTop: 20,
-                            marginHorizontal: 20,
-                        }}
-                    />
-                    {this.renderTitleAndText('Ubicación', 'To be implemented')}
-                    {this.renderTitleAndText('Teléfono', 'To be implemented')}
+                    {this.renderPersonalData()}
 
-                    {/* Sección de contacto */}
-                    <DividerWithMultipleTexts
-                        texts={['Contacto']}
-                        style={{
-                            marginTop: 20,
-                            marginHorizontal: 20,
-                        }}
-                    />
+                    {this.renderContactInfo()}
 
-                    {this.renderTitleAndText('Correo electrónico', 'to@be.implemented')}
+                    {this.renderInterests()}
 
-                    {/* Sección de intereses */}
-                    <DividerWithMultipleTexts
-                        texts={['Intereses']}
-                        style={{
-                            marginTop: 20,
-                            marginHorizontal: 20,
-                        }}
-                    />
+                    {this.renderTrainingsInfo()}
 
-                    <InterestsList
-                    />
+                    {this.renderGoalsInfo()}
 
                 </View>
-                </ScrollView>
+            </ScrollView>
         );
     }
 }
 
 // TODO: revisar que esto sirva de algo o si hay que moverlo a styles
+const profileStyles = StyleSheet.create({
+    bottomButtons: { 
+        width:'100%', 
+        flexDirection: 'row', 
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        marginTop: 10,
+    }
+});
+
 const styles_hs = StyleSheet.create({
     container: {
         flex: 1,
@@ -233,14 +359,14 @@ const styles_hs = StyleSheet.create({
     userImage: {
         width: 140,
         height: 140,
-        borderRadius: 140/2
+        borderRadius: 140 / 2
     },
     editIcon: {
         position: 'absolute',
         bottom: 0,
         right: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        borderRadius: 140/2,
+        borderRadius: 140 / 2,
         padding: 5
     }
 });
