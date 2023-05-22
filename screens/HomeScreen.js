@@ -8,11 +8,13 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import GoalsListScreen from './GoalsListScreen';
 import UserMainScreen from './UserMainScreen';
 // Temporary (Test)
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
 import TrainingsListScreen from './TrainingsListScreen';
 
 import { IconButton } from 'react-native-paper';
+import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons'; 
 
 const Drawer = createDrawerNavigator();
 
@@ -77,16 +79,51 @@ class HomeScreen extends Component {
 
     render() {
         return (
-            <Drawer.Navigator drawerContent={this.CustomDrawerContent} initialRouteName="Mi Perfil">
-                <Drawer.Screen name="Mi Perfil">
+            <Drawer.Navigator 
+                drawerContent={this.CustomDrawerContent} 
+                initialRouteName="Mi Perfil"
+                screenOptions={{
+                    drawerActiveTintColor: '#5925b0',
+                    drawerStyle: {
+                        backgroundColor: '#CCC2DC',
+                    },
+                    headerStyle: {
+                        backgroundColor: '#CCC2DC'
+                    }
+                }}
+            >
+                <Drawer.Screen name="Mi Perfil"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="user-circle-o" size={20} color="black" />
+                            </View>
+                        )
+                    }}
+                >
                     {() => <UserMainScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
-                <Drawer.Screen name="Metas">
+
+                <Drawer.Screen name="Metas"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="bullseye" size={24} color="black" />
+                            </View>
+                        )
+                    }}
+                >
                     {() => <GoalsListScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
+
                 <Drawer.Screen 
                     name="Entrenamientos"
                     options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome5 name="dumbbell" size={16} color="black" />
+                            </View>
+                        ),
                         headerRight: () =>
                             this.state.data.is_trainer ? (
                                 <IconButton
@@ -102,10 +139,27 @@ class HomeScreen extends Component {
                 >
                     {() => <TrainingsListScreen data={this.state.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
-                <Drawer.Screen name="Seguidos" component={Test} />
+                
+                <Drawer.Screen name="Seguidos" 
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="users" size={20} color="black" />
+                            </View>
+                        )
+                    }}
+                    component={Test} 
+                />
+
             </Drawer.Navigator>
         );
     }
 }
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+    drawerIconContainer: {
+        marginRight: -20
+    }
+})
