@@ -21,7 +21,7 @@ import TrainingsListScreen from './screens/TrainingsListScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import TrainingScreen from './screens/TrainingScreen'; 
 import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
-import UserMainScreen from './screens/UserMainScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -177,8 +177,8 @@ export default class App extends Component {
             />
 
             <Stack.Screen 
-              name="UserMainScreen"
-              component={UserMainScreen}
+              name="ProfileScreen"
+              component={ProfileScreen}
             />
 
             <Stack.Screen

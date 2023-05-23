@@ -114,9 +114,10 @@ export const ButtonStandard = (props) => {
                         borderColor: 'black',
                         borderWidth : 1,
                         backgroundColor:
-                            props.whiteMode? 'white' : 
-                                props.warningTheme? '#8A1919' :
-                                    props.disabled? 'grey' : '#21005D'
+                            props.greyMode? 'grey' :
+                                props.whiteMode? 'white' : 
+                                    props.warningTheme? '#8A1919' :
+                                        props.disabled? 'grey' : '#21005D'
                     }}
                     disabled={props.disabled}
                     icon={props.icon}
@@ -304,7 +305,11 @@ export const TextWithLinkFlexible = (props) => {
 
 export const TextLinked = (props) => {
     return (
-        <Text onPress={props.onPress} style={[styles.textLinked, props.style]}>
+        <Text 
+            onPress={props.onPress} 
+            style={[styles.textLinked, props.style]}
+            multiline={props.multiline}
+        >
             {props.linkedText}
         </Text>
     )

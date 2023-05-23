@@ -6,7 +6,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // Screens 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
 import GoalsListScreen from './GoalsListScreen';
-import UserMainScreen from './UserMainScreen';
+import ProfileScreen from './ProfileScreen';
 // Temporary (Test)
 import { View, Text } from 'react-native';
 import Styles from '../src/styles/styles';
@@ -25,17 +25,16 @@ function Test() {
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            data: null
-        }
+        this.data = jwt_decode(tokenManager.getAccessToken())
+        
+        console.log(this.data)
     }
 
     componentDidMount() {
         // Decode the token data for the first and only time
-        const encoded_jwt = tokenManager.getAccessToken();
-        const data = jwt_decode(encoded_jwt);
-        this.setState({ data: data });
-        console.log(encoded_jwt)
+        
+        this.setState({ data: this.data });
+        // console.log(encoded_jwt)
     }
 
     handleLogout = async () => {
@@ -79,13 +78,13 @@ class HomeScreen extends Component {
         return (
             <Drawer.Navigator drawerContent={this.CustomDrawerContent} initialRouteName="Mi Perfil">
                 <Drawer.Screen name="Mi Perfil">
-                    {() => <UserMainScreen data={this.state.data} navigation={this.props.navigation} />}
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
                 <Drawer.Screen name="Metas">
-                    {() => <GoalsListScreen data={this.state.data} navigation={this.props.navigation} />}
+                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
                 <Drawer.Screen name="Entrenamientos" >
-                    {() => <TrainingsListScreen data={this.state.data} navigation={this.props.navigation} />}
+                    {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
                 <Drawer.Screen name="Seguidos" component={Test} />
             </Drawer.Navigator>
