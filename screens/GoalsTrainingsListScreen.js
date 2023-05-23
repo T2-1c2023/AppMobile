@@ -31,7 +31,7 @@ export default class GoalsTrainingsListScreen extends Component {
     }
 
     handleSelection(goal_id) {
-        if (this.props.route.params.trainingData.trainer_id === this.props.route.params.id) {
+        if (this.canEdit()) {
             console.log("puede");//debug
             const ids = [...this.state.selectedGoalsIds, goal_id]
 
@@ -170,6 +170,7 @@ export default class GoalsTrainingsListScreen extends Component {
                     selectedGoalsIds={this.state.selectedGoalsIds}
                     onSelection={this.handleSelection}
                     onDeselection={this.handleDeselection}
+                    canEdit={this.canEdit()}
                     />
                 }
 
