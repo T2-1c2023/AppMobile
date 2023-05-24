@@ -114,7 +114,7 @@ export default class ProfileHeader extends Component {
 
     render() {
         return (
-            <View style={[this.props.style, {width: '100%'}]}>
+            <View style={[this.props.style, profileStyles.container]}>
                 <View style={profileStyles.firstRowContainer}>
                     
                     {this.renderProfilePic()}
@@ -135,7 +135,7 @@ export default class ProfileHeader extends Component {
 
 const profileStyles = StyleSheet.create({
     container: {
-
+        width: '100%'
     },
 
     firstRowContainer: {

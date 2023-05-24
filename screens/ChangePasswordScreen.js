@@ -40,7 +40,7 @@ export default class ChangePasswordScreen extends Component {
             <View style={ styles.container }>
                 <TextInput
                     label="Constraseña actual"
-                    theme={{ colors: { primary: '#21005D'}}}
+                    theme={textStyles.themeColors}
                     onChangeText={text => this.setState({ currentPass: text })}
                     onSubmitEditing={() => this.newPassTextInput.current.focus()}
                     mode='flat'
@@ -52,7 +52,7 @@ export default class ChangePasswordScreen extends Component {
                 <TextInput
                     ref={this.newPassTextInput}
                     label="Nueva contraseña"
-                    theme={{ colors: { primary: '#21005D'}}}
+                    theme={textStyles.themeColors}
                     onChangeText={text => this.setState({ newPass: text })}
                     onSubmitEditing={() => this.ConfirmPassTextInput.current.focus()}
                     mode='flat'
@@ -65,10 +65,14 @@ export default class ChangePasswordScreen extends Component {
                 <TextInput
                     ref={this.ConfirmPassTextInput}
                     label="Confirmar contraseña"
-                    theme={this.confirmPassIsValid() || this.state.confirmPass === ''?
-                        { colors: { primary: '#21005D'}} 
+                    theme={this.confirmPassIsValid() || this.state.confirmPass === ''? 
+                        textStyles.themeColors 
                         : 
-                        { colors: { primary: 'red'}}}
+                        textStyles.themeErrorColors
+                    }
+                    // theme={true?
+                    // theme={false?
+                        
                     onChangeText={text => this.setState({ confirmPass: text })}
                     mode='flat'
                     style={
@@ -97,6 +101,7 @@ export default class ChangePasswordScreen extends Component {
         );
     }
 }
+
 const textStyles = StyleSheet.create({
     inputText: {
         backgroundColor: "transparent",
@@ -108,8 +113,27 @@ const textStyles = StyleSheet.create({
         alignSelf: 'flex-start',
         marginLeft: 15,
         color: 'red',
-    }
+    },
 
+    themeColors: {
+        colors: { 
+            //placeholder unfocus (grande y chiquito)
+            onSurfaceVariant: 'black',
+            
+            //underline unfocus
+            onSurface: 'black',
+
+            //underline y titulo focus
+            primary: '#21005D',        
+        } 
+    },
+
+    themeErrorColors: {
+        colors: { 
+            primary: 'red', 
+            onSurface: 'red', 
+            onSurfaceVariant: 'grey'}
+    },
 })
 
 

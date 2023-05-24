@@ -183,7 +183,7 @@ export default class ProfileScreen extends Component {
         return (
             <ProfileHeader
                 profilePic={this.state.profilePic}
-                name='Sebastian Capelli'
+                name={this.state.fullname}
                 isAthlete={this.is_athlete}
                 isTrainer={this.is_trainer}
                 certifiedTrainer={this.state.certifiedTrainer}
@@ -314,7 +314,6 @@ export default class ProfileScreen extends Component {
     }
 
     render() {
-        const { fullname, mail } = this.props.data || {};
         return (
             <ScrollView
                 automaticallyAdjustKeyboardInsets={true}
