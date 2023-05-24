@@ -35,13 +35,15 @@ class Goal extends Component {
     }
 
     handleLongPress() {
-        const selected = !this.state.selected
-        this.setState({ selected })
+        if (this.props.canEdit) {
+            const selected = !this.state.selected
+            this.setState({ selected })
 
-        if (selected) {
-            this.props.onSelection(this.props.goal.id)
-        } else {
-            this.props.onDeselection(this.props.goal.id)
+            if (selected) {
+                this.props.onSelection(this.props.goal.id)
+            } else {
+                this.props.onDeselection(this.props.goal.id)
+            }
         }
     }
 
@@ -124,6 +126,7 @@ export default class GoalsList extends Component {
                             onDeselection={this.props.onDeselection}
                             selectionMode = {this.props.selectedGoalsIds != 0}
                             selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                            canEdit = {this.props.canEdit}
                         />
                     )}
                 </View>
@@ -139,6 +142,7 @@ export default class GoalsList extends Component {
                             onDeselection={this.props.onDeselection}
                             selectionMode = {this.props.selectedGoalsIds != 0}
                             selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                            canEdit = {this.props.canEdit}
                         />
                     )}
                 </View>

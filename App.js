@@ -70,7 +70,7 @@ export default class App extends Component {
             <Stack.Screen
               name="HomeScreen"
               component={HomeScreen}
-              options={{ title: 'Welcome' }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="RegisterScreen1"

@@ -49,18 +49,6 @@ export default class TrainingsListScreen extends Component {
         
         // reemplazar true por consulta al token o al contexto sobre si el usuario es trainer y sobre si 
         trainingCreationAvailable = jwt_decode(this.token).is_trainer;
-
-
-        this.props.navigation.setOptions({
-            headerRight: () => (
-                <IconButton
-                icon={'plus'}
-                iconColor='black'
-                size={30}
-                onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })} //debug
-              />
-            ),
-          });
     }
 
     handleSetFilters() {

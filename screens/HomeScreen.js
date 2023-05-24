@@ -9,10 +9,14 @@ import GoalsListScreen from './GoalsListScreen';
 import ProfileScreen from './ProfileScreen';
 import ProfileEditionScreen from './ProfileEditionScreen';
 // Temporary (Test)
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
 import TrainingsListScreen from './TrainingsListScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
+
+import { IconButton } from 'react-native-paper';
+import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons'; 
 
 const Drawer = createDrawerNavigator();
 
@@ -33,10 +37,6 @@ class HomeScreen extends Component {
     }
 
     componentDidMount() {
-        // Decode the token data for the first and only time
-        
-        this.setState({ data: this.data });
-        // console.log(encoded_jwt)
     }
 
     handleLogout = async () => {
@@ -63,8 +63,6 @@ class HomeScreen extends Component {
 
     // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
 
-    // TODO: mostrar la foto de perfil del usuario o una predeterminada si no hay
-
     // TODO: mostrar de mejor forma que tipo de usuario sos
 
     /*
@@ -78,21 +76,77 @@ class HomeScreen extends Component {
 
     render() {
         return (
-            <Drawer.Navigator drawerContent={this.CustomDrawerContent} initialRouteName="Mi Perfil">
-                <Drawer.Screen name="Mi Perfil">
-                    {/* {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>} */}
-                    {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}
+            <Drawer.Navigator 
+                drawerContent={this.CustomDrawerContent} 
+                initialRouteName="Mi Perfil"
+                screenOptions={{
+                    drawerActiveTintColor: '#5925b0',
+                    drawerStyle: {
+                        backgroundColor: '#CCC2DC',
+                    },
+                    headerStyle: {
+                        backgroundColor: '#CCC2DC'
+                    }
+                }}
+            >
+                <Drawer.Screen name="Mi Perfil"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="user-circle-o" size={20} color="black" />
+                            </View>
+                        )
+                    }}
+                >
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
+                    {/* {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}*/}
                 </Drawer.Screen>
-                <Drawer.Screen name="Metas">
+
+                <Drawer.Screen name="Metas"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="bullseye" size={24} color="black" />
+                            </View>
+                        )
+                    }}
+                >
                     {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
-                <Drawer.Screen name="Entrenamientos" >
+
+                <Drawer.Screen 
+                    name="Entrenamientos"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome5 name="dumbbell" size={16} color="black" />
+                            </View>
+                        ),
+                        headerRight: () =>
+                            this.state.data.is_trainer ? (
+                                <IconButton
+                                    icon="plus"
+                                    color="black"
+                                    size={30}
+                                    onPress={() => 
+                                        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })
+                                    }
+                                />
+                            ) : null
+                    }}
+                >
                     {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} />}
+
                 </Drawer.Screen>
-                <Drawer.Screen name="Seguidos" component={Test} />
             </Drawer.Navigator>
         );
     }
 }
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+    drawerIconContainer: {
+        marginRight: -20
+    }
+})

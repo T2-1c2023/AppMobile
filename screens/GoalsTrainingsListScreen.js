@@ -31,8 +31,7 @@ export default class GoalsTrainingsListScreen extends Component {
     }
 
     handleSelection(goal_id) {
-        if (this.props.route.params.trainingData.trainer_id === this.props.route.params.id) {
-            console.log("puede");//debug
+        if (this.canEdit()) {
             const ids = [...this.state.selectedGoalsIds, goal_id]
 
             const body = {
@@ -54,16 +53,28 @@ export default class GoalsTrainingsListScreen extends Component {
                 .catch(error => {
                     console.log(error)
                 })
-        } else {console.log("no puede")}
+        }
     }
 
     handleDeselection(goal_id) {
         if (this.props.route.params.trainingData.trainer_id === this.props.route.params.id) {
             const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
 
-            console.log(ids)
-            this.setState({ selectedGoalsIds: ids })
-        } else {console.log("no puede")}
+            axios.delete(
+                API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
+                {
+                    headers: {
+                        Authorization: tokenManager.getAccessToken()
+                    }
+                })
+                .then(response => {
+                    this.setState({ selectedGoalsIds: ids })
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            
+        }
     }
 
     handlePress = (goal) => {
@@ -71,13 +82,35 @@ export default class GoalsTrainingsListScreen extends Component {
     }
 
     fetchData = async () => {
+        this.canEdit() ? this.fetchDataForTrainer() : this.fetchDataForAthlete();
+    }
+
+    fetchDataForAthlete = async () => {     
+        this.setState({ loading: true });
+
+        axios.get(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
+        .then(response => {
+            const goals = response.data;
+            const selectedGoalsIds = response.data.map(goal => goal.id);
+            this.setState({ goals, selectedGoalsIds });
+        })
+        .catch(error => {
+            console.log(error)
+        })
+        this.setState({ loading: false });
+    }
+
+    fetchDataForTrainer = async () => {
         const trainerGoalsPromise = axios.get(API_GATEWAY_URL + "trainers/" + this.props.route.params.trainingData.trainer_id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
         })
             
-        console.log(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals")
         const trainingGoalsPromise = axios.get(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
@@ -170,6 +203,7 @@ export default class GoalsTrainingsListScreen extends Component {
                     selectedGoalsIds={this.state.selectedGoalsIds}
                     onSelection={this.handleSelection}
                     onDeselection={this.handleDeselection}
+                    canEdit={this.canEdit()}
                     />
                 }
 
