@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Avatar, Button, Card, Text, IconButton } from 'react-native-paper';
 import { View, Image, StyleSheet } from 'react-native';
+import { downloadImage } from '../../services/Media';
 
 class Goal extends Component {
     constructor(props) {
@@ -9,26 +10,40 @@ class Goal extends Component {
         this.handlePress = this.handlePress.bind(this)
         this.state = {
             selected: this.props.selected,
+            uri: null
         }
     }
 
-    getUriById(image_id) {
+    componentDidMount() {
+        this.loadImage();
+    }
 
-        //reemplazar por logica de obtener imagen a partir de id
-        //----------------
-        return 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg'
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/220px-Cat_November_2010-1a.jpg'
-        //----------------
+    async loadImage() {
+        const multimedia_ids = this.props.goal.multimedia_ids;
+
+        if (multimedia_ids != null && multimedia_ids.length > 0) {
+            const image_id = parseInt(multimedia_ids[0]);
+            if (!isNaN(image_id)) {
+                try {
+                    const uri = await downloadImage(image_id);
+                    this.setState({ uri: uri });
+                } catch (error) {
+                    console.error('Error downloading image:', error);
+                }
+            }
+        }
     }
 
     handleLongPress() {
-        const selected = !this.state.selected
-        this.setState({ selected })
+        if (this.props.canEdit) {
+            const selected = !this.state.selected
+            this.setState({ selected })
 
-        if (selected) {
-            this.props.onSelection(this.props.goal.id)
-        } else {
-            this.props.onDeselection(this.props.goal.id)
+            if (selected) {
+                this.props.onSelection(this.props.goal.id)
+            } else {
+                this.props.onDeselection(this.props.goal.id)
+            }
         }
     }
 
@@ -45,18 +60,19 @@ class Goal extends Component {
                 onPress={this.props.selectionMode? this.handleLongPress : this.handlePress}
             >
                 <View style={{ position: 'relative' }}>
-                    {(this.props.goal.image_ids != undefined && this.props.goal.image_ids.length > 0) ?
-                        (<Image
-                            source={{ uri: this.getUriById(this.props.goal.image_ids[0]) }}
-                            style={ goalsStyles.cardImage }
-                            resizeMode= 'contain'
-                        />)
-                        :
-                        (<Image
+                    {this.state.uri ? (
+                        <Image
+                            source={{ uri: this.state.uri }}
+                            style={goalsStyles.cardImage}
+                            resizeMode="contain"
+                        />
+                    ) : (
+                        <Image
                             source={require('./fiufit.png')}
                             style={[goalsStyles.cardWithoutImage, {alignSelf: 'center'}]}
                             resizeMode= 'contain'
-                        />)
+                        />
+                    )
                     }
                     {this.state.selected &&
                         <View style={goalsStyles.cardSelectedIcon}>
@@ -95,6 +111,7 @@ export default class GoalsList extends Component {
     render() {
         const goals_left = this.props.goals.filter((goal, index) => index % 2 === 0);
         const goals_right = this.props.goals.filter((goal, index) => index % 2 === 1);
+
         return (
             <View style={[this.props.style,{flexDirection: 'row'}]}>
                 <View style={{
@@ -109,6 +126,7 @@ export default class GoalsList extends Component {
                             onDeselection={this.props.onDeselection}
                             selectionMode = {this.props.selectedGoalsIds != 0}
                             selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                            canEdit = {this.props.canEdit}
                         />
                     )}
                 </View>
@@ -124,6 +142,7 @@ export default class GoalsList extends Component {
                             onDeselection={this.props.onDeselection}
                             selectionMode = {this.props.selectedGoalsIds != 0}
                             selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                            canEdit = {this.props.canEdit}
                         />
                     )}
                 </View>

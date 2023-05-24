@@ -128,7 +128,6 @@ const levelStyles = StyleSheet.create({
         marginLeft: 20,
         justifyContent: 'flex-end',
         flexGrow: 1
-        
     },
 
     blockedButton: {

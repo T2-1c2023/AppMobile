@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper';
 export default StyleSheet.create({
     scrollView: {
         backgroundColor: '#DED8E1',
+        flex: 1,
     },
     
     scrollViewWithFooter: {
@@ -15,18 +16,17 @@ export default StyleSheet.create({
 
     footerContainer: {
         flex: 0.1, 
-        // backgroundColor: 'blue'
     },
 
     container: {
         backgroundColor: '#DED8E1',
-        // backgroundColor: 'green',
         flex: 1,
         alignItems: 'center',
+        marginBottom: 20,
     },
     loginImage: {
-        aspectRatio: 488/537, 
-        maxHeight: 140,
+        aspectRatio: 699/699, 
+        height: 140,
     },
 
     fingerprintImage: {
@@ -36,7 +36,14 @@ export default StyleSheet.create({
 
     textHeader: {
         textAlign: 'center',
+        color: 'black',
     },
+
+    textProfileName: {
+        color: 'black',
+        fontWeight: 'bold',
+    },
+
     ImageLoginFingerPrint: {
         aspectRatio: 1/1, 
         maxWidth: 50,
@@ -48,6 +55,18 @@ export default StyleSheet.create({
         color: '#605D64',
         width: 250,
         textAlign: 'center',
+    },
+    
+    textDetailsNotFixedWidth: {
+        color: '#605D64',
+        textAlign: 'center',
+    },
+
+    textDetailsLeft: {
+        color: '#605D64',
+        width: 350,
+        textAlign: 'left',
+        fontSize: 14,
     },
 
     textWarning: {

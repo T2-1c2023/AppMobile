@@ -1,97 +1,152 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
-import Styles from '../src/styles/styles';
+// User Session
 import { tokenManager } from '../src/TokenManager';
-//import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import jwt_decode from 'jwt-decode';
-import { uploadImage } from '../services/Media'; 
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// Screens 
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
+import GoalsListScreen from './GoalsListScreen';
+import ProfileScreen from './ProfileScreen';
+import ProfileEditionScreen from './ProfileEditionScreen';
+// Temporary (Test)
+import { View, Text, StyleSheet } from 'react-native';
+import Styles from '../src/styles/styles';
+import TrainingsListScreen from './TrainingsListScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
+
+import { IconButton } from 'react-native-paper';
+import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons'; 
+
+const Drawer = createDrawerNavigator();
+
+function Test() {
+    return (
+        <View style={Styles.container}>
+            <Text>Work In Progress...</Text>
+        </View>
+    )
+}
 
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
-        this.handleLogout = this.handleLogout.bind(this);
-        this.state = {
-            data: null,
-            image: null
-        }
+        this.data = jwt_decode(tokenManager.getAccessToken())
+        
+        console.log(this.data)
     }
 
     componentDidMount() {
-        const encoded_jwt = tokenManager.getAccessToken();
-        const data = jwt_decode(encoded_jwt);
-        this.setState({ data: data });
-        console.log(data);
     }
 
-    async handleImageUpload() {
-        const imageUri = await uploadImage();
-        console.log('Home:' + imageUri);
-        this.setState({ image: imageUri });
-    }
-
-    async handleLogout() {
-        //const isSignedInGoogle = await GoogleSignin.isSignedIn();
-        /*if (isSignedInGoogle) {
+    handleLogout = async () => {
+        const isSignedInGoogle = await GoogleSignin.isSignedIn();
+        if (isSignedInGoogle) {
             await GoogleSignin.signOut();
-        }*/
+        }
         await tokenManager.unloadTokens()
         this.props.navigation.replace('LoginScreen')
     }
 
-    getRole() {
-        const { is_trainer, is_athlete } = this.state.data;
-        if (is_trainer && is_athlete) {
-          return 'Trainer and Athlete';
-        } else if (is_trainer) {
-          return 'Trainer';
-        } else if (is_athlete) {
-          return 'Athlete';
-        } else {
-          return 'N/A';
-        }
+    // So that 'Cerrar Sesión' drawer functions as button
+    CustomDrawerContent = (props) => {
+        return (
+            <DrawerContentScrollView {...props}>
+                <DrawerItemList {...props} />
+                <DrawerItem 
+                    label="Cerrar Sesión"
+                    onPress={this.handleLogout}
+                />
+            </DrawerContentScrollView>
+        )
     }
-      
+
+    // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
+
+    // TODO: mostrar de mejor forma que tipo de usuario sos
+
+    /*
+        TODO:
+        nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
+
+        Botón de ver perfiles (WIP)
+    */
+
+    // TODO: (no prioritario) mejorar visualmente el sidebar https://www.youtube.com/watch?v=M4WNSjTWFDo
 
     render() {
-        const { fullname, mail } = this.state.data || {};
         return (
-            <View style={styles_hs.container}>
-                {this.state.data && (
-                    <>
-                        <Text style={styles_hs.text}>Welcome {fullname}!</Text>
-                        <Text style={styles_hs.text}>Email: {mail}</Text>
-                        <Text style={styles_hs.text}>Role: {this.getRole()}</Text>
-                    </>
-                )}
-
-                {this.state.image && <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />}
-
-                <Button 
-                    title="Subir imágen"
-                    onPress={this.handleImageUpload = this.handleImageUpload.bind(this)}
+            <Drawer.Navigator 
+                drawerContent={this.CustomDrawerContent} 
+                initialRouteName="Mi Perfil"
+                screenOptions={{
+                    drawerActiveTintColor: '#5925b0',
+                    drawerStyle: {
+                        backgroundColor: '#CCC2DC',
+                    },
+                    headerStyle: {
+                        backgroundColor: '#CCC2DC'
+                    }
+                }}
+            >
+                <Drawer.Screen name="Mi Perfil"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="user-circle-o" size={20} color="black" />
+                            </View>
+                        )
+                    }}
                 >
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
+                    {/* {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}*/}
+                </Drawer.Screen>
 
-                </Button>
+                <Drawer.Screen name="Metas"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="bullseye" size={24} color="black" />
+                            </View>
+                        )
+                    }}
+                >
+                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
+                </Drawer.Screen>
 
-                <Button
-                    title="Logout"
-                    onPress={this.handleLogout}>
-                </Button>
-            </View>
+                <Drawer.Screen 
+                    name="Entrenamientos"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome5 name="dumbbell" size={16} color="black" />
+                            </View>
+                        ),
+                        headerRight: () =>
+                            this.state.data.is_trainer ? (
+                                <IconButton
+                                    icon="plus"
+                                    color="black"
+                                    size={30}
+                                    onPress={() => 
+                                        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })
+                                    }
+                                />
+                            ) : null
+                    }}
+                >
+                    {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} />}
+
+                </Drawer.Screen>
+            </Drawer.Navigator>
         );
     }
 }
 
 export default HomeScreen;
 
-const styles_hs = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        fontSize: 30,
+const styles = StyleSheet.create({
+    drawerIconContainer: {
+        marginRight: -20
     }
-});
+})

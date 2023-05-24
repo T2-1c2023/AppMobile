@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import styles from '../src/styles/styles';
-
+import { ButtonStandard } from '../src/styles/BaseComponents';
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import GoalsList from '../src/components/GoalsList';
-import { ConfirmationButtons } from '../src/styles/BaseComponents';
+import { tokenManager } from '../src/TokenManager';
+import jwt_decode from 'jwt-decode';
 import axios from 'axios';
+import Constants from 'expo-constants'
+import { ActivityIndicator } from 'react-native-paper';
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class GoalsListScreen extends Component {
     constructor(props) {
@@ -15,6 +20,7 @@ export default class GoalsListScreen extends Component {
         this.handleDeselection = this.handleDeselection.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
         this.state = {
+            loading: true,
             title: '',
             description: '',
             metric: '',
@@ -24,74 +30,78 @@ export default class GoalsListScreen extends Component {
         }
     }
 
-    handleSelection(goal_id) {
+    handleSelection(goal_id) {  //TO_DO ver si se puede quitar esta función
         const ids = [...this.state.selectedGoalsIds, goal_id]
 
         const body = {
             training_id: 1,
             goal_id: goal_id
         }
-
-        axios.put(
-            "https://trainings-g6-1c-2023.onrender.com/trainings/1/goals/" + goal_id.toString(), 
-            body)
-            .then(response => {
-                console.log(ids)
-                this.setState({ selectedGoalsIds: ids })
-            })
-            .catch(error => {
-                console.log(error)
-            })
-
     }
 
-    handleDeselection(goal_id) {
-        const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
-
-        console.log(ids)
-        this.setState({ selectedGoalsIds: ids })
+    handleDeselection(goal_id) {  //TO_DO ver si se puede quitar esta función
+        
     }
 
     handlePress = (goal) => {
         alert('id de meta: ' + goal.goal_id + '\n' + 'Titulo: ' + goal.title)
     }
 
-    componentDidMount() {
-        const trainerGoalsPromise = axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
-            
-        const trainingGoalsPromise = axios.get("https://trainings-g6-1c-2023.onrender.com/trainings/1/goals")
-        
-        Promise.all([trainerGoalsPromise, trainingGoalsPromise])
-            .then(responses => {
-                const goals = responses[0].data;
-                const selectedGoalsIds = responses[1].data.map(goal => goal.id);
+    fetchData = async () => {
 
-                goals.sort(( a, b) => 
-                    selectedGoalsIds.includes(a.id) ? -1 
-                    : 
-                    selectedGoalsIds.includes(b.id) ? 1 : 0
-                )
-
-                this.setState({ goals, selectedGoalsIds });
-            }).catch(function (error) {
-                console.log(error);
+        console.log("data " + JSON.stringify(this.props.data));
+        let endpoint;
+        if (this.props.data.is_trainer) {   //TO_DO qué pasa si alguno es entrenador y atleta?
+            endpoint = 'trainers/'
+        } else if (this.props.data.is_athlete) {
+            endpoint = 'athletes/'
+        }
+        console.log(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals")
+        await axios.get(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            },
+            params: {
+                completed: false
             }
-            );
+         })
+        .then((response) => {
+            this.setState({ goals: response.data});
+            console.log(response.data);
+        }) 
+        .catch((error) => {
+            console.error(error);
+        })
+        
+
+        this.setState({ loading: false });
     }
 
-
+    componentDidMount() {
+        this.fetchData();
+        // TODO: averiguar como hacer para que se reinicie siempre que vuelva el foco a esta pantalla
+    }
 
     handleSearch (queryText) {
-        axios.get("https://trainings-g6-1c-2023.onrender.com/trainers/1/goals")
+        console.log(API_GATEWAY_URL + "trainers/" + this.props.data.id +"/goals");
+        axios.get(API_GATEWAY_URL + "trainers/" + this.props.data.id +"/goals", {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+            })
             .then(response => {
                 const goals = response.data;
+                console.log("goals " + goals);
                 const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
                 this.setState({ goals: filteredGoals })
             })
             .catch(function (error) {
                 console.log(error);
             });
+
+            
     }
+
 
     render() {
         return (
@@ -104,7 +114,9 @@ export default class GoalsListScreen extends Component {
             <View style={styles.container}>
                 
                 <SearchInputWithIcon
-                    onIconPress={() => alert('Icon pressed')}
+                    onIconPress={
+                        () => this.props.navigation.navigate('GoalScreen', { data: this.props.data })
+                    }
                     onSubmit={this.handleSearch}
                     placeholder="Buscar por título"
                     style={{
@@ -112,7 +124,12 @@ export default class GoalsListScreen extends Component {
                     }}
                 />
 
-                <GoalsList 
+                {this.state.loading ? 
+                    <View style={{marginTop: 80}}>
+                        <ActivityIndicator size="large" color="#21005D"/>
+                    </View>
+                    :
+                    <GoalsList 
                     goals={this.state.goals}
                     style={{
                         marginTop: 20,
@@ -121,22 +138,21 @@ export default class GoalsListScreen extends Component {
                     selectedGoalsIds={this.state.selectedGoalsIds}
                     onSelection={this.handleSelection}
                     onDeselection={this.handleDeselection}
-                />
+                    />
+                }
 
             </View>
+            {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
+            {!this.state.loading &&
+                <View style={styles.container}>
+                    <ButtonStandard 
+                        title="Refresh"
+                        onPress={this.fetchData}
+                        style={{marginTop: 20}}
+                    />
+                </View>
+            }
             </ScrollView>
-            <View style={styles.footerContainer}>
-                <ConfirmationButtons
-                    confirmationText="Continuar"
-                    cancelText="Cancelar"
-                    onConfirmPress={this.handleCreatePress}
-                    onCancelPress={this.handleCancelPress}
-                    style={{
-                        marginTop: 10,
-                        alignSelf: 'flex-end',
-                    }}
-                />
-            </View>
             </>
         );
     }

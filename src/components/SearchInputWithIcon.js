@@ -25,7 +25,7 @@ export default class SearchInputWithIcon extends Component {
                     onSubmitEditing={(param) => this.props.onSubmit(param.nativeEvent.text)}
                 />
                 <IconButton
-                    icon="plus"
+                    icon={this.props.filter? 'filter-variant' : 'plus'}
                     iconColor='white'
                     size={40}
                     onPress={this.props.onIconPress}

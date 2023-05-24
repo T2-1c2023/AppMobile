@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import * as reactNative from 'react-native';
-import { Text, Divider, Button, TextInput, IconButton } from 'react-native-paper';
+import { Text, Divider, Button, TextInput, IconButton, DefaultTheme } from 'react-native-paper';
 import styles from './styles';
 
 export const TextHeader = (props) => {
     return (
         <Text variant="displayLarge" style={[styles.textHeader, props.style]}>
+            {props.body}
+        </Text>
+    )
+}
+
+export const TextSubheader = (props) => {
+    return (
+        <Text variant="displaySmall" style={[styles.textHeader, props.style]}>
+            {props.body}
+        </Text>
+    )
+}
+
+export const TextProfileName = (props) => {
+    return (
+        <Text variant="titleLarge" style={[styles.textProfileName, props.style]}>
             {props.body}
         </Text>
     )
@@ -18,18 +34,40 @@ export const TextDetails = (props) => {
             <Text
                 numberOfLines={props.numberOfLines}
                 variant="labelMedium"
-                style={props.warning ? styles.textWarning : styles.textDetails}>
+                style={props.warning ? styles.textWarning : 
+                    props.alignLeft ? styles.textDetailsLeft : styles.textDetails 
+                }
+            >
                 {props.body}
             </Text>
         </View>
     )
 }
 
+export const DividerWithMultipleTexts = (props) => {
+    const renderDividersAndTexts = () => {
+      return props.texts.map((text, index) => (
+        <React.Fragment key={index}>
+          <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
+          <Text style={{ marginHorizontal: 10, color: 'black'}}>{text}</Text>
+        </React.Fragment>
+      ));
+    };
+  
+    return (
+      <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
+        {renderDividersAndTexts()}
+        <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
+      </View>
+    );
+  };
+    
+
 export const DividerWithMiddleText = (props) => {
     return (
         <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
             <Divider style={{ flex: 1, height: 1, maxWidth: 100 }} />
-            <Text style={{ marginHorizontal: 10 }}>{props.text}</Text>
+            <Text style={{ color: 'black', marginHorizontal: 10 }}>{props.text}</Text>
             <Divider style={{ flex: 1, height: 1, maxWidth: 100 }} />
         </View>
 
@@ -40,18 +78,26 @@ export const DividerWithLeftText = (props) => {
     return (
         <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
             <Divider style={{ flex: 1, height: 1, maxWidth: 20, backgroundColor: '#9D9D9D' }} />
-            <Text style={{ marginHorizontal: 10 }}>{props.text}</Text>
+            <Text style={{ color: 'black', marginHorizontal: 10 }}>{props.text}</Text>
             <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
             { ( props.maxCounter != undefined && props.counter != undefined ) &&
                 <>
-                <Text style={{ marginHorizontal: 10 }}>{props.counter + '/' + props.maxCounter}</Text>
+                <Text style={{ color: 'black', marginHorizontal: 10 }}>{props.counter + '/' + props.maxCounter}</Text>
                 <Divider style={{ flex: 1, height: 1, maxWidth: 20, backgroundColor: '#9D9D9D' }} />
                 </>
+            }
+
+            {props.editButtonPress &&
+                <IconButton
+                    icon="pencil"
+                    color="#000000"
+                    size={20}
+                    onPress={() => props.editButtonPress()}
+                />
             }
         </View>
     )
 }
-
 
 export const ButtonStandard = (props) => {
     return (
@@ -59,9 +105,23 @@ export const ButtonStandard = (props) => {
             <View style={[{ display: 'flex', flexDirection: 'row' }, styles.buttonStandard]}>
                 <Button
                     mode="contained"
-                    buttonColor='#21005D'
+                    buttonColor={props.warningTheme? '#8A1919' :
+                        props.disabled? 'green' : '#21005D'
+                    }
                     onPress={props.onPress}
+                    
+                    style={{
+                        borderColor: 'black',
+                        borderWidth : 1,
+                        backgroundColor:
+                            props.greyMode? 'grey' :
+                                props.whiteMode? 'white' : 
+                                    props.warningTheme? '#8A1919' :
+                                        props.disabled? 'grey' : '#21005D'
+                    }}
                     disabled={props.disabled}
+                    icon={props.icon}
+                    textColor={props.whiteMode? 'black' : 'white'}
                 >
                     {props.title}
                 </Button>
@@ -78,7 +138,7 @@ export const ConfirmationButtons = (props) => {
                 onPress={props.onConfirmPress}
                 disabled={props.disabled}
                 style={[{marginLeft: 10}, styles.confirmationButton]}
-                
+                textColor='white'
             >
                 {props.confirmationText}
             </Button>
@@ -87,6 +147,7 @@ export const ConfirmationButtons = (props) => {
                 onPress={props.onCancelPress}
                 disabled={props.disabled}
                 style={[{ marginLeft: 10 }, styles.cancelButton]}
+                textColor='white'
             >
                 {props.cancelText}
             </Button>
@@ -94,31 +155,69 @@ export const ConfirmationButtons = (props) => {
     )
 }
 
-export const InputData = (props) => {
+export const InputData = React.forwardRef((props, ref) => {
     const [text, setText] = useState('');
+    const [textHidden, setTextHidden] = useState(true);
 
     const handleClear = () => {
         setText('');
         props.onChangeText('')
     }
 
+    const handleEyePress = () => {
+        setTextHidden(!textHidden);
+    }
+
+    const theme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            primary: '#21005D',
+        },
+    }
+
+    const warningTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            primary: 'red',
+        },
+    }
+
     return (
         <View style={props.style}>
             <TextInput
+                ref={ref}
+                theme={props.warningMode? warningTheme : theme}
+                fontStyle={text.length == 0 ? 'italic' : 'normal'}
                 mode='outlined'
                 placeholder={props.placeholder}
+                placeholderTextColor='grey'
                 onChangeText={(newText) => {
                     setText(newText);
                     props.onChangeText(newText)
                 }}
-                secureTextEntry={props.secureTextEntry}
+                onSubmitEditing={props.onSubmitEditing}
+                secureTextEntry={props.secureTextEntry && textHidden}
                 value={text}
-                right={<TextInput.Icon icon="close-circle-outline" onPress={handleClear} />}
+                selectionColor="grey"
+                autoCapitalize="none"
+                right={
+                    <TextInput.Icon 
+                        icon={props.secureTextEntry? 
+                            textHidden? "eye-outline" : "eye-off-outline"
+                            :
+                            "close-circle-outline"} 
+                        iconColor="black" 
+                        onPress={props.secureTextEntry? handleEyePress : handleClear}
+                    />
+                    // </TouchableWithoutFeedback>
+                }
                 style={styles.inputData}
             />
         </View>
     )
-}
+})
 
 export const DaysInput = (props) => {
     return (
@@ -178,14 +277,41 @@ export const TextBox = (props) => {
 }
 
 export const TextWithLink = (props) => {
+
+    const textDetailsStyle = props.notFixedWidth? styles.textDetailsNotFixedWidth : styles.textDetails;
+
     return (
-        <Text style={[styles.textDetails, props.style]}>
+        <Text style={[textDetailsStyle, props.style]}>
             {props.text + " "}
             <Text onPress={props.onPress} style={styles.textLinked}>
                 {props.linkedText}
             </Text>
         </Text>
 
+    )
+}
+
+export const TextWithLinkFlexible = (props) => {
+    return (
+        <Text style={[styles.textDetailsFlexible, props.style]}>
+            {props.text + " "}
+            <Text onPress={props.onPress} style={styles.textLinked}>
+                {props.linkedText}
+            </Text>
+        </Text>
+
+    )
+}
+
+export const TextLinked = (props) => {
+    return (
+        <Text 
+            onPress={props.onPress} 
+            style={[styles.textLinked, props.style]}
+            multiline={props.multiline}
+        >
+            {props.linkedText}
+        </Text>
     )
 }
 

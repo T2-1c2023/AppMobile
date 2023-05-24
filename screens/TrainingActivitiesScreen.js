@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text } from 'react-native';
-import { DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
+import { View, ScrollView } from 'react-native';
+import { DividerWithLeftText } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
-import { ConfirmationButtons, ButtonStandard } from '../src/styles/BaseComponents';
+import { ButtonStandard } from '../src/styles/BaseComponents';
 import ActivityList from '../src/components/ActivityList.js'
-
+// User information
+import { tokenManager } from '../src/TokenManager';
+import jwt_decode from 'jwt-decode';
+// Requests
+import Constants from 'expo-constants';
 import axios from 'axios';
 
 const MAX_ACTIVITIES = 20;
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingActivitiesScreen extends Component {
     constructor(props) {
@@ -16,19 +22,31 @@ export default class TrainingActivitiesScreen extends Component {
         this.refreshActivities = this.refreshActivities.bind(this)
         this.state = {
             activities: [],
+            trainerData: {},
+            trainingData: props.route.params.trainingData,
         }
     }
 
     componentDidMount() {
+        console.log("navigation state " + this);
+        const encoded_jwt = tokenManager.getAccessToken();
+        const trainerData = jwt_decode(encoded_jwt);
+        this.setState({ trainerData });
+
         this.refreshActivities();
     }
 
     handleContinuePress() {
-        alert("Continue pressed");
+        console.log(this.state.trainingData);
+        this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.trainingData, id:this.state.trainerData.id });
     }
 
     refreshActivities() {
-        axios.get('https://trainings-g6-1c-2023.onrender.com/trainings/1/activities')
+        axios.get(API_GATEWAY_URL + 'trainings/' + this.state.trainingData.id + '/activities', {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
             .then(response => {
                 const activities = response.data;
                 this.setState({ activities });
@@ -59,10 +77,12 @@ export default class TrainingActivitiesScreen extends Component {
                 <ActivityList
                     maxActivities={MAX_ACTIVITIES}
                     activities={this.state.activities}
+                    trainingId={this.state.trainingData.id}
                     onChange={this.refreshActivities}
                     style={{
                         marginTop: 5,
                     }}
+                    editionMode
                 />
 
                 <ButtonStandard
