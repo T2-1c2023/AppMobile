@@ -22,6 +22,7 @@ export default StyleSheet.create({
         backgroundColor: '#DED8E1',
         flex: 1,
         alignItems: 'center',
+        marginBottom: 20,
     },
     loginImage: {
         aspectRatio: 699/699, 
@@ -37,6 +38,12 @@ export default StyleSheet.create({
         textAlign: 'center',
         color: 'black',
     },
+
+    textProfileName: {
+        color: 'black',
+        fontWeight: 'bold',
+    },
+
     ImageLoginFingerPrint: {
         aspectRatio: 1/1, 
         maxWidth: 50,

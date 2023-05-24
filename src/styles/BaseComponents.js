@@ -20,6 +20,14 @@ export const TextSubheader = (props) => {
     )
 }
 
+export const TextProfileName = (props) => {
+    return (
+        <Text variant="titleLarge" style={[styles.textProfileName, props.style]}>
+            {props.body}
+        </Text>
+    )
+}
+
 export const TextDetails = (props) => {
     return (
         <View style={props.style}>
@@ -41,7 +49,7 @@ export const DividerWithMultipleTexts = (props) => {
       return props.texts.map((text, index) => (
         <React.Fragment key={index}>
           <Divider style={{ flex: 1, height: 1, backgroundColor: '#9D9D9D' }} />
-          <Text style={{ marginHorizontal: 10 }}>{text}</Text>
+          <Text style={{ marginHorizontal: 10, color: 'black'}}>{text}</Text>
         </React.Fragment>
       ));
     };
@@ -106,9 +114,10 @@ export const ButtonStandard = (props) => {
                         borderColor: 'black',
                         borderWidth : 1,
                         backgroundColor:
-                            props.whiteMode? 'white' : 
-                                props.warningTheme? '#8A1919' :
-                                    props.disabled? 'grey' : '#21005D'
+                            props.greyMode? 'grey' :
+                                props.whiteMode? 'white' : 
+                                    props.warningTheme? '#8A1919' :
+                                        props.disabled? 'grey' : '#21005D'
                     }}
                     disabled={props.disabled}
                     icon={props.icon}
@@ -296,7 +305,11 @@ export const TextWithLinkFlexible = (props) => {
 
 export const TextLinked = (props) => {
     return (
-        <Text onPress={props.onPress} style={[styles.textLinked, props.style]}>
+        <Text 
+            onPress={props.onPress} 
+            style={[styles.textLinked, props.style]}
+            multiline={props.multiline}
+        >
             {props.linkedText}
         </Text>
     )

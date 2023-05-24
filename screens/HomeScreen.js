@@ -6,11 +6,13 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // Screens 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
 import GoalsListScreen from './GoalsListScreen';
-import UserMainScreen from './UserMainScreen';
+import ProfileScreen from './ProfileScreen';
+import ProfileEditionScreen from './ProfileEditionScreen';
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
 import TrainingsListScreen from './TrainingsListScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
 
 import { IconButton } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -29,17 +31,12 @@ function Test() {
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            data: null
-        }
+        this.data = jwt_decode(tokenManager.getAccessToken())
+        
+        console.log(this.data)
     }
 
     componentDidMount() {
-        // Decode the token data for the first and only time
-        const encoded_jwt = tokenManager.getAccessToken();
-        const data = jwt_decode(encoded_jwt);
-        this.setState({ data: data });
-        console.log(data);
     }
 
     handleLogout = async () => {
@@ -101,7 +98,8 @@ class HomeScreen extends Component {
                         )
                     }}
                 >
-                    {() => <UserMainScreen data={this.state.data} navigation={this.props.navigation} />}
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
+                    {/* {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}*/}
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Metas"
@@ -113,7 +111,7 @@ class HomeScreen extends Component {
                         )
                     }}
                 >
-                    {() => <GoalsListScreen data={this.state.data} navigation={this.props.navigation} />}
+                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
 
                 <Drawer.Screen 
@@ -137,20 +135,9 @@ class HomeScreen extends Component {
                             ) : null
                     }}
                 >
-                    {() => <TrainingsListScreen data={this.state.data} navigation={this.props.navigation} />}
-                </Drawer.Screen>
-                
-                <Drawer.Screen name="Seguidos" 
-                    options={{
-                        drawerIcon: () => (
-                            <View style={styles.drawerIconContainer}>
-                                <FontAwesome name="users" size={20} color="black" />
-                            </View>
-                        )
-                    }}
-                    component={Test} 
-                />
+                    {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} />}
 
+                </Drawer.Screen>
             </Drawer.Navigator>
         );
     }
