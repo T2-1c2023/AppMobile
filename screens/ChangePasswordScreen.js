@@ -14,8 +14,11 @@ export default class ChangePasswordScreen extends Component {
         this.ConfirmPassTextInput = React.createRef()
         this.state = {
             currentPass: '',
+            currentPassHidden: true,
             newPass: '',
+            newPassHidden: true,
             confirmPass: '',
+            confirmPassHidden: true,
         }
     }
 
@@ -26,8 +29,18 @@ export default class ChangePasswordScreen extends Component {
         alert("contraseñas: " + this.state.confirmPass + ' ' + this.state.newPass + ' ' + this.state.currentPass)
     }
 
+    passWarningMode() {
+        return (
+            this.state.newPass.length < 8 && this.state.newPass.length > 0
+        )
+    }
+
     confirmPassIsValid() {
         return this.state.newPass === this.state.confirmPass
+    }
+
+    confirmPassWarningMode() {
+        return !this.confirmPassIsValid() && this.state.confirmPass !== ''
     }
 
     fieldsNotEmpty() {
@@ -47,21 +60,45 @@ export default class ChangePasswordScreen extends Component {
                     style={
                         textStyles.inputText
                     }
-                    secureTextEntry
+                    secureTextEntry = {this.state.currentPassHidden}
+                    right={
+                        <TextInput.Icon 
+                            icon={this.state.currentPassHidden? "eye-outline" : "eye-off-outline"}
+                            iconColor="black" 
+                            onPress={() => this.setState({ currentPassHidden: !this.state.currentPassHidden })}
+                        />
+                    }
                 />
                 <TextInput
                     ref={this.newPassTextInput}
                     label="Nueva contraseña"
-                    theme={textStyles.themeColors}
+                    theme={this.passWarningMode()? textStyles.themeErrorColors : textStyles.themeColors}
                     onChangeText={text => this.setState({ newPass: text })}
                     onSubmitEditing={() => this.ConfirmPassTextInput.current.focus()}
                     mode='flat'
                     style={
                         textStyles.inputText
                     }
-                    secureTextEntry
-                    
+                    secureTextEntry={this.state.newPassHidden}
+                    right={
+                        <TextInput.Icon 
+                            icon={this.state.newPassHidden? "eye-outline" : "eye-off-outline"}
+                            iconColor="black" 
+                            onPress={() => this.setState({ newPassHidden: !this.state.newPassHidden})}
+                        />
+                    }
                 />
+
+                { this.passWarningMode() &&
+                    <HelperText 
+                        type="error" 
+                        visible
+                        style={textStyles.helperText}
+                    >
+                        La contraseña debe ser más larga
+                    </HelperText>
+                }
+
                 <TextInput
                     ref={this.ConfirmPassTextInput}
                     label="Confirmar contraseña"
@@ -70,28 +107,35 @@ export default class ChangePasswordScreen extends Component {
                         : 
                         textStyles.themeErrorColors
                     }
-                    // theme={true?
-                    // theme={false?
                         
                     onChangeText={text => this.setState({ confirmPass: text })}
                     mode='flat'
                     style={
                         textStyles.inputText
                     }
-                    secureTextEntry
+                    secureTextEntry = {this.state.confirmPassHidden}
+                    right={
+                        <TextInput.Icon 
+                            icon={this.state.confirmPassHidden? "eye-outline" : "eye-off-outline"}
+                            iconColor="black" 
+                            onPress={() => this.setState({ confirmPassHidden: !this.state.confirmPassHidden })}
+                        />
+                    }
                 />
-                <HelperText 
-                    type="error" 
-                    visible={!this.confirmPassIsValid() && this.state.confirmPass !== ''}
-                    style={textStyles.helperText}
-                >
-                    La nueva contraseña no coincide
-                </HelperText>
+                {this.confirmPassWarningMode() && 
+                    <HelperText 
+                        type="error" 
+                        visible
+                        style={textStyles.helperText}
+                    >
+                        La nueva contraseña no coincide
+                    </HelperText>
+                }
                 
                 <ButtonStandard 
                     onPress={this.handleChangePasswordPress}
                     title="Cambiar contraseña"
-                    disabled={!this.confirmPassIsValid() || !this.fieldsNotEmpty()}
+                    disabled={this.confirmPassWarningMode() || !this.fieldsNotEmpty() || this.passWarningMode()}
                     style={{
                         marginTop: 100,
                     }}
@@ -117,22 +161,23 @@ const textStyles = StyleSheet.create({
 
     themeColors: {
         colors: { 
-            //placeholder unfocus (grande y chiquito)
+            //placeholder unfocus (big and small)
             onSurfaceVariant: 'black',
             
             //underline unfocus
             onSurface: 'black',
 
-            //underline y titulo focus
+            //underline and title focus
             primary: '#21005D',        
-        } 
+        }
     },
 
     themeErrorColors: {
         colors: { 
-            primary: 'red', 
+            onSurfaceVariant: 'black',
             onSurface: 'red', 
-            onSurfaceVariant: 'grey'}
+            primary: 'red', 
+        }
     },
 })
 

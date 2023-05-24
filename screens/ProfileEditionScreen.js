@@ -22,10 +22,13 @@ const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 export default class ProfileEditionScreen extends Component {
     constructor(props) {
         super(props);
+        this.nameEmpty = this.nameEmpty.bind(this);
+        this.invalidPhone = this.invalidPhone.bind(this);
 
         this.state = {
             profilePic: require('../assets/images/user_predet_image.png'),
-            fullname: '',
+            fullname: 'placeholder name',
+            phone: 'placeholder phone number',
         }
     }
 
@@ -49,34 +52,84 @@ export default class ProfileEditionScreen extends Component {
         )
     }
 
-    renderInputField() {
+    nameEmpty() {
+        return this.state.fullname == '';
+    }
+
+    invalidPhone() {
+        return this.state.phone == '';
+    }
+
+    renderNameField() {
         return (
             <React.Fragment>
                 <TextInput
-                    label="Nombre y apellido"
-                    // theme={true?
-                    //     { colors: { primary: '#21005D', placeholder: 'black', underlineColor: 'black', text: 'black',}}
-                    //     : 
-                    //     { colors: { primary: 'red'}}}
+                    label={'Nombre y apellido'}
                     onChangeText={fullname => this.setState({ fullname })}
-                    theme={{ colors: { onSurfaceVariant: 'grey'} }}
-                    underlineColor={'black'}
-                    textColor={'black'}
-                    activeOutlineColor={'black'}
-                    outlineColor={'black'}
-                    activeUnderlineColor={'black'}
-                    selectionColor={'black'}
-
+                    theme={this.nameEmpty()? editionStyles.themeErrorColors : editionStyles.themeColors}
+                    value={this.state.fullname}
                     mode='flat'
                     style={editionStyles.inputText}
                 />
-                <HelperText 
-                    type="error" 
-                    visible={true}
-                    style={editionStyles.helperText}
-                >
-                    La nueva contraseña no coincide
-                </HelperText>
+                {this.nameEmpty() &&
+                    <HelperText 
+                        type="error" 
+                        visible
+                        style={editionStyles.helperText}
+                    >
+                        El nombre no puede estar vacío
+                    </HelperText>
+                }
+            </React.Fragment>
+        )
+    }
+
+    renderPhoneField() {
+        return (
+            <React.Fragment>
+                <TextInput
+                    label={'Teléfono'}
+                    keyboardType='numeric'
+                    onChangeText={phone => this.setState({ phone })}
+                    theme={this.invalidPhone()? editionStyles.themeErrorColors : editionStyles.themeColors}
+                    value={this.state.phone}
+                    mode='flat'
+                    style={editionStyles.inputText}
+                />
+                {this.invalidPhone() &&
+                    <HelperText 
+                        type="error" 
+                        visible
+                        style={editionStyles.helperText}
+                    >
+                        El teléfono no puede estar vacío
+                    </HelperText>
+                }
+            </React.Fragment>
+        )
+    }
+
+    onPressChangePassword() {
+        console.log('TODO: change password');
+    }
+
+    onPressEnrollFingerprint() {
+        console.log('TODO: enroll fingerprint');
+    }
+
+    renderLinks() {
+        return (
+            <React.Fragment>
+                <TextLinked
+                    linkedText={'Cambiar contraseña'}
+                    onPress={this.onPressChangePassword}
+                    style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 50}}
+                />
+                <TextLinked
+                    linkedText={'Enrollar huella'}
+                    onPress={this.onPressEnrollFingerprint}
+                    style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 30}}
+                />
             </React.Fragment>
         )
     }
@@ -89,10 +142,18 @@ export default class ProfileEditionScreen extends Component {
             >
                 <View style={styles.container}>
                     {this.renderHeader()}
-                    {this.renderInputField()}
+                    {this.renderNameField()}
+
+                    {/* TODO: reemplazar por input de nueva ubicación */}
+                    <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
+                    
+                    {this.renderPhoneField()}
+                    <View style={editionStyles.divider} />
+
+                    {this.renderLinks()}
                 </View>
             </ScrollView>
-        );
+        )
     }
 }
 
@@ -102,7 +163,6 @@ const editionStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'green',
         marginTop: 10,
     },
 
@@ -141,7 +201,35 @@ const editionStyles = StyleSheet.create({
         alignSelf: 'flex-start',
         marginLeft: 15,
         color: 'red',
-    }
+    },
+
+    themeColors: {
+        colors: { 
+            //placeholder unfocus (big and small)
+            onSurfaceVariant: 'black',
+            
+            //underline unfocus
+            onSurface: 'black',
+
+            //underline and title focus
+            primary: '#21005D',        
+        }
+    },
+
+    themeErrorColors: {
+        colors: { 
+            onSurfaceVariant: 'black',
+            onSurface: 'red', 
+            primary: 'red', 
+        }
+    },
+
+    divider: { 
+        width: '100%', 
+        height: 1, 
+        backgroundColor: 'grey',
+        marginTop: 50, 
+    },
 });
 
 

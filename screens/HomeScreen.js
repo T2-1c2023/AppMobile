@@ -81,8 +81,7 @@ class HomeScreen extends Component {
             <Drawer.Navigator drawerContent={this.CustomDrawerContent} initialRouteName="Mi Perfil">
                 <Drawer.Screen name="Mi Perfil">
                     {/* {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>} */}
-                    {/* {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>} */}
-                    {() => <ChangePasswordScreen/>}
+                    {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}
                 </Drawer.Screen>
                 <Drawer.Screen name="Metas">
                     {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
