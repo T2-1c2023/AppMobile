@@ -44,29 +44,59 @@ export default class TrainingsListScreen extends Component {
         ]
         this.token = tokenManager.getAccessToken()
         this.type = ''
+        this.data = ''
     }
 
     getType() {
-        if (this.props.route !== undefined) {   //vengo de la ventana de entrenamientos suscriptos, ahora recibo todos
-            this.type = Type.All;
-        } else {    //vengo de la barra lateral
-            switch(this.props.type) {
-                case 'created':
-                    console.log('created')
-                    this.type = Type.Created;
-                    break;
-                case 'enrolled':
-                    console.log('enrolled')
-                    this.type = Type.Enrolled;
-                    break;
-                case 'favorites':
-                    console.log('favorites')
-                    this.type = Type.Favourites;
-                    break;
-                default:
-                    console.log('Tipo incorrecto');
-                    break;
-            }
+        let type;
+        let data;
+        if (this.props.route !== undefined) {
+            type = this.props.route.params.type;
+            data = this.props.route.params.data;
+        } else {
+            type = this.props.type;
+            data = this.props.data;
+        }
+        this.data = data;
+        switch(type) {
+            case 'all':
+                this.type = Type.All
+                break;
+            case 'created':
+                console.log('created')
+                this.type = Type.Created;
+                this.props.navigation.setOptions({
+                    headerRight: () => (
+                        <IconButton
+                            icon={'plus'}
+                            iconColor='#21005D'
+                            size={30}
+                            onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })}
+                        />
+                    ),
+                })
+                break;
+            case 'enrolled':
+                console.log('enrolled')
+                this.type = Type.Enrolled;
+                this.props.navigation.setOptions({
+                    headerRight: () => (
+                        <IconButton
+                            icon={'plus'}
+                            iconColor='#21005D'
+                            size={30}
+                            onPress={() => {this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'});this.forceUpdate();}}
+                        />
+                    ),
+                })
+                break;
+            case 'favorites':
+                console.log('favorites')
+                this.type = Type.Favourites;
+                break;
+            default:
+                console.log('Tipo incorrecto');
+                break;
         }
     }
 
@@ -75,11 +105,6 @@ export default class TrainingsListScreen extends Component {
         this.refreshActivities();
         this.refreshTrainingsTypes();
         
-        
-            
-
-        
-        // reemplazar true por consulta al token o al contexto sobre si el usuario es trainer y sobre si 
         trainingCreationAvailable = jwt_decode(this.token).is_trainer;
     }
 
@@ -141,11 +166,11 @@ export default class TrainingsListScreen extends Component {
                 params = {trainer_id: decodedToken.id}
                 break;
             case Type.Enrolled:
-                url += 'athletes/' + this.props.data.id + '/subscriptions'
+                url += 'athletes/' + this.data.id + '/subscriptions'
                 params = {blocked: false}
                 break;
             case Type.Favourites:
-                url += 'athletes/' + this.props.data.id + '/favorites'
+                url += 'athletes/' + this.data.id + '/favorites'
                 params = {blocked: false}
                 break;
         }

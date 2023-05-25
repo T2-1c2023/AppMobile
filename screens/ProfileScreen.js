@@ -94,11 +94,11 @@ export default class ProfileScreen extends Component {
     }
 
     onPressCreatedTrainings() {
-        console.log('Created trainings pressed');
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created'})
     }
     
     onPressSubscribedTrainings() {
-        console.log('Subscribed trainings pressed');
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled'})
     }
     
     onPressCurrentGoals() {
