@@ -37,8 +37,11 @@ export default class TrainingActivitiesScreen extends Component {
     }
 
     handleContinuePress() {
-        console.log(this.state.trainingData);
-        this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.trainingData, id:this.state.trainerData.id });
+        console.log("this.state.trainingData " + JSON.stringify(this.state.trainingData));
+        this.props.route.params.from === 'TrainingScreen'
+        ? this.props.navigation.navigate('TrainingScreen', { userData: jwt_decode(tokenManager.getAccessToken()), token:tokenManager.getAccessToken(), trainingId: this.state.trainingData.id })
+        : this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.trainingData, id:this.state.trainerData.id });
+        
     }
 
     refreshActivities() {
