@@ -8,11 +8,13 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import GoalsListScreen from './GoalsListScreen';
 import ProfileScreen from './ProfileScreen';
 import ProfileEditionScreen from './ProfileEditionScreen';
+import TrainingsListScreen from './TrainingsListScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
-import TrainingsListScreen from './TrainingsListScreen';
-import ChangePasswordScreen from './ChangePasswordScreen';
+
+
 
 import { IconButton } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -34,11 +36,6 @@ class HomeScreen extends Component {
     constructor(props) {
         super(props)
         this.data = jwt_decode(tokenManager.getAccessToken())
-        
-        console.log(this.data)
-    }
-
-    componentDidMount() {
     }
 
     handleLogout = async () => {
@@ -74,19 +71,6 @@ class HomeScreen extends Component {
         )
     }
 
-    // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
-
-    // TODO: mostrar de mejor forma que tipo de usuario sos
-
-    /*
-        TODO:
-        nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
-
-        Botón de ver perfiles (WIP)
-    */
-
-    // TODO: (no prioritario) mejorar visualmente el sidebar https://www.youtube.com/watch?v=M4WNSjTWFDo
-
     render() {
         return (
             <Drawer.Navigator 
@@ -113,14 +97,14 @@ class HomeScreen extends Component {
                         <IconButton
                             icon="pencil"
                             iconColor="black"
-                            size={30}
+                            size={25}
                             onPress={() => 
-                                this.props.navigation.navigate('ProfileEditionScreen', { tokenData: tokenManager.getAccessToken(), data: jwt_decode(tokenManager.getAccessToken()) })//TO_DO un solo acceso a tokenmanager
+                                this.props.navigation.navigate('ProfileEditionScreen', { data: this.data })
                             }
                         />
                     }}
                 >
-                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Metas"
