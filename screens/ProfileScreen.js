@@ -102,7 +102,7 @@ export default class ProfileScreen extends Component {
     }
     
     onPressCurrentGoals() {
-        console.log('Current goals pressed');
+        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken())})
     }
     
     onPressCompletedGoals() {

@@ -19,6 +19,7 @@ export default class GoalsListScreen extends Component {
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
+        this.getTokenData = this.getTokenData.bind(this)
         this.state = {
             loading: true,
             title: '',
@@ -28,6 +29,11 @@ export default class GoalsListScreen extends Component {
             goals: [],
             selectedGoalsIds: [],
         }
+        this.tokenData = ''
+    }
+
+    getTokenData() {
+        this.tokenData = this.props.route !== undefined ? this.props.route.params.data : this.props.data
     }
 
     handleSelection(goal_id) {  //TO_DO ver si se puede quitar esta función
@@ -49,16 +55,16 @@ export default class GoalsListScreen extends Component {
 
     fetchData = async () => {
 
-        console.log("data " + JSON.stringify(this.props.data));
+        console.log("data " + JSON.stringify(this.tokenData));
         let endpoint;
-        if (this.props.data.is_trainer) {   //TO_DO qué pasa si alguno es entrenador y atleta?
+        if (this.tokenData.is_trainer) {   //TO_DO qué pasa si alguno es entrenador y atleta?
             endpoint = 'trainers/'
-        } else if (this.props.data.is_athlete) {
+        } else if (this.tokenData.is_athlete) {
             endpoint = 'athletes/'
         }
-        console.log(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals")
+        console.log(API_GATEWAY_URL + endpoint + this.tokenData.id + "/goals")
         console.log(tokenManager.getAccessToken());
-        await axios.get(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals", {
+        await axios.get(API_GATEWAY_URL + endpoint + this.tokenData.id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             },
@@ -79,13 +85,14 @@ export default class GoalsListScreen extends Component {
     }
 
     componentDidMount() {
+        this.getTokenData();
         this.fetchData();
         // TODO: averiguar como hacer para que se reinicie siempre que vuelva el foco a esta pantalla
     }
 
     handleSearch (queryText) {
-        console.log(API_GATEWAY_URL + "trainers/" + this.props.data.id +"/goals");
-        axios.get(API_GATEWAY_URL + "trainers/" + this.props.data.id +"/goals", {
+        console.log(API_GATEWAY_URL + "trainers/" + this.tokenData.id +"/goals");
+        axios.get(API_GATEWAY_URL + "trainers/" + this.tokenData.id +"/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
@@ -116,7 +123,7 @@ export default class GoalsListScreen extends Component {
                 
                 <SearchInputWithIcon
                     onIconPress={
-                        () => this.props.navigation.navigate('GoalScreen', { data: this.props.data })
+                        () => this.props.navigation.navigate('GoalScreen', { data: this.tokenData })
                     }
                     onSubmit={this.handleSearch}
                     placeholder="Buscar por título"
