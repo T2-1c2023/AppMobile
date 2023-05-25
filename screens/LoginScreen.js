@@ -184,7 +184,7 @@ export default class LoginScreen extends Component {
                     <TextWithLink
                         text="¿No tienes cuenta?"
                         linkedText="Registrate"
-                        onPress={() => this.props.navigation.replace('ProfileSelectionScreen')}
+                        onPress={() => this.props.navigation.navigate('ProfileSelectionScreen')}
                         style={{
                             marginTop: 10,
                         }}
