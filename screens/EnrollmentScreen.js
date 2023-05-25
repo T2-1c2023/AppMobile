@@ -18,7 +18,8 @@ export default class EnrollmentScreen extends Component {
             cancelLabel: 'Cancelar',
             disableDeviceFallback: true,
         })
-
+        
+        this.props.route.navigation.navigate('LoginScreen')
 
 
         success ? console.log('Autenticación exitosa') : console.log('Autenticación fallida')

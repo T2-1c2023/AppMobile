@@ -57,20 +57,19 @@ export default class NewTrainingScreen extends Component {
             "severity": this.levelStrToInt(this.state.level),
         }
         console.log(body);
-        await axios.post(API_GATEWAY_URL + 'trainings', body, {
+        
+        try {
+            const response = await axios.post(API_GATEWAY_URL + 'trainings', body, {
                 headers: {
                     Authorization: tokenManager.getAccessToken()
                 }
-            })
-            .then(async (response) => {
-                if (response.status === 201) {
-                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId } });
-                }
-            })
-            .catch((error) => {
-                this.handleNewTrainingError(error);
+            })    
+            if (response.status === 201) {
+                this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId } });
             }
-        );
+        } catch (error) {
+            this.handleNewTrainingError(error);
+        }
     }
 
     handleCancelPress = async () => {

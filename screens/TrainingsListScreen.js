@@ -45,12 +45,16 @@ export default class TrainingsListScreen extends Component {
         this.token = tokenManager.getAccessToken()
         this.type = ''
         this.data = ''
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.refreshActivities();
+        });
     }
 
     getType() {
         let type;
         let data;
         if (this.props.route !== undefined) {
+            console.log('route')
             type = this.props.route.params.type;
             data = this.props.route.params.data;
         } else {
@@ -69,7 +73,7 @@ export default class TrainingsListScreen extends Component {
                     headerRight: () => (
                         <IconButton
                             icon={'plus'}
-                            iconColor='#21005D'
+                            iconColor='black'
                             size={30}
                             onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })}
                         />

@@ -28,6 +28,9 @@ export default class GoalsTrainingsListScreen extends Component {
             goals: [],
             selectedGoalsIds: [],
         }
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.fetchData();
+        });
     }
 
     handleSelection(goal_id) {

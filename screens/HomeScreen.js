@@ -135,17 +135,6 @@ class HomeScreen extends Component {
                                     <FontAwesome5 name="dumbbell" size={16} color="black" />
                                 </View>
                             ),
-                            /*headerRight: () =>
-                                TO_DO ? (
-                                    <IconButton
-                                        icon="plus"
-                                        color="black"
-                                        size={30}
-                                        onPress={() => 
-                                            this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken() })
-                                        }
-                                    />
-                                ) : null*/
                         }}
                     >
                         {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' />}
@@ -162,15 +151,6 @@ class HomeScreen extends Component {
                                     <FontAwesome5 name="dumbbell" size={16} color="black" />
                                 </View>
                             ),
-                            headerRight: () =>
-                                <IconButton
-                                    icon="plus"
-                                    color="black"
-                                    size={30}
-                                    onPress={() => 
-                                        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})
-                                    }
-                                />
                         }}
                     >
                         {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} />}
@@ -190,7 +170,7 @@ class HomeScreen extends Component {
                             headerRight: () =>
                                 <IconButton
                                     icon="plus"
-                                    color="black"
+                                    iconColor="black"
                                     size={30}
                                     onPress={() => 
                                         this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })
