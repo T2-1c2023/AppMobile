@@ -74,8 +74,8 @@ export default class ProfileScreen extends Component {
         const response = await axios.get(url, this.emptyBodyWithToken)
 
         const photo_id = response.data.photo_id
-        const imageUrl = await downloadImage(photo_id);
-        if (imageUrl) {
+        if (photo_id) {
+            const imageUrl = await downloadImage(photo_id);
             this.setState({ profilePic: { uri: imageUrl } });
         }
 

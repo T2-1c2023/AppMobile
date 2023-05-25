@@ -13,6 +13,7 @@ export default class LoginScreen extends Component {
     constructor(props) {
         super(props)
         this.handleLogin = this.handleLogin.bind(this);
+        this.onPressRegister = this.onPressRegister.bind(this);
 
         this.state = {
             loading: true,
@@ -71,13 +72,16 @@ export default class LoginScreen extends Component {
     }
 
     navigateToEnrollmentScreen = () => {
-        this.props.navigation.navigate('EnrollmentScreen');
+        this.props.navigation.replace('EnrollmentScreen');
     }
 
     alreadyLogged() {
         return tokenManager.getAccessToken() != null
     }
 
+    onPressRegister() {
+        this.props.navigation.replace('ProfileSelectionScreen')
+    }
 
 
     render() {
@@ -96,7 +100,11 @@ export default class LoginScreen extends Component {
                     style={styles.scrollView}
                 >
                 <View style={styles.container}>
-                    <LoginImage />
+                    <LoginImage
+                        style={{
+                            marginTop: 30,
+                        }}
+                    />
 
                     <TextHeader
                         body="Bienvenido"
@@ -184,9 +192,9 @@ export default class LoginScreen extends Component {
                     <TextWithLink
                         text="¿No tienes cuenta?"
                         linkedText="Registrate"
-                        onPress={() => this.props.navigation.navigate('ProfileSelectionScreen')}
+                        onPress={this.onPressRegister}
                         style={{
-                            marginTop: 10,
+                            marginTop: 30,
                         }}
                     />
                 </View>

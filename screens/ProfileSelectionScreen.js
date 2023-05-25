@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import ProfileInput from '../src/components/ProfileInput';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage, TextDetails } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
-
 
 export default class ProfileSelectionScreen extends Component {
     constructor(props) {
@@ -28,8 +27,17 @@ export default class ProfileSelectionScreen extends Component {
 
     render() {
         return (
+            <ScrollView 
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps='handled'
+                style={styles.scrollView}
+            >
             <View style={styles.container}>
-                <LoginImage />
+                <LoginImage 
+                    style={{
+                        marginTop: 30,
+                    }}
+                />
 
                 <TextHeader
                     body="Empecemos"
@@ -61,7 +69,9 @@ export default class ProfileSelectionScreen extends Component {
                 />
 
                 {this.state.showError && (
-                    <Text style={styles.error}>Seleccione por lo menos una de las opciones</Text>
+                    <Text style={styles.error}>
+                        Selecciona por lo menos una de las opciones
+                    </Text>
                 )}
 
                 <ButtonStandard
@@ -71,7 +81,19 @@ export default class ProfileSelectionScreen extends Component {
                         marginTop: 50,
                     }}
                 />
+
+                <TextWithLink
+                    text="¿Ya tienes cuenta?"
+                    linkedText="Inicia sesión"
+                    onPress={() => 
+                        this.props.navigation.replace('LoginScreen')
+                    }
+                    style={{
+                        marginTop: 30,
+                    }}
+                />
             </View>
+            </ScrollView>
         )
     }
 }

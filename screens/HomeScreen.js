@@ -18,6 +18,8 @@ import { IconButton } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 
+import { CommonActions } from '@react-navigation/native';
+
 const Drawer = createDrawerNavigator();
 
 function Test() {
@@ -45,7 +47,18 @@ class HomeScreen extends Component {
             await GoogleSignin.signOut();
         }
         await tokenManager.unloadTokens()
-        this.props.navigation.replace('LoginScreen')
+        // this.props.navigation.replace('LoginScreen')
+
+
+        this.props.navigation.dispatch(
+            // Reset del navigation stack para que no se muestre 
+            // el botón de 'go back' a profile selection screen.
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'LoginScreen' }]
+            })
+        )
+
     }
 
     // So that 'Cerrar Sesión' drawer functions as button

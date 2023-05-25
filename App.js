@@ -60,7 +60,8 @@ export default class App extends Component {
               headerStyle: {
                 backgroundColor: '#CCC2DC',
               },
-              headerTitleAlign: 'center'
+              headerTitleAlign: 'center',
+              // headerShown: false
             }}
           >
             <Stack.Screen

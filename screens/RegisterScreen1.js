@@ -131,7 +131,11 @@ export default class RegisterScreen1 extends Component {
                     style={styles.scrollView}
                 >
                 <View style={styles.container}>
-                    <LoginImage />
+                    <LoginImage 
+                        style={{
+                            marginTop: 30,
+                        }}
+                    />
 
                     <TextHeader 
                         body="Ingresa tus datos"
@@ -281,8 +285,7 @@ export default class RegisterScreen1 extends Component {
                             )
                         }
                         style={{
-                            marginTop: 10,
-                            marginBottom: 20,
+                            marginTop: 30,
                         }}
                     />
 
