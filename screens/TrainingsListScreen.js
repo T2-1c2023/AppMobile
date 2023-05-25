@@ -17,6 +17,8 @@ import jwt_decode from 'jwt-decode';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
+const Type = { Favourites: 0, Enrolled: 1, All: 2, Created: 3};
+
 export default class TrainingsListScreen extends Component {
     constructor(props) {
         super(props)
@@ -24,6 +26,7 @@ export default class TrainingsListScreen extends Component {
         this.handleFilterPress = this.handleFilterPress.bind(this)
         this.handleSetFilters = this.handleSetFilters.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
+        this.getType = this.getType.bind(this)
         this.state = {
             trainings: [],
             filteredTypeKeySelected: 0,
@@ -40,11 +43,40 @@ export default class TrainingsListScreen extends Component {
             {"key": 3, "value": "Avanzado"},
         ]
         this.token = tokenManager.getAccessToken()
+        this.type = ''
+    }
+
+    getType() {
+        if (this.props.route !== undefined) {   //vengo de la ventana de entrenamientos suscriptos, ahora recibo todos
+            this.type = Type.All;
+        } else {    //vengo de la barra lateral
+            switch(this.props.type) {
+                case 'created':
+                    console.log('created')
+                    this.type = Type.Created;
+                    break;
+                case 'enrolled':
+                    console.log('enrolled')
+                    this.type = Type.Enrolled;
+                    break;
+                case 'favorites':
+                    console.log('favorites')
+                    this.type = Type.Favourites;
+                    break;
+                default:
+                    console.log('Tipo incorrecto');
+                    break;
+            }
+        }
     }
 
     componentDidMount() {
+        this.getType()
         this.refreshActivities();
         this.refreshTrainingsTypes();
+        
+        
+            
 
         
         // reemplazar true por consulta al token o al contexto sobre si el usuario es trainer y sobre si 
@@ -74,7 +106,7 @@ export default class TrainingsListScreen extends Component {
                     this.setState({ trainings });
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    console.log("handlesetfilters " + error);
                 });
             }
         )
@@ -98,8 +130,26 @@ export default class TrainingsListScreen extends Component {
     refreshActivities() {
         console.log("refresh activities");
         const decodedToken = jwt_decode(this.token);
-        const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
-        axios.get(API_GATEWAY_URL + 'trainings/', {
+        let url = API_GATEWAY_URL
+        switch(this.type) {
+            case Type.All:
+                url += 'trainings';
+                params = {blocked: false}
+                break;
+            case Type.Created:
+                url += 'trainings'
+                params = {trainer_id: decodedToken.id}
+                break;
+            case Type.Enrolled:
+                url += 'athletes/' + this.props.data.id + '/subscriptions'
+                params = {blocked: false}
+                break;
+            case Type.Favourites:
+                url += 'athletes/' + this.props.data.id + '/favorites'
+                params = {blocked: false}
+                break;
+        }
+        axios.get(url, {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             },             
@@ -111,7 +161,7 @@ export default class TrainingsListScreen extends Component {
                 this.setState({ trainings });
             })
             .catch(function (error) {
-                console.log(error);
+                console.log("refreshActivities " + error);
             });
     }
 
@@ -129,7 +179,7 @@ export default class TrainingsListScreen extends Component {
                 this.setState({ trainingTypes });
             })
             .catch(function (error) {
-                console.log(error);
+                console.log("refreshTrainingsTypes" + error);
             })
     }
 

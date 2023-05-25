@@ -57,6 +57,7 @@ export default class GoalsListScreen extends Component {
             endpoint = 'athletes/'
         }
         console.log(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals")
+        console.log(tokenManager.getAccessToken());
         await axios.get(API_GATEWAY_URL + endpoint + this.props.data.id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()

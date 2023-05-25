@@ -99,7 +99,6 @@ class HomeScreen extends Component {
                     }}
                 >
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
-                    {/* {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}*/}
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Metas"
@@ -114,16 +113,68 @@ class HomeScreen extends Component {
                     {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
                 </Drawer.Screen>
 
-                <Drawer.Screen 
-                    name="Entrenamientos"
-                    options={{
-                        drawerIcon: () => (
-                            <View style={styles.drawerIconContainer}>
-                                <FontAwesome5 name="dumbbell" size={16} color="black" />
-                            </View>
-                        ),
-                        headerRight: () =>
-                            this.state.data.is_trainer ? (
+                {this.data.is_athlete ? 
+                    <Drawer.Screen 
+                        name="Entrenamientos favoritos" //TO_DO
+                        options={{
+                            drawerIcon: () => (
+                                <View style={styles.drawerIconContainer}>
+                                    <FontAwesome5 name="dumbbell" size={16} color="black" />
+                                </View>
+                            ),
+                            /*headerRight: () =>
+                                TO_DO ? (
+                                    <IconButton
+                                        icon="plus"
+                                        color="black"
+                                        size={30}
+                                        onPress={() => 
+                                            this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken() })
+                                        }
+                                    />
+                                ) : null*/
+                        }}
+                    >
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' />}
+
+                    </Drawer.Screen>
+                : null}
+
+                {this.data.is_athlete ? 
+                    <Drawer.Screen 
+                        name="Entrenamientos suscriptos"
+                        options={{
+                            drawerIcon: () => (
+                                <View style={styles.drawerIconContainer}>
+                                    <FontAwesome5 name="dumbbell" size={16} color="black" />
+                                </View>
+                            ),
+                            headerRight: () =>
+                                <IconButton
+                                    icon="plus"
+                                    color="black"
+                                    size={30}
+                                    onPress={() => 
+                                        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})
+                                    }
+                                />
+                        }}
+                    >
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} />}
+
+                    </Drawer.Screen>
+                : null }
+
+                {this.data.is_trainer ? 
+                    <Drawer.Screen 
+                        name="Entrenamientos creados"
+                        options={{
+                            drawerIcon: () => (
+                                <View style={styles.drawerIconContainer}>
+                                    <FontAwesome5 name="dumbbell" size={16} color="black" />
+                                </View>
+                            ),
+                            headerRight: () =>
                                 <IconButton
                                     icon="plus"
                                     color="black"
@@ -132,12 +183,12 @@ class HomeScreen extends Component {
                                         this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })
                                     }
                                 />
-                            ) : null
-                    }}
-                >
-                    {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} />}
+                        }}
+                    >
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'created'} />}
 
-                </Drawer.Screen>
+                    </Drawer.Screen>
+                : null}
             </Drawer.Navigator>
         );
     }
