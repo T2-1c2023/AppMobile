@@ -77,7 +77,7 @@ export default class GoalsListScreen extends Component {
             console.log(response.data);
         }) 
         .catch((error) => {
-            console.error(error);
+            console.error("fetchData " + error);
         })
         
 
@@ -104,7 +104,7 @@ export default class GoalsListScreen extends Component {
                 this.setState({ goals: filteredGoals })
             })
             .catch(function (error) {
-                console.log(error);
+                console.log("handleSearch " + error);
             });
 
             

@@ -30,14 +30,14 @@ export default class ProfileScreen extends Component {
         this.onPressUnfollow = this.onPressUnfollow.bind(this);
         this.onPressSendMessage = this.onPressSendMessage.bind(this);
         
-        const data = props.data;
+        const data = this.props.route !== undefined ? this.props.route.params.data : this.props.data
 
         this.emptyBodyWithToken = { headers: {
             Authorization: tokenManager.getAccessToken()
         }}
 
         // owner defines if the profile is the user's or another user's
-        this.owner = props.owner
+        this.owner = this.props.route !== undefined ? this.props.route.params.owner : this.props.owner
 
         // variables estaticas (se pueden sacar del token o data)
         this.id = data.id
@@ -60,6 +60,10 @@ export default class ProfileScreen extends Component {
             // TODO: quitar hardcodeo
             following: false,
         }
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.loadInterests();
+            this.loadUserInfo();
+        });
     }
 
     async loadInterests() {

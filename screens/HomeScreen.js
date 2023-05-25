@@ -109,15 +109,15 @@ class HomeScreen extends Component {
                                 <FontAwesome name="user-circle-o" size={20} color="black" />
                             </View>
                         ),
-                        /*headerRight: () =>
+                        headerRight: () =>
                         <IconButton
                             icon="pencil"
                             iconColor="black"
                             size={30}
                             onPress={() => 
-                                this.props.navigation.navigate('ProfileEditionScreen', { trainerData: tokenManager.getAccessToken() })//TO_DO ir a profileeditionscreen
+                                this.props.navigation.navigate('ProfileEditionScreen', { tokenData: tokenManager.getAccessToken(), data: jwt_decode(tokenManager.getAccessToken()) })//TO_DO un solo acceso a tokenmanager
                             }
-                        />*/
+                        />
                     }}
                 >
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
