@@ -27,6 +27,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 
+// Chat Test (borrar)
+import ChatTest from './screens/ChatTest';
+
 const Stack = createNativeStackNavigator();
 
 export default class App extends Component {
@@ -55,7 +58,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}
+          <Stack.Navigator initialRouteName={"ChatTest"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -63,6 +66,10 @@ export default class App extends Component {
               headerTitleAlign: 'center'
             }}
           >
+            <Stack.Screen 
+              name='ChatTest'
+              component={ChatTest}
+            />
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}

@@ -33,7 +33,7 @@ class HomeScreen extends Component {
         super(props)
         this.data = jwt_decode(tokenManager.getAccessToken())
         
-        console.log(this.data)
+        //console.log(this.data)
     }
 
     componentDidMount() {
@@ -61,19 +61,6 @@ class HomeScreen extends Component {
         )
     }
 
-    // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
-
-    // TODO: mostrar de mejor forma que tipo de usuario sos
-
-    /*
-        TODO:
-        nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
-
-        Botón de ver perfiles (WIP)
-    */
-
-    // TODO: (no prioritario) mejorar visualmente el sidebar https://www.youtube.com/watch?v=M4WNSjTWFDo
-
     render() {
         return (
             <Drawer.Navigator 
@@ -98,7 +85,7 @@ class HomeScreen extends Component {
                         )
                     }}
                 >
-                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                     {/* {() => <ProfileEditionScreen data={this.data} navigation={this.props.navigation}/>}*/}
                 </Drawer.Screen>
 
@@ -123,7 +110,7 @@ class HomeScreen extends Component {
                             </View>
                         ),
                         headerRight: () =>
-                            this.state.data.is_trainer ? (
+                            this.data.is_trainer ? (
                                 <IconButton
                                     icon="plus"
                                     color="black"
