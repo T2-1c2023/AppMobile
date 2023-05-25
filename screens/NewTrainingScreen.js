@@ -21,7 +21,7 @@ export default class NewTrainingScreen extends Component {
             trainingTypes: {},
             title: '',
             description: '',
-            trainingTypeId: '',
+            trainingTypeId: 0,
             level: 'basic',
             trainerId: jwt_decode(this.props.route.params.trainerData).id
         }
@@ -57,6 +57,7 @@ export default class NewTrainingScreen extends Component {
             "severity": this.levelStrToInt(this.state.level),
         }
         console.log(body);
+        console.log(API_GATEWAY_URL + 'trainings')
         
         try {
             const response = await axios.post(API_GATEWAY_URL + 'trainings', body, {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { TextHeader, TextDetails, ButtonStandard, InputData, LoginImage } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import axios from 'axios';
@@ -38,42 +38,48 @@ export default class PassRecoveryScreen extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <ScrollView 
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps='handled'
+                style={styles.scrollView}
+            >
+                <View style={styles.container}>
 
-                <LoginImage />
+                    <LoginImage style={{marginTop:30}}/>
 
-                <TextHeader
-                    body="Restaura tu contraseña"
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
+                    <TextHeader
+                        body="Restaura tu contraseña"
+                        style={{
+                            marginTop: 20,
+                        }}
+                    />
 
-                <TextDetails
-                    numberOfLines={3}
-                    body="Por favor ingresa tu correo electronico. Te enviaremos las instrucciones para restaurar tu contraseña."
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
+                    <TextDetails
+                        numberOfLines={3}
+                        body="Por favor ingresa tu correo electronico. Te enviaremos las instrucciones para restaurar tu contraseña."
+                        style={{
+                            marginTop: 20,
+                        }}
+                    />
 
-                <InputData
-                    placeholder="Correo electrónico"
-                    onChangeText={(email) => {
-                        this.setState({ email })
-                    }}
-                />
+                    <InputData
+                        placeholder="Correo electrónico"
+                        onChangeText={(email) => {
+                            this.setState({ email })
+                        }}
+                    />
 
-                <ButtonStandard
-                    title="Enviar"
-                    style={{
-                        marginTop: 70,
-                    }}
-                    disabled={(this.state.email === '' || !this.validateEmail(this.state.email))}
-                    onPress={this.handleSendToken}
-                />
+                    <ButtonStandard
+                        title="Enviar"
+                        style={{
+                            marginTop: 70,
+                        }}
+                        disabled={(this.state.email === '' || !this.validateEmail(this.state.email))}
+                        onPress={this.handleSendToken}
+                    />
 
-            </View>
+                </View>
+            </ScrollView>
         );
     }
 }

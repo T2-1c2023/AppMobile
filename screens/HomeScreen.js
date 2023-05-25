@@ -108,7 +108,16 @@ class HomeScreen extends Component {
                             <View style={styles.drawerIconContainer}>
                                 <FontAwesome name="user-circle-o" size={20} color="black" />
                             </View>
-                        )
+                        ),
+                        /*headerRight: () =>
+                        <IconButton
+                            icon="pencil"
+                            iconColor="black"
+                            size={30}
+                            onPress={() => 
+                                this.props.navigation.navigate('ProfileEditionScreen', { trainerData: tokenManager.getAccessToken() })//TO_DO ir a profileeditionscreen
+                            }
+                        />*/
                     }}
                 >
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
@@ -121,6 +130,7 @@ class HomeScreen extends Component {
                                 <FontAwesome name="bullseye" size={24} color="black" />
                             </View>
                         )
+                        
                     }}
                 >
                     {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}

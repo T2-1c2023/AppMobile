@@ -215,12 +215,6 @@ export default class GoalsTrainingsListScreen extends Component {
             {!this.state.loading &&
                 <View style={styles.container}>
                     <ButtonStandard 
-                        title="Refresh"
-                        onPress={this.fetchData}
-                        style={{marginTop: 20}}
-                    />
-
-                    <ButtonStandard 
                         title="Continuar"
                         onPress={() => this.props.navigation.replace('TrainingScreen',
                             {token:tokenManager.getAccessToken(), userData:jwt_decode(tokenManager.getAccessToken()), trainingId:this.props.route.params.trainingData.id})}

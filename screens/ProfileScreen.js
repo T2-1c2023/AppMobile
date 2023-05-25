@@ -53,7 +53,7 @@ export default class ProfileScreen extends Component {
             phone_number: '',
             
             // TODO: Cuando esten las requests deben inicializarse en loadUserInfo()
-            certifiedTrainer: true,
+            certifiedTrainer: false,
             location: 'to be implemented',
 
             // only applied when this.owner == false

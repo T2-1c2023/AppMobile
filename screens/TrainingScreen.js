@@ -114,7 +114,7 @@ export default class TrainingScreen extends Component {
     }
 
     async unsubscribe() {
-        //////////////////////////  TO_DO borrar
+       /* //////////////////////////  TO_DO borrar
         console.log('-------------------');
         await axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
@@ -122,8 +122,8 @@ export default class TrainingScreen extends Component {
             }
         })
         .then(response => {
-            /*const isSubscribed = false;
-            this.setState({ isSubscribed });*/
+            const isSubscribed = false;
+            this.setState({ isSubscribed });
             console.log("getter " + JSON.stringify(response.data));
             console.log('------------------');
         })
@@ -133,19 +133,21 @@ export default class TrainingScreen extends Component {
                 console.log(error.response.data); // => the response payload 
             }
         });
-        /////////////////////////////////
+        /////////////////////////////////*/
 
 
         const body = {training_id: this.props.route.params.trainingId}
         console.log(JSON.stringify(body));
-        //axios.delete(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
         console.log('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions');
         console.log(this.props.route.params.token)
-        //TO_DO llamar al api gateway
-        await axios.delete('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+        const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions'
+        console.log("url " + url)
+        console.log("body " + JSON.stringify(body))
+        axios.delete(url, {
+            data: body,
             headers: {
                 Authorization: this.props.route.params.token
-            }
+            },
         })
         .then(response => {
             const isSubscribed = false;
