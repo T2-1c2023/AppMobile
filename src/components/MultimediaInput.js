@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { selectImage } from '../../services/Media';
+import { selectImage, downloadImage } from '../../services/Media';
 
 export default class MultimediaInput extends Component {
     constructor(props) {
@@ -9,14 +9,35 @@ export default class MultimediaInput extends Component {
         this.handleUploadPress = this.handleUploadPress.bind(this)
         this.handleImagePress = this.handleImagePress.bind(this)
 
+        this.initialImageIds = this.props.initialImageIds,
         this.state = {
-            localImagesUris: [] 
+            uploadedImagesUris: [],
+            localImagesUris: []
         }
+    }
+
+    async componentDidMount() {
+        const imageIds = this.initialImageIds
+        console.log("array de ids inicial: ", imageIds)
+        const imagesUris = await Promise.all(imageIds.map(async (imageId) => {
+            return await downloadImage(imageId)
+        }))
+
+        console.log(imagesUris)
+
+        this.setState({
+            uploadedImagesUris: imagesUris
+        })
     }
 
     // TODO: mostrar la imagen en grande y opción de eliminarla.
     handleImagePress = (localPath) => {
-        alert('Image Pressed: ' + localPath);
+        alert('Local Image Pressed: ' + localPath);
+    }
+
+    // TODO: mostrar la imagen en grande y opción de eliminarla.
+    handleImageAlredyUploadPress = (uploadUri) => {
+        alert('Uploaded Image Pressed: ' + uploadUri);
     }
 
     handleUploadPress = async () => {
@@ -43,21 +64,31 @@ export default class MultimediaInput extends Component {
     render() {
         return (
             <ScrollView horizontal style={multimediaStyles.container}>
-                <View style={multimediaStyles.itemContainer}>
-                    {this.uploadItem()}
-                </View>
-                {
-                    this.state.localImagesUris.map((localUri) => 
-                        <View key={localUri} style={multimediaStyles.itemContainer}>
-                            <TouchableOpacity onPress={() => this.handleImagePress(localUri)}>
-                                <Image 
-                                    source={{ uri: localUri }} 
-                                    style={multimediaStyles.containedImage}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    )
+                {!this.props.readOnly &&
+                    <View style={multimediaStyles.itemContainer}>
+                        {this.uploadItem()}
+                    </View>
                 }
+                {this.state.uploadedImagesUris.map((uploadUri) => 
+                    <View key={uploadUri} style={multimediaStyles.itemContainer}>
+                        <TouchableOpacity onPress={() => this.handleImageAlredyUploadPress(uploadUri)}>
+                            <Image 
+                                source={{ uri: uploadUri }}
+                                style={multimediaStyles.containedImage}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {this.state.localImagesUris.map((localUri) => 
+                    <View key={localUri} style={multimediaStyles.itemContainer}>
+                        <TouchableOpacity onPress={() => this.handleImagePress(localUri)}>
+                            <Image 
+                                source={{ uri: localUri }}
+                                style={multimediaStyles.containedImage}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                )}
             </ScrollView>
         )
     }

@@ -4,6 +4,7 @@ import styles from '../src/styles/styles';
 import { ButtonStandard } from '../src/styles/BaseComponents';
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import GoalsList from '../src/components/GoalsList';
+// import { Mode } from './GoalsScreen';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
@@ -11,6 +12,12 @@ import Constants from 'expo-constants'
 import { ActivityIndicator } from 'react-native-paper';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+
+const Mode = { 
+    Create: 'create', 
+    Edit: 'edit', 
+    ReadOnly: 'readOnly'
+}
 
 export default class GoalsListScreen extends Component {
     constructor(props) {
@@ -29,7 +36,10 @@ export default class GoalsListScreen extends Component {
             goals: [],
             selectedGoalsIds: [],
         }
-        this.tokenData = ''
+        this.tokenData = props.data
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.fetchData();
+        });
     }
 
     getTokenData() {
@@ -50,7 +60,7 @@ export default class GoalsListScreen extends Component {
     }
 
     handlePress = (goal) => {
-        alert('id de meta: ' + goal.goal_id + '\n' + 'Titulo: ' + goal.title)
+        this.props.navigation.navigate('GoalScreen', { data: goal, mode: Mode.ReadOnly })
     }
 
     fetchData = async () => {
@@ -85,7 +95,7 @@ export default class GoalsListScreen extends Component {
     }
 
     componentDidMount() {
-        this.getTokenData();
+        // this.getTokenData();
         this.fetchData();
         // TODO: averiguar como hacer para que se reinicie siempre que vuelva el foco a esta pantalla
     }
@@ -123,7 +133,11 @@ export default class GoalsListScreen extends Component {
                 
                 <SearchInputWithIcon
                     onIconPress={
-                        () => this.props.navigation.navigate('GoalScreen', { data: this.tokenData })
+                        () => {
+                            console.log("data enviada al plus: " + this.tokenData);
+                            this.props.navigation.navigate('GoalScreen', { data: this.tokenData, mode: Mode.Create })
+                            
+                        }
                     }
                     onSubmit={this.handleSearch}
                     placeholder="Buscar por título"
@@ -151,7 +165,7 @@ export default class GoalsListScreen extends Component {
 
             </View>
             {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
-            {!this.state.loading &&
+            {/* {!this.state.loading &&
                 <View style={styles.container}>
                     <ButtonStandard 
                         title="Refresh"
@@ -159,7 +173,7 @@ export default class GoalsListScreen extends Component {
                         style={{marginTop: 20}}
                     />
                 </View>
-            }
+            } */}
             </ScrollView>
             </>
         );

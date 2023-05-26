@@ -6,6 +6,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // Screens 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
 import GoalsListScreen from './GoalsListScreen';
+import GoalScreen from './GoalScreen';
 import ProfileScreen from './ProfileScreen';
 import ProfileEditionScreen from './ProfileEditionScreen';
 // Temporary (Test)
@@ -121,6 +122,7 @@ class HomeScreen extends Component {
                     }}
                 >
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
+                    {/* { () => <GoalScreen data={this.data} navigation={this.props.navigation} /> } */}
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Metas"
