@@ -7,7 +7,6 @@ import { selectImage, uploadImageFirebase, downloadImage } from '../services/Med
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
-// for componentDidMount() (TODO: it shouldn't be needed?)
 import jwt_decode from 'jwt-decode';
 
 import ProfileHeader from '../src/components/ProfileHeader';
@@ -24,19 +23,49 @@ export default class ProfileEditionScreen extends Component {
         super(props);
         this.nameEmpty = this.nameEmpty.bind(this);
         this.invalidPhone = this.invalidPhone.bind(this);
+        this.handleProfilePicturePress = this.handleProfilePicturePress.bind(this);
+        this.loadUserInfo = this.loadUserInfo.bind(this);
+
+        this.emptyBodyWithToken = { headers: {
+            Authorization: tokenManager.getAccessToken()
+        }}
 
         this.state = {
             profilePic: require('../assets/images/user_predet_image.png'),
-            fullname: 'placeholder name',
-            phone: 'placeholder phone number',
+            fullname: props.route.params.data.fullname,
+            phone: props.route.params.data.phone_number,
         }
     }
 
-    renderHeader() {
+    async componentDidMount() {
+        try {
+            this.loadUserInfo()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async loadUserInfo() {
+        const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id
+        console.log(url)
+        const response = await axios.get(url, this.emptyBodyWithToken)
+
+        const photo_id = response.data.photo_id
+        if (photo_id) {
+            const imageUrl = await downloadImage(photo_id);
+            this.setState({ profilePic: { uri: imageUrl } });
+        }
+
+        const fullname = response.data.fullname
+        const phone = response.data.phone_number
+        this.setState({ fullname, phone })
+    }
+
+    renderProfilePic() {
         return (
             <View style={editionStyles.headerContainer}>
                 <View style={editionStyles.profilePicContainer}>
-                    <TouchableOpacity onPress={(this.handleProfilePicturePress)}>
+                    <TouchableOpacity onPress={this.handleProfilePicturePress}>
                         <Image
                             source={this.state.profilePic}
                             style={editionStyles.profilePic}
@@ -50,6 +79,54 @@ export default class ProfileEditionScreen extends Component {
                 <View style={editionStyles.paddingContainer} />
             </View>
         )
+    }
+
+    // Lets user choose a profile picture from library
+    handleProfilePicturePress = async () => {
+        Alert.alert(
+            'Editar foto de perfil',
+            'Desea modificar la foto de perfil?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Continuar',
+                    onPress: async () => {
+                        this.uploadProfilePicture();
+                    }
+                }
+            ]
+        );
+    }
+
+    // TODO: (extra) modularizar para que sea más legible. Llevarlo a Media.js
+    uploadProfilePicture = async () => {
+        const imageLocalUri = await selectImage();
+        if (imageLocalUri != null) {
+            this.setState({ profilePic: { uri: imageLocalUri } });
+
+            const imageId = await uploadImageFirebase(imageLocalUri);
+
+            // Update image id on back end
+            const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
+            const body = {
+                photo_id: imageId
+            }
+            // TODO: Es mejor hacer un load con await?
+            axios.patch(url, body, {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error)
+                });
+        }
     }
 
     nameEmpty() {
@@ -109,12 +186,62 @@ export default class ProfileEditionScreen extends Component {
         )
     }
 
-    onPressChangePassword() {
-        console.log('TODO: change password');
+    onPressChangePassword = () => {
+        this.props.navigation.navigate('ChangePasswordScreen');
     }
 
     onPressEnrollFingerprint() {
         console.log('TODO: enroll fingerprint');
+    }
+
+    // TODO: (extra) modularizar para que sea más legible?
+    uploadProfilePicture = async () => {
+        const imageLocalUri = await selectImage();
+        if (imageLocalUri != null) {
+            this.setState({ profilePic: { uri: imageLocalUri } });
+
+            const imageId = await uploadImageFirebase(imageLocalUri);
+
+            // Update image id on back end
+            const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
+            const body = {
+                photo_id: imageId
+            }
+            // TODO: Es mejor hacer un load con await?
+            axios.patch(url, body, {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                }
+            })
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error)
+                });
+        }
+    }
+
+
+    // Lets user choose a profile picture from library
+    handleProfilePicturePress = async () => {
+
+        Alert.alert(
+            'Editar foto de perfil',
+            'Desea modificar la foto de perfil?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Continuar',
+                    onPress: async () => {
+                        this.uploadProfilePicture();
+                    }
+                }
+            ]
+        );
     }
 
     renderLinks() {
@@ -141,7 +268,7 @@ export default class ProfileEditionScreen extends Component {
                 style={styles.scrollView}
             >
                 <View style={styles.container}>
-                    {this.renderHeader()}
+                    {this.renderProfilePic()}
                     {this.renderNameField()}
 
                     {/* TODO: reemplazar por input de nueva ubicación */}
@@ -231,76 +358,6 @@ const editionStyles = StyleSheet.create({
         marginTop: 50, 
     },
 });
-
-
-
-// TODO: (extra) modularizar para que sea más legible?
-uploadProfilePicture = async () => {
-    const imageLocalUri = await selectImage();
-    if (imageLocalUri != null) {
-        this.setState({ profilePic: { uri: imageLocalUri } });
-
-        const imageId = await uploadImageFirebase(imageLocalUri);
-
-        // Update image id on back end
-        const url = API_GATEWAY_URL + 'users/' + this.props.data.id;
-        const body = {
-            photo_id: imageId
-        }
-        // TODO: Es mejor hacer un load con await?
-        axios.patch(url, body, {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-            .then((response) => {
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.log(error)
-            });
-    }
-}
-
-
-// Lets user choose a profile picture from library
-handleProfilePicturePress = async () => {
-
-    Alert.alert(
-        'Editar foto de perfil',
-        'Desea modificar la foto de perfil?',
-        [
-            {
-                text: 'Cancel',
-                style: 'cancel'
-            },
-            {
-                text: 'Continuar',
-                onPress: async () => {
-                    this.uploadProfilePicture();
-                }
-            }
-        ]
-    );
-}
-
-
-{/* {this.props.data && (
-    <>
-        <TouchableOpacity onPress={this.handleProfilePicturePress}>
-            <Image
-                source={this.state.profilePic}
-                style={{... styles_hs.userImage, marginTop: 40}}
-            />
-            <View style={styles_hs.editIcon}>
-                <Ionicons name="pencil" size={24} color="white" />
-            </View>
-        </TouchableOpacity>
-        <Text style={{... styles_hs.text, marginTop: 40}}>Welcome {fullname}!</Text>
-        <Text style={styles_hs.text}>Email: {mail}</Text>
-        <Text style={{... styles_hs.text, marginBottom: 20}}>Role: {this.getRole()}</Text>
-    </>
-)} */}
 
 const styles_hs = StyleSheet.create({
     container: {

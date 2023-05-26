@@ -9,11 +9,13 @@ import GoalsListScreen from './GoalsListScreen';
 import GoalScreen from './GoalScreen';
 import ProfileScreen from './ProfileScreen';
 import ProfileEditionScreen from './ProfileEditionScreen';
+import TrainingsListScreen from './TrainingsListScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
-import TrainingsListScreen from './TrainingsListScreen';
-import ChangePasswordScreen from './ChangePasswordScreen';
+
+
 
 import { IconButton } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -35,11 +37,6 @@ class HomeScreen extends Component {
     constructor(props) {
         super(props)
         this.data = jwt_decode(tokenManager.getAccessToken())
-        
-        console.log(this.data)
-    }
-
-    componentDidMount() {
     }
 
     handleLogout = async () => {
@@ -75,19 +72,6 @@ class HomeScreen extends Component {
         )
     }
 
-    // TODO: hay opciones que solo podés mostrarle a entrenadores, un atleta no debería verlas
-
-    // TODO: mostrar de mejor forma que tipo de usuario sos
-
-    /*
-        TODO:
-        nuevo entrenamiento es de entrenador. Similar a lo de listado de metas y crear meta
-
-        Botón de ver perfiles (WIP)
-    */
-
-    // TODO: (no prioritario) mejorar visualmente el sidebar https://www.youtube.com/watch?v=M4WNSjTWFDo
-
     render() {
         return (
             <Drawer.Navigator 
@@ -110,19 +94,18 @@ class HomeScreen extends Component {
                                 <FontAwesome name="user-circle-o" size={20} color="black" />
                             </View>
                         ),
-                        /*headerRight: () =>
+                        headerRight: () =>
                         <IconButton
                             icon="pencil"
                             iconColor="black"
-                            size={30}
+                            size={25}
                             onPress={() => 
-                                this.props.navigation.navigate('ProfileEditionScreen', { trainerData: tokenManager.getAccessToken() })//TO_DO ir a profileeditionscreen
+                                this.props.navigation.navigate('ProfileEditionScreen', { data: this.data })
                             }
-                        />*/
+                        />
                     }}
                 >
-                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} />}
-                    {/* { () => <GoalScreen data={this.data} navigation={this.props.navigation} /> } */}
+                    {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Metas"
@@ -140,13 +123,22 @@ class HomeScreen extends Component {
 
                 {this.data.is_athlete ? 
                     <Drawer.Screen 
-                        name="Entrenamientos favoritos" //TO_DO
+                        name="Entrenamientos favoritos"
                         options={{
                             drawerIcon: () => (
                                 <View style={styles.drawerIconContainer}>
                                     <FontAwesome5 name="dumbbell" size={16} color="black" />
                                 </View>
                             ),
+                            headerRight: () =>
+                                <IconButton
+                                    icon="plus"
+                                    color="black"
+                                    size={30}
+                                    onPress={() => 
+                                        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})
+                                    }
+                                />
                         }}
                     >
                         {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' />}
@@ -163,6 +155,15 @@ class HomeScreen extends Component {
                                     <FontAwesome5 name="dumbbell" size={16} color="black" />
                                 </View>
                             ),
+                            headerRight: () =>
+                                <IconButton
+                                    icon="plus"
+                                    color="black"
+                                    size={30}
+                                    onPress={() => 
+                                        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})
+                                    }
+                                />
                         }}
                     >
                         {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} />}

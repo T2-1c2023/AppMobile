@@ -66,7 +66,7 @@ export default class NewTrainingScreen extends Component {
                 }
             })    
             if (response.status === 201) {
-                this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId } });
+                this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId, from:'NewTrainingScreen' } });
             }
         } catch (error) {
             this.handleNewTrainingError(error);
