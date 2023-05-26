@@ -6,50 +6,83 @@ class ChatTest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            chatPath: '',
-            chatRef: null,
-            uid: 1,
+            // TODO: esta hardcodeado, esto lo debería recibir del back o, si no existe, dejarlo en ''
+            // así se crea un nuevo chat.
+            chatId: '-NWKZNvBGBKObn1AS8kT', 
             messages: [],
-            inputText: ''
+            inputText: '',
+            uid1: 20,
+            uid2: 30
         }
     };
 
     componentDidMount() {
-        // TODO: the reference should depend on the user id.
-        // TODO: check what would be the best structure for storing messages
-        const path = 'chat_test/users/' + this.state.uid;
-        this.setState({ chatPath: path });
-        const reference = database().ref(path);
-        this.setState({ chatRef: reference });
+        const { chatId } = this.state;
+
+        const reference = database().ref('chats/' + chatId);
+
         // Setup an active listener to react to any changes to the node and it's children
         reference.on('value', (snapshot) => {
-            // Check if there are messages already
             if (snapshot.exists()) {
+                // If the chat room exists, load messages.
                 const data = snapshot.val();
-                const messagesList = Object.keys(data).map((key) => ({ id: key, text: data[key]}));
-                this.setState({ messages: messagesList });
-            } else {
-                // Just in case
-                this.setState({ messages: [] });
+                if (data.messages !== undefined) {
+                    const messages = Object.values(data.messages);
+                    this.setState({ messages: messages });
+                }
+            } else { // No snapshot found, create chat room
+                this.createChatRoom();
             }
         });
     }
 
+    createChatRoom = () => {
+        const { uid1, uid2 } = this.state;
+        const reference = database().ref('chats');
+        // Create new node where the new chat will be stored
+        const newChatRef = reference.push();
+        // TODO: store this in back end.
+        const chatId = newChatRef.key;
+
+        this.setState({ chatId: chatId });
+
+        const chatData = {
+            messages: [],
+            uid1: uid1,
+            uid2: uid2
+        };
+
+        reference.child(chatId).set(chatData)
+            .then(() => {
+                console.log('Node created succesfully');
+            })
+            .catch((error) => {
+                console.log('Error creating node:', error);
+            })
+    }
+
     componentWillUnmount() {
         // Unsubscribe from listener
-        this.state.chatRef.off('value');
+        const { chatId } = this.state;
+        const reference = database().ref('chats/' + chatId);
+        reference.off('value');
     }
 
     sendMessage = () => {
-        const { inputText } = this.state;
-
+        const { inputText, chatId, uid1 } = this.state;
+        // Check if its not only white space
         if (inputText.trim() !== '') {
-            console.log(this.state.chatPath);
-            const newMessageRef = database().ref(this.state.chatPath).push();
+            const newMessageRef = database().ref('chats/' + chatId + '/messages').push();
+            // TODO: el uid tiene que ser el id del usuario que está escribiendo el mensaje.
+            const newMessageData = {
+                message: inputText,
+                uid: uid1
+            };
+
             newMessageRef
-                .set(inputText)
-                .then(() => this.setState({ inputText: '' }))
-                .catch((error) => console.log('Error sending message:', error));
+                .set(newMessageData)
+                .then(() => this.setState({ inputText: ''}))
+                .catch((error) => console.error('Error sending message:', error));
         }
     }
 
@@ -60,12 +93,13 @@ class ChatTest extends React.Component {
           <View style={{ flex: 1, padding: 20 }}>
             <FlatList 
               data={messages}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <View style={{paddingVertical: 5}}>
-                  <Text>{item.text}</Text>
+                  <Text>{item.message}</Text>
                 </View>
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
+              inverted
             />
 
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
