@@ -22,6 +22,10 @@ export default class PassRecoveryScreen extends Component {
         return emailRegex.test(email);
     }
 
+    emailWarningMode() {
+        return !this.state.email.length == 0 && !this.validateEmail(this.state.email)
+    }
+
     handleSendToken() {
         const body = {mail: this.state.email}
         axios.post(API_GATEWAY_URL + 'login/recovery', body)
@@ -67,6 +71,7 @@ export default class PassRecoveryScreen extends Component {
                         onChangeText={(email) => {
                             this.setState({ email })
                         }}
+                        warningMode = {this.emailWarningMode()}
                     />
 
                     <ButtonStandard
