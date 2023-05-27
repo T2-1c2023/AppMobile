@@ -40,6 +40,7 @@ export default class GoalsListScreen extends Component {
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.fetchData();
         });
+        this.completed = this.props.route !== undefined ? this.props.route.params.completed : this.props.completed
     }
 
     getTokenData() {
@@ -64,8 +65,7 @@ export default class GoalsListScreen extends Component {
     }
 
     fetchData = async () => {
-
-        console.log("data " + JSON.stringify(this.tokenData));
+        //console.log("data " + JSON.stringify(this.tokenData));
         let endpoint;
         if (this.tokenData.is_trainer) {   //TO_DO qué pasa si alguno es entrenador y atleta?
             endpoint = 'trainers/'
@@ -79,7 +79,7 @@ export default class GoalsListScreen extends Component {
                 Authorization: tokenManager.getAccessToken()
             },
             params: {
-                completed: false
+                completed: this.completed
             }
          })
         .then((response) => {
@@ -95,7 +95,7 @@ export default class GoalsListScreen extends Component {
     }
 
     componentDidMount() {
-        // this.getTokenData();
+        this.getTokenData();
         this.fetchData();
         // TODO: averiguar como hacer para que se reinicie siempre que vuelva el foco a esta pantalla
     }

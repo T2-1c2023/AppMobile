@@ -118,7 +118,7 @@ class HomeScreen extends Component {
                         
                     }}
                 >
-                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} />}
+                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} completed={false}/>}
                 </Drawer.Screen>
 
                 {this.data.is_athlete ? 
