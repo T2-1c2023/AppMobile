@@ -29,6 +29,7 @@ export default class ProfileScreen extends Component {
         this.onPressFollow = this.onPressFollow.bind(this);
         this.onPressUnfollow = this.onPressUnfollow.bind(this);
         this.onPressSendMessage = this.onPressSendMessage.bind(this);
+        this.onPressFavoriteTrainings = this.onPressFavoriteTrainings.bind(this);
         
         const data = this.props.route !== undefined ? this.props.route.params.data : this.props.data
 
@@ -103,6 +104,10 @@ export default class ProfileScreen extends Component {
     
     onPressSubscribedTrainings() {
         this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled'})
+    }
+
+    onPressFavoriteTrainings() {
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites'})
     }
     
     onPressCurrentGoals() {
@@ -292,6 +297,13 @@ export default class ProfileScreen extends Component {
             linkedTexts.push({
                 title: 'Ver entrenamientos suscriptos', 
                 handler: this.onPressSubscribedTrainings
+            })
+        }
+
+        if (this.is_athlete) {
+            linkedTexts.push({
+                title: 'Ver entrenamientos favoritos', 
+                handler: this.onPressFavoriteTrainings
             })
         }
         
