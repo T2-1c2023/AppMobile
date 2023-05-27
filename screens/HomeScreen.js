@@ -186,7 +186,7 @@ class HomeScreen extends Component {
                                     iconColor="black"
                                     size={30}
                                     onPress={() => 
-                                        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })
+                                        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: true })
                                     }
                                 />
                         }}

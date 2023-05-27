@@ -248,7 +248,7 @@ export default class TrainingScreen extends Component {
     }
 
     handleDataEditPress() {
-        alert("Edit pressed for data");
+        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: false, trainingId: this.props.route.params.trainingId })
     }
 
     handleDeletePress() {

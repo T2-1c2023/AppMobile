@@ -75,7 +75,7 @@ export default class TrainingsListScreen extends Component {
                             icon={'plus'}
                             iconColor='black'
                             size={30}
-                            onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken() })}
+                            onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: true })}
                         />
                     ),
                 })
