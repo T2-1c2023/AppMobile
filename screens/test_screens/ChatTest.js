@@ -1,20 +1,27 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import database from '@react-native-firebase/database';
 
-class ChatTest extends React.Component {
+class ChatTest extends Component {
     constructor(props) {
         super(props);
         this.state = {
             // TODO: esta hardcodeado, esto lo debería recibir del back o, si no existe, dejarlo en ''
             // así se crea un nuevo chat.
-            chatId: '-NWKZNvBGBKObn1AS8kT', 
+            chatId: '-NWOThYawEkOK34oN4sy', 
             messages: [],
             inputText: '',
             uid1: 20,
             uid2: 30
         }
     };
+
+    // TODO: ver de agregar otra tabla con chats por user id y todos los chats que tenga (chatId's). Habría info repetida por usuario.
+    //       users/ + userId 
+    // TODO: separar en izquierda / derecha dependiendo de quien sea el usuario. 
+    // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje y que los mensajes estén en rectángulos de colores
+    // TODO: Agregar un date.now a los mensajes
+    // TODO: mostrar todas las conversaciones actuales en formato lista en 
 
     componentDidMount() {
         const { chatId } = this.state;
@@ -98,6 +105,7 @@ class ChatTest extends React.Component {
                   <Text>{item.message}</Text>
                 </View>
               )}
+              // TODO: esta ordenando alphabeticamente acá. Usa el date.
               keyExtractor={(item, index) => index.toString()}
               inverted
             />
