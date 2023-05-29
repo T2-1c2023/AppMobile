@@ -7,6 +7,8 @@ const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 // TODO: usar constantes para los errores
 
+// Register/Login handling ----------------------------------------------------------------------------------------
+
 export async function register(data) {
 
 	try {
@@ -135,3 +137,6 @@ function handleLogInGoogleError(error) {
                 Status code:', error.response.status);
 	}
 }
+
+// Profile Edition ----------------------------------------------------------------------------------------
+// TODO: mover todo el código con requests relacionadas a usuario acá

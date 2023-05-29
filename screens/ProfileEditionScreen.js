@@ -33,6 +33,7 @@ export default class ProfileEditionScreen extends Component {
         this.state = {
             profilePic: require('../assets/images/user_predet_image.png'),
             fullname: props.route.params.data.fullname,
+            newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
         }
     }
@@ -137,14 +138,53 @@ export default class ProfileEditionScreen extends Component {
         return this.state.phone == '';
     }
 
+    handleNameFieldBlur = () => {
+        const { fullname, newFullName } = this.state;
+        if (newFullName.trim() !== fullname.trim()) {
+            Alert.alert(
+                'Desea modificar su nombre de usuario a "' + newFullName + '"?',
+                '',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Proceed', onPress: this.handleChangeUsername }
+                ],
+                { cancelable: false }
+            );
+        } else console.log('No hubo cambios')
+    };
+
+    handleChangeUsername = async () => {
+        // TODO: setLoading = true
+        // TODO: es el mismo código que el cambio de foto, modulariza en Users.js
+        const { newFullName } = this.state;
+
+        const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
+        const body = {
+            fullname: newFullName
+        }
+        
+        await axios.patch(url, body, {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        })
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    }
+
     renderNameField() {
         return (
             <React.Fragment>
                 <TextInput
                     label={'Nombre y apellido'}
-                    onChangeText={fullname => this.setState({ fullname })}
+                    onChangeText={(newFullName) => this.setState({ newFullName })}
+                    onBlur={this.handleNameFieldBlur}
                     theme={this.nameEmpty()? editionStyles.themeErrorColors : editionStyles.themeColors}
-                    value={this.state.fullname}
+                    value={this.state.newFullName}
                     mode='flat'
                     style={editionStyles.inputText}
                 />
