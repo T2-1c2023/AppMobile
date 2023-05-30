@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import styles from '../src/styles/styles';
 import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator } from 'react-native-paper';
 // Image upload
 import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
 import Constants from 'expo-constants'
@@ -15,6 +16,7 @@ import InterestsList from '../src/components/InterestsList';
 
 import { TextInput, HelperText } from 'react-native-paper';
 
+import { showMessage } from 'react-native-flash-message';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -31,8 +33,9 @@ export default class ProfileEditionScreen extends Component {
         }}
 
         this.state = {
+            loading: false,
             profilePic: require('../assets/images/user_predet_image.png'),
-            fullname: props.route.params.data.fullname,
+            fullname: props.route.params.data.fullname, // TODO: sacar?
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
         }
@@ -88,23 +91,17 @@ export default class ProfileEditionScreen extends Component {
             'Editar foto de perfil',
             'Desea modificar la foto de perfil?',
             [
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Continuar',
-                    onPress: async () => {
-                        this.uploadProfilePicture();
-                    }
-                }
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Continuar', onPress: this.uploadProfilePicture }
             ]
         );
     }
 
     // TODO: (extra) modularizar para que sea más legible. Llevarlo a Media.js
     uploadProfilePicture = async () => {
+        this.setState({ loading: true });
         const imageLocalUri = await selectImage();
+        
         if (imageLocalUri != null) {
             this.setState({ profilePic: { uri: imageLocalUri } });
 
@@ -116,18 +113,34 @@ export default class ProfileEditionScreen extends Component {
                 photo_id: imageId
             }
             // TODO: Es mejor hacer un load con await?
-            axios.patch(url, body, {
+            await axios.patch(url, body, {
                 headers: {
                     Authorization: tokenManager.getAccessToken()
                 }
             })
                 .then((response) => {
                     console.log(response.data);
+                    showMessage({
+                        message: 'Foto de perfil cambiada con éxito',
+                        type: 'success',
+                        duration: 3000,
+                        backgroundColor: '#00B386',
+                        color: '#FFFFFF'
+                    });
                 })
                 .catch((error) => {
                     console.log(error)
+                    // TODO: borrar la foto subida a firebase
+                    showMessage({
+                        message: 'No se a podido actualizar la foto de perfil',
+                        type: 'warning',
+                        duration: 3000,
+                        backgroundColor: '#d94b32',
+                        color: '#FFFFFF'
+                    });
                 });
         }
+        this.setState({ loading: false });
     }
 
     nameEmpty() {
@@ -146,7 +159,7 @@ export default class ProfileEditionScreen extends Component {
                 '',
                 [
                     { text: 'Cancel', style: 'cancel' },
-                    { text: 'Proceed', onPress: this.handleChangeUsername }
+                    { text: 'Continuar', onPress: this.handleChangeUsername }
                 ],
                 { cancelable: false }
             );
@@ -154,7 +167,7 @@ export default class ProfileEditionScreen extends Component {
     };
 
     handleChangeUsername = async () => {
-        // TODO: setLoading = true
+        this.setState({ loading: true });
         // TODO: es el mismo código que el cambio de foto, modulariza en Users.js
         const { newFullName } = this.state;
 
@@ -170,9 +183,25 @@ export default class ProfileEditionScreen extends Component {
         })
             .then((response) => {
                 console.log(response.data);
+                this.setState({ loading: false, fullname: newFullName });
+                showMessage({
+                    message: 'Nombre cambiado con éxito',
+                    type: 'success',
+                    duration: 3000,
+                    backgroundColor: '#00B386',
+                    color: '#FFFFFF'
+                });
             })
             .catch((error) => {
                 console.log(error)
+                this.setState({ loading: false });
+                showMessage({
+                    message: 'No se a podido actualizar la foto de perfil',
+                    type: 'warning',
+                    duration: 3000,
+                    backgroundColor: '#d94b32',
+                    color: '#FFFFFF'
+                });
             });
     }
 
@@ -234,56 +263,6 @@ export default class ProfileEditionScreen extends Component {
         console.log('TODO: enroll fingerprint');
     }
 
-    // TODO: (extra) modularizar para que sea más legible?
-    uploadProfilePicture = async () => {
-        const imageLocalUri = await selectImage();
-        if (imageLocalUri != null) {
-            this.setState({ profilePic: { uri: imageLocalUri } });
-
-            const imageId = await uploadImageFirebase(imageLocalUri);
-
-            // Update image id on back end
-            const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
-            const body = {
-                photo_id: imageId
-            }
-            // TODO: Es mejor hacer un load con await?
-            axios.patch(url, body, {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-            })
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.log(error)
-                });
-        }
-    }
-
-
-    // Lets user choose a profile picture from library
-    handleProfilePicturePress = async () => {
-
-        Alert.alert(
-            'Editar foto de perfil',
-            'Desea modificar la foto de perfil?',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Continuar',
-                    onPress: async () => {
-                        this.uploadProfilePicture();
-                    }
-                }
-            ]
-        );
-    }
-
     renderLinks() {
         return (
             <React.Fragment>
@@ -302,25 +281,34 @@ export default class ProfileEditionScreen extends Component {
     }
 
     render() {
-        return (
-            <ScrollView
-                automaticallyAdjustKeyboardInsets={true}
-                style={styles.scrollView}
-            >
-                <View style={styles.container}>
-                    {this.renderProfilePic()}
-                    {this.renderNameField()}
-
-                    {/* TODO: reemplazar por input de nueva ubicación */}
-                    <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
-                    
-                    {this.renderPhoneField()}
-                    <View style={editionStyles.divider} />
-
-                    {this.renderLinks()}
+        if (this.state.loading) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#21005D" />
+                    <Text style={{marginTop: 30}}>Realizando cambio...</Text>
                 </View>
-            </ScrollView>
-        )
+            )
+        } else {
+            return (
+                <ScrollView
+                    automaticallyAdjustKeyboardInsets={true}
+                    style={styles.scrollView}
+                >
+                    <View style={styles.container}>
+                        {this.renderProfilePic()}
+                        {this.renderNameField()}
+
+                        {/* TODO: reemplazar por input de nueva ubicación */}
+                        <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
+                        
+                        {this.renderPhoneField()}
+                        <View style={editionStyles.divider} />
+
+                        {this.renderLinks()}
+                    </View>
+                </ScrollView>
+            )
+        }
     }
 }
 
