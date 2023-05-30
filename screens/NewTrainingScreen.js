@@ -17,35 +17,60 @@ export default class NewTrainingScreen extends Component {
         super(props)
         this.handleCreatePress = this.handleCreatePress.bind(this)
         this.handleCancelPress = this.handleCancelPress.bind(this)
+        this.isNew = this.props.route.params.isNew
+        this.emptyBodyWithToken = { headers: {
+            Authorization: tokenManager.getAccessToken()
+        }}
         this.state = {
             trainingTypes: {},
             title: '',
             description: '',
-            trainingTypeId: '',
+            trainingTypeId: 0,
             level: 'basic',
-            trainerId: jwt_decode(this.props.route.params.trainerData).id
+            trainerId: jwt_decode(this.props.route.params.trainerData).id,
+            initialTitle: '',
+            initialDescription: '',
+            initialLevel: 'basic',
+            //initialTrainingType: 1,
         }
     }
 
     async getTrainingsTypes() {
-        const response = await axios.get(API_GATEWAY_URL + 'training-types', {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-        console.log(response.data);     
+        const response = await axios.get(API_GATEWAY_URL + 'training-types', this.emptyBodyWithToken)
+        //console.log(response.data);     
         return response.data
     }
 
     async componentDidMount() {
-        console.log("navigation state " + JSON.stringify(this.props.navigation.getState()));
+        if (!this.isNew) {
+            //this.getTrainingData();
+            this.loadTrainingInfo();
+        }
         const data = await this.getTrainingsTypes()
 
         const trainingTypes = data.map((trainingType) => {
             return {"key": trainingType.id, "value": trainingType.description}
         })
+        console.log(trainingTypes)
 
-        this.setState({ trainingTypes  })
+        this.setState({ trainingTypes })
+    }
+
+    loadTrainingInfo() {     
+        axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, this.emptyBodyWithToken)
+            .then(response => {
+                const training = response.data;
+                console.log(training);//debug
+                this.setState({ 
+                    initialTitle: training.title,
+                    initialDescription: training.description,
+                    initialLevel: this.levelStrToInt(training.severity),
+                    //TO_DO trainingTypeId: 
+                });
+            })
+            .catch(function (error) {
+                console.log('loadTrainingInfo ' + error);
+            });
     }
 
     async handleCreatePress() {
@@ -56,21 +81,28 @@ export default class NewTrainingScreen extends Component {
             "type_id": this.state.trainingTypeId,
             "severity": this.levelStrToInt(this.state.level),
         }
-        console.log(body);
-        await axios.post(API_GATEWAY_URL + 'trainings', body, {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-            })
-            .then(async (response) => {
-                if (response.status === 201) {
-                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId } });
-                }
-            })
-            .catch((error) => {
-                this.handleNewTrainingError(error);
+        //console.log(body);
+        //console.log(API_GATEWAY_URL + 'trainings')
+        
+        try {
+            let response;
+            if (this.isNew) {
+                response = await axios.post(API_GATEWAY_URL + 'trainings', body, this.emptyBodyWithToken)
+            } else {
+                response = await axios.patch(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, body, this.emptyBodyWithToken)
             }
-        );
+            console.log(response.status)
+            if (response.status === 200 || response.status === 201) {
+                if (this.isNew) {
+                    this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId, from:'NewTrainingScreen' } });
+                } else {
+                    this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created'})
+                }
+                
+            }
+        } catch (error) {
+            this.handleNewTrainingError(error);
+        }
     }
 
     handleCancelPress = async () => {
@@ -78,7 +110,7 @@ export default class NewTrainingScreen extends Component {
     }
 
     handleNewTrainingError(error) {
-        console.log(error);//TO_DO
+        console.error(error);
     }
 
     levelStrToInt (levelStr) {
@@ -105,6 +137,7 @@ export default class NewTrainingScreen extends Component {
                     title="Título"
                     onChangeText={(title) => this.setState({ title })}
                     maxLength={60}
+                    placeholder={this.state.initialTitle}
                     style={{
                         marginTop: 5,
                     }}
@@ -114,6 +147,7 @@ export default class NewTrainingScreen extends Component {
                     title="Descripción"
                     onChangeText={(description) => this.setState({ description })}
                     maxLength={250}
+                    placeholder={this.state.initialDescription}
                     style={{
                         marginTop: 5,
                     }}
@@ -145,7 +179,7 @@ export default class NewTrainingScreen extends Component {
                 />
 
                 <LevelInput 
-                    initialLevel={this.state.level}
+                    initialLevel={this.state.initialLevel}
                     setSelected={(level) => this.setState({ level })}
                     style={{
                         marginTop: 10,
@@ -165,7 +199,7 @@ export default class NewTrainingScreen extends Component {
                 {/* -------------------- */}
 
                 <ConfirmationButtons 
-                    confirmationText="Crear entrenamiento "
+                    confirmationText={this.isNew? "Crear entrenamiento" : "Editar entrenamiento"}
                     cancelText="Cancelar"
                     onConfirmPress={this.handleCreatePress}
                     onCancelPress={this.handleCancelPress}

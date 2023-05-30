@@ -29,15 +29,16 @@ export default class ProfileScreen extends Component {
         this.onPressFollow = this.onPressFollow.bind(this);
         this.onPressUnfollow = this.onPressUnfollow.bind(this);
         this.onPressSendMessage = this.onPressSendMessage.bind(this);
+        this.onPressFavoriteTrainings = this.onPressFavoriteTrainings.bind(this);
         
-        const data = props.data;
+        const data = this.props.route !== undefined ? this.props.route.params.data : this.props.data
 
         this.emptyBodyWithToken = { headers: {
             Authorization: tokenManager.getAccessToken()
         }}
 
         // owner defines if the profile is the user's or another user's
-        this.owner = props.owner
+        this.owner = this.props.route !== undefined ? this.props.route.params.owner : this.props.owner
 
         // variables estaticas (se pueden sacar del token o data)
         this.id = data.id
@@ -53,13 +54,17 @@ export default class ProfileScreen extends Component {
             phone_number: '',
             
             // TODO: Cuando esten las requests deben inicializarse en loadUserInfo()
-            certifiedTrainer: true,
+            certifiedTrainer: false,
             location: 'to be implemented',
 
             // only applied when this.owner == false
             // TODO: quitar hardcodeo
             following: false,
         }
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.loadInterests();
+            this.loadUserInfo();
+        });
     }
 
     async loadInterests() {
@@ -74,8 +79,8 @@ export default class ProfileScreen extends Component {
         const response = await axios.get(url, this.emptyBodyWithToken)
 
         const photo_id = response.data.photo_id
-        const imageUrl = await downloadImage(photo_id);
-        if (imageUrl) {
+        if (photo_id) {
+            const imageUrl = await downloadImage(photo_id);
             this.setState({ profilePic: { uri: imageUrl } });
         }
 
@@ -94,19 +99,23 @@ export default class ProfileScreen extends Component {
     }
 
     onPressCreatedTrainings() {
-        console.log('Created trainings pressed');
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created'})
     }
     
     onPressSubscribedTrainings() {
-        console.log('Subscribed trainings pressed');
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled'})
+    }
+
+    onPressFavoriteTrainings() {
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites'})
     }
     
     onPressCurrentGoals() {
-        console.log('Current goals pressed');
+        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), completed:false})
     }
     
     onPressCompletedGoals() {
-        console.log('Completed goals pressed');
+        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), completed:true})
     }
 
     onPressFollowers() {
@@ -288,6 +297,13 @@ export default class ProfileScreen extends Component {
             linkedTexts.push({
                 title: 'Ver entrenamientos suscriptos', 
                 handler: this.onPressSubscribedTrainings
+            })
+        }
+
+        if (this.is_athlete) {
+            linkedTexts.push({
+                title: 'Ver entrenamientos favoritos', 
+                handler: this.onPressFavoriteTrainings
             })
         }
         

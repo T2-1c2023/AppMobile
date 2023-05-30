@@ -246,8 +246,8 @@ export const TextBox = (props) => {
     useEffect(() => {
         setText(props.value || '');
       }, [props.value]);
-
-    const textStyle = props.flexible? styles.flexibleTextBox : styles.textBox;
+    const textStyle = props.flexible? styles.flexibleTextBox : 
+        props.nonEditable?  styles.textBoxNonEditable : styles.textBox;
 
     const counterStyle = props.flexible? styles.flexibleTextBoxCounter : styles.texBoxCounter;
 
@@ -268,6 +268,7 @@ export const TextBox = (props) => {
                 style={[textStyle, 
                     { marginTop: 10 }
                 ]}
+                editable={!props.nonEditable}
             />
             <Text style={counterStyle}>
                 {text.length}/{props.maxLength}

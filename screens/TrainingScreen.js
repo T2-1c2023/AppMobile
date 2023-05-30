@@ -16,6 +16,7 @@ import { IconButton } from 'react-native-paper'
 import TrainingData from '../src/components/TrainingData'
 import axios from 'axios';
 import { downloadImage } from '../services/Media';
+import { tokenManager } from '../src/TokenManager';
 
 const MAX_ACTIVITIES = 20;
 
@@ -42,35 +43,75 @@ export default class TrainingScreen extends Component {
             trainer: {},
             trainerProfilePic: require('../assets/images/user_predet_image.png')
         }
+        this.emptyBodyWithToken = { headers: {
+            Authorization: tokenManager.getAccessToken()
+        }}
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.componentDidMount();
+        });
     }
 
     handleFavoriteButtonPress() {
-        alert("Logica de añadir a favoritos - TBD")
-
-        const isInFavorites = !this.state.isInFavorites
-        this.changeFavoriteStatus(isInFavorites).then(() => {
+        const newIsInFavorites = !this.state.isInFavorites
+        this.changeFavoriteStatus(newIsInFavorites).then(() => {
             this.checkFavoriteStatus();
         })
         .catch(function (error) {
             console.log('handleFavoriteButtonPress' + error);
         });
+        
     }
 
-    async changeFavoriteStatus() {
-        //TODO: enviarla al back la actualizacion del estado favorito de la actividad
-        // await axios.post(...)
+    async changeFavoriteStatus(newValue) {
+        const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/favorites'
+        const body = {training_id:  this.props.route.params.trainingId}
+        let response;
+        try {
+            if (newValue === true ) {
+                response = await axios.post(url, body, this.emptyBodyWithToken)
+            } else {
+                response = await axios.delete(url, {
+                    data: body,
+                    headers: {
+                        Authorization: this.props.route.params.token
+                    },
+                })
+            }
+        } catch (error) {
+            console.error("changeFavoriteStatus " + error)
+        }
+
         return
     }
 
     async isInFavorites() {
-        //TODO: preguntarle al back si la actividad está en favoritos
-        // await axios.get(...)
-        return false
+        let isInFavorites = false;
+        const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/favorites'
+        await axios.get(url, {
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
+        .then(response => {
+            //console.log("isInFavorites response " + JSON.stringify(response.data));
+            const favorites = response.data;
+            isInFavorites = false
+            if (favorites.some(f => f.id === this.props.route.params.trainingId)) {
+                isInFavorites = true
+            }
+            this.setState({isInFavorites})
+            return isInFavorites;
+        })
+        .catch(function (error) {
+            console.log('isInFavorites ' + error);
+        });
+        return isInFavorites
     }
 
     checkFavoriteStatus() {
-        this.isInFavorites().then((isInFavorites) => {
-            this.setState({isInFavorites})
+        
+        this.isInFavorites().then(isInFavorites => {
+            this.setState({isInFavorites} )
             this.props.navigation.setOptions({
                 headerRight: () => (
                     <IconButton
@@ -97,14 +138,14 @@ export default class TrainingScreen extends Component {
 
     async subscribe() {
         const body = {training_id: this.props.route.params.trainingId}
-        console.log(this.props.route.params.trainingId);
+        //console.log(this.props.route.params.trainingId);
         axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
                 Authorization: this.props.route.params.token
             }
         })
         .then(response => {
-            console.log("subscribe response " + response);
+            //console.log("subscribe response " + response);
             const isSubscribed = true;
             this.setState({ isSubscribed });
         })
@@ -114,38 +155,13 @@ export default class TrainingScreen extends Component {
     }
 
     async unsubscribe() {
-        //////////////////////////  TO_DO borrar
-        console.log('-------------------');
-        await axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
-            headers: {
-                Authorization: this.props.route.params.token
-            }
-        })
-        .then(response => {
-            /*const isSubscribed = false;
-            this.setState({ isSubscribed });*/
-            console.log("getter " + JSON.stringify(response.data));
-            console.log('------------------');
-        })
-        .catch(function (error) {
-            console.log('getter ' + error);
-            if( error.response ){
-                console.log(error.response.data); // => the response payload 
-            }
-        });
-        /////////////////////////////////
-
-
         const body = {training_id: this.props.route.params.trainingId}
-        console.log(JSON.stringify(body));
-        //axios.delete(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
-        console.log('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions');
-        console.log(this.props.route.params.token)
-        //TO_DO llamar al api gateway
-        await axios.delete('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
+        const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions'
+        axios.delete(url, {
+            data: body,
             headers: {
                 Authorization: this.props.route.params.token
-            }
+            },
         })
         .then(response => {
             const isSubscribed = false;
@@ -161,10 +177,10 @@ export default class TrainingScreen extends Component {
 
     async checkSubscriptionStatus() {
         if (!this.props.route.params.userData.is_athlete) {
-            console.log("no es atleta");
+           // console.log("no es atleta");
             const isSubscribed = false;
             this.setState({ isSubscribed });
-            console.log("seteo");
+            //console.log("seteo");
         } else {
             //axios.get(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', {
             axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', {
@@ -174,9 +190,9 @@ export default class TrainingScreen extends Component {
             })
             .then(response => {
                 const subscribedTrainings = response.data;
-                console.log(subscribedTrainings);//debug
+                //console.log(subscribedTrainings);//debug
                 const isSubscribed = (subscribedTrainings.filter(t => t.id === this.props.route.params.trainingId).length > 0);
-                console.log("isSubscribed " + isSubscribed);
+                //console.log("isSubscribed " + isSubscribed);
                 this.setState({ isSubscribed });
             })
             .catch(function (error) {
@@ -189,7 +205,6 @@ export default class TrainingScreen extends Component {
         this.loadTrainingInfo();
         this.checkFavoriteStatus();
         this.checkSubscriptionStatus();
-        console.log(this.props.route.params.trainingId);//debug
     }
 
     loadTrainingInfo() {     
@@ -229,11 +244,11 @@ export default class TrainingScreen extends Component {
     }
 
     handleActivityEditPress() {
-        alert("Edit pressed for activity");
+        this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: this.state.training, data:{id:this.state.trainer.id }, from:'TrainingScreen' });
     }
 
     handleDataEditPress() {
-        alert("Edit pressed for data");
+        this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: false, trainingId: this.props.route.params.trainingId })
     }
 
     handleDeletePress() {
@@ -244,15 +259,15 @@ export default class TrainingScreen extends Component {
         })
         .then(response => {
             alert('Entrenamiento eliminado');
-            this.props.navigation.replace('TrainingsListScreen');
+            this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'created'});//al pasársela así cree que es la segunda pantalla, no desde drawer?
         })
         .catch(function (error) {
             console.log('handleDeletePress ' + error);
         });
     }
 
-    handleBackToTrainings() {   //TO_DO usar esta para volver a trainings
-        this.props.navigation.navigate('TrainingsListScreen')
+    handleBackToTrainings() {
+        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'created'})
     }
 
     async getUriById(image_id) {

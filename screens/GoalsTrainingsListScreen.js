@@ -28,6 +28,9 @@ export default class GoalsTrainingsListScreen extends Component {
             goals: [],
             selectedGoalsIds: [],
         }
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.fetchData();
+        });
     }
 
     handleSelection(goal_id) {
@@ -211,12 +214,6 @@ export default class GoalsTrainingsListScreen extends Component {
             {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
             {!this.state.loading &&
                 <View style={styles.container}>
-                    <ButtonStandard 
-                        title="Refresh"
-                        onPress={this.fetchData}
-                        style={{marginTop: 20}}
-                    />
-
                     <ButtonStandard 
                         title="Continuar"
                         onPress={() => this.props.navigation.replace('TrainingScreen',

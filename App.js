@@ -22,10 +22,13 @@ import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import TrainingScreen from './screens/TrainingScreen'; 
 import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import ProfileEditionScreen from './screens/ProfileEditionScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+
+import FlashMessage  from 'react-native-flash-message';
 
 // Chat Test (borrar)
 import ChatTest from './screens/test_screens/ChatTest';
@@ -64,7 +67,8 @@ export default class App extends Component {
               headerStyle: {
                 backgroundColor: '#CCC2DC',
               },
-              headerTitleAlign: 'center'
+              headerTitleAlign: 'center',
+              // headerShown: false
             }}
           >
             <Stack.Screen 
@@ -195,6 +199,11 @@ export default class App extends Component {
               component={ProfileScreen}
             />
 
+            <Stack.Screen 
+              name="ProfileEditionScreen"
+              component={ProfileEditionScreen}
+            />
+
             <Stack.Screen
               name='TrainingScreen'
               component={TrainingScreen}
@@ -208,6 +217,7 @@ export default class App extends Component {
             />
           </Stack.Navigator>
         </NavigationContainer>
+        <FlashMessage position="bottom" />
       </PaperProvider>
     )
   };
