@@ -22,6 +22,12 @@ const MAX_ACTIVITIES = 20;
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
+const ListMode = {
+    trainingGoals_Selectable: 'selectable',
+    trainingGoals_ReadOnly: 'readOnly',
+    personalGoals: 'athlete'
+}
+
 export default class TrainingScreen extends Component {
     constructor(props) {
         super(props)
@@ -278,6 +284,14 @@ export default class TrainingScreen extends Component {
         }   
     }
 
+    onPressTrainingGoals() {
+        this.props.navigation.navigate('GoalsListScreen', { 
+            trainingData: this.state.training, 
+            id:this.props.route.params.userData.id,  
+            listMode: ListMode.trainingGoals_ReadOnly
+        })
+    }
+
     renderFooter() {
         return (
             <View style={{flexDirection: 'row', width: '100%', marginTop: 10, alignItems: 'center'}}>
@@ -294,8 +308,7 @@ export default class TrainingScreen extends Component {
                 <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center'}}>
                     <TextLinked
                         linkedText="Ver metas del entrenamiento"
-                        onPress={() => this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.training, id:this.props.route.params.userData.id })}
-                        //onPress={() => console.log(this.state.training) }
+                        onPress={this.onPressTrainingGoals}
                         style={{
                             marginRight: 20,
                         }}

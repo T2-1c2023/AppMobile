@@ -19,6 +19,12 @@ const Mode = {
     ReadOnly: 'readOnly'
 }
 
+const ListMode = {
+    trainingGoals_Selectable: 'selectable',
+    trainingGoals_ReadOnly: 'readOnly',
+    personalGoals: 'athlete'
+}
+
 export default class GoalsListScreen extends Component {
     constructor(props) {
         super(props)
@@ -40,6 +46,8 @@ export default class GoalsListScreen extends Component {
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.fetchData();
         });
+        this.ListMode = props.listMode
+        console.log("listMode " + this.ListMode);
         this.completed = this.props.route !== undefined ? this.props.route.params.completed : this.props.completed
     }
 
@@ -94,10 +102,25 @@ export default class GoalsListScreen extends Component {
         this.setState({ loading: false });
     }
 
+    setEditButton() {
+        if (this.ListMode == ListMode.trainingGoals_ReadOnly) {
+            this.props.navigation.setOptions({
+                headerRight: () => (
+                    <IconButton
+                        icon="pencil"
+                        color="#21005D"
+                        size={30}
+                        onPress={() => this.props.navigation.navigate('TrainingScreen', { data: this.tokenData, mode: Mode.Edit })}
+                    />
+                ),
+            });
+        }
+    }
+
     componentDidMount() {
         this.getTokenData();
         this.fetchData();
-        // TODO: averiguar como hacer para que se reinicie siempre que vuelva el foco a esta pantalla
+        this.setEditButton();
     }
 
     handleSearch (queryText) {
@@ -116,11 +139,7 @@ export default class GoalsListScreen extends Component {
             .catch(function (error) {
                 console.log("handleSearch " + error);
             });
-
-            
     }
-
-
     render() {
         return (
             <>
@@ -136,7 +155,6 @@ export default class GoalsListScreen extends Component {
                         () => {
                             console.log("data enviada al plus: " + this.tokenData);
                             this.props.navigation.navigate('GoalScreen', { data: this.tokenData, mode: Mode.Create })
-                            
                         }
                     }
                     onSubmit={this.handleSearch}
