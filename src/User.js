@@ -161,7 +161,7 @@ export async function updateUserData(newData, userId) {
         })
         .catch((error) => {
             console.log(error)
-            Alert.alert('Error al actualizar datos de usuario', error);
+            Alert.alert('Error al actualizar datos de usuario', error.message);
 			throw new Error('Failed to update user data');
         });
 }

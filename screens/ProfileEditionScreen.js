@@ -38,6 +38,7 @@ export default class ProfileEditionScreen extends Component {
             fullname: props.route.params.data.fullname, 
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
+            newPhone: props.route.params.data.phone_number
         }
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -67,7 +68,8 @@ export default class ProfileEditionScreen extends Component {
         const fullname = response.data.fullname;
         const newFullName = response.data.fullname;
         const phone = response.data.phone_number;
-        this.setState({ fullname, newFullName, phone })
+        const newPhone = response.data.phone_number;
+        this.setState({ fullname, newFullName, phone, newPhone });
     }
 
     renderProfilePic() {
@@ -141,7 +143,9 @@ export default class ProfileEditionScreen extends Component {
                 'Desea modificar su nombre de usuario a "' + newFullName + '"?',
                 '',
                 [
-                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Cancel', style: 'cancel', 
+                      onPress: () => {this.setState({ newFullName: fullname })}
+                    },
                     { text: 'Continuar', onPress: this.handleChangeUsername }
                 ],
                 { cancelable: false }
@@ -161,6 +165,42 @@ export default class ProfileEditionScreen extends Component {
             this.setState({ fullname: newFullName });
         } catch (error) {   
             console.log(error);
+            this.setState({ newFullName: this.state.fullname });
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
+    handlePhoneNumberFieldBlur = () => {
+        const { phone, newPhone } = this.state;
+        if (newPhone.trim() !== phone.trim()) {
+            Alert.alert(
+                'Desea modificar su número de teléfono a "' + newPhone + '"?',
+                '',
+                [
+                    { text: 'Cancel', style: 'cancel', 
+                      onPress: () => {this.setState({ newPhone: phone })}
+                    },
+                    { text: 'Continuar', onPress: this.handleChangePhone }
+                ],
+                { cancelable: false }
+            );
+        } else console.log('No hubo cambios')
+    };
+
+    handleChangePhone = async () => {
+        this.setState({ loading: true });
+        try {
+            const { newPhone } = this.state;
+            const userId = this.props.route.params.data.id;
+            const newData = {
+                phone_number: newPhone
+            }
+            await updateUserData(newData, userId);
+            this.setState({ phone: newPhone });
+        } catch (error) {   
+            console.log(error);
+            this.setState({ newPhone: this.state.phone });
         } finally {
             this.setState({ loading: false });
         }
@@ -197,9 +237,10 @@ export default class ProfileEditionScreen extends Component {
                 <TextInput
                     label={'Teléfono'}
                     keyboardType='numeric'
-                    onChangeText={phone => this.setState({ phone })}
+                    onChangeText={(newPhone) => this.setState({ newPhone })}
+                    onBlur={this.handlePhoneNumberFieldBlur}
                     theme={this.invalidPhone()? editionStyles.themeErrorColors : editionStyles.themeColors}
-                    value={this.state.phone}
+                    value={this.state.newPhone}
                     mode='flat'
                     style={editionStyles.inputText}
                 />
