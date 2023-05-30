@@ -29,10 +29,21 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import FlashMessage  from 'react-native-flash-message';
+import * as Notifications from 'expo-notifications';
 
 // Chat Test (borrar)
 import ChatTest from './screens/test_screens/ChatTest';
-import NotificationTest from './screens/test_screens/NotificationsTest';
+
+// Handler that will cause the notification to show the alert
+// (even when user is not currently using the application)
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+      // Configuration for when a notification is received
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false
+  })
+});
 
 const Stack = createNativeStackNavigator();
 
@@ -42,12 +53,38 @@ export default class App extends Component {
     this.state = {
       isLoading: true,
     };
+    // So that I can unsubscribe from listeners on componentWillUnmount
+    this.notificationListener = React.createRef();
+    this.responseListener = React.createRef();
   }
 
   async componentDidMount() {
     // await new Promise(resolve => setTimeout(resolve, 1000));
 
     this.setState({ isLoading: false });
+
+    // Set notification listeners
+    // When a notification is received by the app, the callback function is called. 
+    this.notificationListener.current = 
+    Notifications.addNotificationReceivedListener((notification) => {
+        this.setState({ notification });
+    });
+
+    // When user interacts with notification, the callback function is called.
+    this.responseListener.current =
+        Notifications.addNotificationResponseReceivedListener((response) => {
+            console.log(response);
+        });
+  }
+
+  componentWillUnmount() {
+    // Unsubscribe from listeners
+    Notifications.removeNotificationSubscription(
+      this.notificationListener.current
+    );
+    Notifications.removeNotificationSubscription(
+        this.responseListener.current
+    );
   }
 
   render() {
@@ -62,7 +99,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"NotificationTest"}
+          <Stack.Navigator initialRouteName={"LoginScreen"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -74,11 +111,6 @@ export default class App extends Component {
             <Stack.Screen 
               name='ChatTest'
               component={ChatTest}
-            />
-
-            <Stack.Screen 
-              name='NotificationTest'
-              component={NotificationTest}
             />
 
             <Stack.Screen

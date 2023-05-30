@@ -10,7 +10,8 @@ import { tokenManager } from '../src/TokenManager';
 import { googleSignIn } from '../src/GoogleAccount';
 // Navigation
 import { CommonActions } from '@react-navigation/native';
-
+// Notifications
+import { registerForPushNotificationsAsync } from '../src/Notifications';
 
 export default class RegisterScreen1 extends Component {
     constructor(props) {
@@ -35,7 +36,11 @@ export default class RegisterScreen1 extends Component {
             return
 
         this.setState({ loading: true })
-
+        
+        let expo_push_token = await registerForPushNotificationsAsync();
+        if (expo_push_token === undefined) {
+            expo_push_token = '';
+        }
         const data = {
             fullname: this.state.fullName,
             mail: this.state.email,
@@ -43,7 +48,8 @@ export default class RegisterScreen1 extends Component {
             blocked: false,
             is_trainer: this.props.route.params.trainer,
             is_athlete: this.props.route.params.athlete,
-            password: this.state.password
+            password: this.state.password,
+            expo_push_token: expo_push_token
         }
         await register(data);
 
@@ -61,7 +67,12 @@ export default class RegisterScreen1 extends Component {
         const is_athlete = this.props.route.params.athlete;
         const is_trainer = this.props.route.params.trainer;
 
-        await googleSignIn(phone_number, is_athlete, is_trainer);
+        const expo_push_token = await registerForPushNotificationsAsync();
+        if (expo_push_token === undefined) {
+            expo_push_token = '';
+        }
+
+        await googleSignIn(phone_number, is_athlete, is_trainer, expo_push_token);
 
         if (this.userIsLogged()) {
             this.props.navigation.replace('HomeScreen');
