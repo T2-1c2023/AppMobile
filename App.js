@@ -30,6 +30,10 @@ import { Provider as PaperProvider } from 'react-native-paper';
 
 import FlashMessage  from 'react-native-flash-message';
 
+// Chat Test (borrar)
+import ChatTest from './screens/test_screens/ChatTest';
+import NotificationTest from './screens/test_screens/NotificationsTest';
+
 const Stack = createNativeStackNavigator();
 
 export default class App extends Component {
@@ -58,7 +62,7 @@ export default class App extends Component {
     return (
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}
+          <Stack.Navigator initialRouteName={"NotificationTest"}
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#CCC2DC',
@@ -67,6 +71,16 @@ export default class App extends Component {
               // headerShown: false
             }}
           >
+            <Stack.Screen 
+              name='ChatTest'
+              component={ChatTest}
+            />
+
+            <Stack.Screen 
+              name='NotificationTest'
+              component={NotificationTest}
+            />
+
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}

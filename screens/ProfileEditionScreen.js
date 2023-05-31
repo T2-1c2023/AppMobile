@@ -9,14 +9,14 @@ import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
+// User changes
+import { updateUserData } from '../src/User';
 
 import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails, ButtonStandard } from '../src/styles/BaseComponents';
 import InterestsList from '../src/components/InterestsList';
 
 import { TextInput, HelperText } from 'react-native-paper';
-
-import { showMessage } from 'react-native-flash-message';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -35,10 +35,15 @@ export default class ProfileEditionScreen extends Component {
         this.state = {
             loading: false,
             profilePic: require('../assets/images/user_predet_image.png'),
-            fullname: props.route.params.data.fullname, // TODO: sacar?
+            fullname: props.route.params.data.fullname, 
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
+            newPhone: props.route.params.data.phone_number
         }
+
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.loadUserInfo();
+        });
     }
 
     async componentDidMount() {
@@ -60,9 +65,11 @@ export default class ProfileEditionScreen extends Component {
             this.setState({ profilePic: { uri: imageUrl } });
         }
 
-        const fullname = response.data.fullname
-        const phone = response.data.phone_number
-        this.setState({ fullname, phone })
+        const fullname = response.data.fullname;
+        const newFullName = response.data.fullname;
+        const phone = response.data.phone_number;
+        const newPhone = response.data.phone_number;
+        this.setState({ fullname, newFullName, phone, newPhone });
     }
 
     renderProfilePic() {
@@ -97,7 +104,6 @@ export default class ProfileEditionScreen extends Component {
         );
     }
 
-    // TODO: (extra) modularizar para que sea más legible. Llevarlo a Media.js
     uploadProfilePicture = async () => {
         this.setState({ loading: true });
         const imageLocalUri = await selectImage();
@@ -107,38 +113,17 @@ export default class ProfileEditionScreen extends Component {
 
             const imageId = await uploadImageFirebase(imageLocalUri);
 
-            // Update image id on back end
-            const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
-            const body = {
-                photo_id: imageId
+            try {
+                // Update image id on back end
+                const userId = this.props.route.params.data.id;
+                const newData = {
+                    photo_id: imageId
+                };
+                await updateUserData(newData, userId);
+            } catch (error) {
+                console.log(error);
+                // TODO: borrar foto de firebase
             }
-            // TODO: Es mejor hacer un load con await?
-            await axios.patch(url, body, {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-            })
-                .then((response) => {
-                    console.log(response.data);
-                    showMessage({
-                        message: 'Foto de perfil cambiada con éxito',
-                        type: 'success',
-                        duration: 3000,
-                        backgroundColor: '#00B386',
-                        color: '#FFFFFF'
-                    });
-                })
-                .catch((error) => {
-                    console.log(error)
-                    // TODO: borrar la foto subida a firebase
-                    showMessage({
-                        message: 'No se a podido actualizar la foto de perfil',
-                        type: 'warning',
-                        duration: 3000,
-                        backgroundColor: '#d94b32',
-                        color: '#FFFFFF'
-                    });
-                });
         }
         this.setState({ loading: false });
     }
@@ -158,7 +143,9 @@ export default class ProfileEditionScreen extends Component {
                 'Desea modificar su nombre de usuario a "' + newFullName + '"?',
                 '',
                 [
-                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Cancel', style: 'cancel', 
+                      onPress: () => {this.setState({ newFullName: fullname })}
+                    },
                     { text: 'Continuar', onPress: this.handleChangeUsername }
                 ],
                 { cancelable: false }
@@ -168,41 +155,55 @@ export default class ProfileEditionScreen extends Component {
 
     handleChangeUsername = async () => {
         this.setState({ loading: true });
-        // TODO: es el mismo código que el cambio de foto, modulariza en Users.js
-        const { newFullName } = this.state;
-
-        const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
-        const body = {
-            fullname: newFullName
-        }
-        
-        await axios.patch(url, body, {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
+        try {
+            const { newFullName } = this.state;
+            const userId = this.props.route.params.data.id;
+            const newData = {
+                fullname: newFullName
             }
-        })
-            .then((response) => {
-                console.log(response.data);
-                this.setState({ loading: false, fullname: newFullName });
-                showMessage({
-                    message: 'Nombre cambiado con éxito',
-                    type: 'success',
-                    duration: 3000,
-                    backgroundColor: '#00B386',
-                    color: '#FFFFFF'
-                });
-            })
-            .catch((error) => {
-                console.log(error)
-                this.setState({ loading: false });
-                showMessage({
-                    message: 'No se a podido actualizar la foto de perfil',
-                    type: 'warning',
-                    duration: 3000,
-                    backgroundColor: '#d94b32',
-                    color: '#FFFFFF'
-                });
-            });
+            await updateUserData(newData, userId);
+            this.setState({ fullname: newFullName });
+        } catch (error) {   
+            console.log(error);
+            this.setState({ newFullName: this.state.fullname });
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
+    handlePhoneNumberFieldBlur = () => {
+        const { phone, newPhone } = this.state;
+        if (newPhone.trim() !== phone.trim()) {
+            Alert.alert(
+                'Desea modificar su número de teléfono a "' + newPhone + '"?',
+                '',
+                [
+                    { text: 'Cancel', style: 'cancel', 
+                      onPress: () => {this.setState({ newPhone: phone })}
+                    },
+                    { text: 'Continuar', onPress: this.handleChangePhone }
+                ],
+                { cancelable: false }
+            );
+        } else console.log('No hubo cambios')
+    };
+
+    handleChangePhone = async () => {
+        this.setState({ loading: true });
+        try {
+            const { newPhone } = this.state;
+            const userId = this.props.route.params.data.id;
+            const newData = {
+                phone_number: newPhone
+            }
+            await updateUserData(newData, userId);
+            this.setState({ phone: newPhone });
+        } catch (error) {   
+            console.log(error);
+            this.setState({ newPhone: this.state.phone });
+        } finally {
+            this.setState({ loading: false });
+        }
     }
 
     renderNameField() {
@@ -236,9 +237,10 @@ export default class ProfileEditionScreen extends Component {
                 <TextInput
                     label={'Teléfono'}
                     keyboardType='numeric'
-                    onChangeText={phone => this.setState({ phone })}
+                    onChangeText={(newPhone) => this.setState({ newPhone })}
+                    onBlur={this.handlePhoneNumberFieldBlur}
                     theme={this.invalidPhone()? editionStyles.themeErrorColors : editionStyles.themeColors}
-                    value={this.state.phone}
+                    value={this.state.newPhone}
                     mode='flat'
                     style={editionStyles.inputText}
                 />
@@ -256,7 +258,7 @@ export default class ProfileEditionScreen extends Component {
     }
 
     onPressChangePassword = () => {
-        this.props.navigation.navigate('ChangePasswordScreen');
+        this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
 
     onPressEnrollFingerprint() {
