@@ -67,11 +67,10 @@ export default class RegisterScreen1 extends Component {
         const is_athlete = this.props.route.params.athlete;
         const is_trainer = this.props.route.params.trainer;
 
-        const expo_push_token = await registerForPushNotificationsAsync();
+        let expo_push_token = await registerForPushNotificationsAsync();
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
-
         await googleSignIn(phone_number, is_athlete, is_trainer, expo_push_token);
 
         if (this.userIsLogged()) {
