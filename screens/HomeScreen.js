@@ -80,7 +80,7 @@ class HomeScreen extends Component {
         )
     }
 
-    createGoalButton(postUrl) {
+    createGoalButton(mode) {
         return (
             <IconButton
                 icon="plus"
@@ -89,8 +89,7 @@ class HomeScreen extends Component {
                 onPress={() => this.props.navigation.navigate('GoalScreen', 
                     {
                         data: this.data, 
-                        mode: Mode.Create,
-                        postUrl: postUrl 
+                        mode: mode,
                     }
                 )}
             />
@@ -102,8 +101,7 @@ class HomeScreen extends Component {
     }
 
     createGoalButtonForAthlete() {
-        const postUrl = API_GATEWAY_URL + "athletes/" + this.id + "/personal-goals"
-        return this.createGoalButton(postUrl)
+        return this.createGoalButton(Mode.AthleteCreate)
     }
 
     // botón solo para atletas

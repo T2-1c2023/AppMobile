@@ -37,18 +37,15 @@ export const ListMode = {
 export default class GoalsListScreen extends Component {
     constructor(props) {
         super(props)
-        this.handlePress = this.handlePress.bind(this)
+        this.onPressGoal = this.onPressGoal.bind(this)
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
         this.getTokenData = this.getTokenData.bind(this)
 
-        // this.focusListener = this.props.navigation.addListener('focus', () => {
-        //     this.fetchData();
-        // })
-
-        const props2 = this.props.route !== undefined ? this.props.route.params : this.props 
-        console.log("props2 " + JSON.stringify(this.props2))
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.componentDidMount();
+        })
 
         this.props = props
 
@@ -82,7 +79,7 @@ export default class GoalsListScreen extends Component {
 
     }
 
-    handlePress = (goal) => {
+    onPressGoal(goal) {
         this.props.navigation.navigate('GoalScreen', { data: goal, mode: Mode.ReadOnly })
     }
 
@@ -132,19 +129,21 @@ export default class GoalsListScreen extends Component {
     // }
 
     loadGoals(url, params) {
+        console.log("token: " + tokenManager.getAccessToken())
         console.log("url: " + url)
-        axios.get(url, {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            },
-            params: params
-        })
+
+        const config = { 
+            headers: { Authorization: tokenManager.getAccessToken() }, 
+            params: params,
+        }
+
+        axios.get(url, config)
             .then((response) => {
                 this.setState({ goals: response.data });
                 console.log("goals retrieve: "+response.data);
             })
             .catch((error) => {
-                console.error("fetchData " + error);
+                console.error("loadGoals error " + error);
             })
     }
 
@@ -163,6 +162,8 @@ export default class GoalsListScreen extends Component {
             default:
                 break
         }
+
+        this.setState({ loading: false });
         // this.getTokenData();
         // this.fetchData();
         // this.setEditButton();
@@ -200,16 +201,14 @@ export default class GoalsListScreen extends Component {
                     style={styles.scrollViewWithFooter}
                 >
                     <View style={styles.container}>
-                        {/* <GoalsList
+                        <GoalsList
                             goals={this.state.goals}
                             style={{
                                 marginTop: 20,
                             }}
-                            onPress={this.handlePress}
-                            selectedGoalsIds={this.state.selectedGoalsIds}
-                            onSelection={this.handleSelection}
-                            onDeselection={this.handleDeselection}
-                        /> */}
+                            onPress={this.onPressGoal}
+                            selectable={false}
+                        />
                     </View>
                 </ScrollView>
             );

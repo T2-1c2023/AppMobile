@@ -12,10 +12,14 @@ import { IconButton } from 'react-native-paper';
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export const Mode = {
-    Create: 'create',
+    AthleteCreate: 'athleteCreate',
+    TrainerCreate: 'trainerCreate',
     Edit: 'edit',
     ReadOnly: 'readOnly'
 }
+
+// endpoint athlete create
+// const postUrl = API_GATEWAY_URL + "athletes/" + this.id + "/personal-goals"
 
 export default class GoalScreen extends Component {
     setTitle(title, subtitle) {
@@ -31,7 +35,7 @@ export default class GoalScreen extends Component {
     initializeVariables() {
         let state
         switch (this.mode) {
-            case Mode.Create:
+            case Mode.AthleteCreate || Mode.TrainerCreate:
                 state = {
                     title: '',
                     description: '',
@@ -125,45 +129,77 @@ export default class GoalScreen extends Component {
         alert('to be implemented')
     }
 
-    async handleCreatePress() {
-        this.setState({ loading: true })
-        console.log(tokenManager.getAccessToken());//TO_DO quitar
-        const { mediaLocalUris } = this.state;
+    getPostUrl() {
+        switch (this.mode) {
+            case Mode.TrainerCreate:
+                return API_GATEWAY_URL + "trainers/" + this.data.id + "/goals"
+            
+            case Mode.AthleteCreate:
+                return API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
 
-        const data = this.data
+            default:
+                throw new Error('Should not need a post url for this mode');
+        }
+    }
 
-        const uploadPromises = mediaLocalUris.map((localUri) => {
+    async sendPostRequest(multimediaIds) {
+        const url = this.getPostUrl()
+        const body = {
+            "title": this.state.title,
+            "description": this.state.description,
+            "objective": this.state.metric,
+            "multimedia_ids": multimediaIds
+        }
+        const header = { headers: { Authorization: tokenManager.getAccessToken() } }
+        const response = await axios.post(url, body, header)
+
+        console.log('Éxito');
+        console.log(response.data);
+    }
+
+    async getMultimediaIds() {
+        const uploadPromises = this.state.mediaLocalUris.map((localUri) => {
             return uploadImageFirebase(localUri);
         });
+        return Promise.all(uploadPromises)
+    }
+
+    async handleCreatePress() {
+        this.setState({ loading: true })
 
         try {
-            const ids = await Promise.all(uploadPromises)
-
-            const url = API_GATEWAY_URL + 'trainers/' + data.id + '/goals'
-            const body = {
-                "trainer_id": data.id,
-                "title": this.state.title,
-                "description": this.state.description,
-                "objective": this.state.metric,
-                "multimedia_ids": this.initialImageIds.concat(ids)
-            }
-            const header = { headers: { Authorization: tokenManager.getAccessToken() } }
-
-            const response = await axios.post(url, body, header)
-
-            console.log('Éxito');
-            console.log(response.data);
+            const multimediaIds = await this.getMultimediaIds()
+            await this.sendPostRequest(multimediaIds)
         } catch (error) {
             console.log(error);
         }
-
-        // TODO: mostrar alguna ventana que indique si la creación fue exitosa o no    
+   
         this.props.navigation.goBack();
         this.setState({ loading: false })
     }
 
     handleCancelPress() {
         this.props.navigation.goBack();
+    }
+
+    shouldRenderConfirmationButtons() {
+        return this.mode === Mode.AthleteCreate || this.mode === Mode.TrainerCreate || this.mode === Mode.Edit
+    }
+
+    renderConfirmationButtons() {
+        const creationMode = this.mode === Mode.AthleteCreate || this.mode === Mode.TrainerCreate
+
+        return (
+            <ConfirmationButtons
+                confirmationText={creationMode? "Crear" : "Guardar cambios"}
+                cancelText="Cancelar"
+                onConfirmPress={creationMode? this.handleCreatePress : this.handleSaveChangesPress}
+                onCancelPress={this.handleCancelPress}
+                style={{
+                    marginTop: 20,
+                }}
+            />
+        )
     }
 
     render() {
@@ -228,16 +264,8 @@ export default class GoalScreen extends Component {
                             }}
                         />
 
-                        {(this.mode == Mode.Create || this.mode == Mode.Edit) &&
-                            <ConfirmationButtons
-                                confirmationText={this.mode == Mode.Create? "Crear" : "Guardar cambios"}
-                                cancelText="Cancelar"
-                                onConfirmPress={this.mode == Mode.Create? this.handleCreatePress : this.handleSaveChangesPress}
-                                onCancelPress={this.handleCancelPress}
-                                style={{
-                                    marginTop: 20,
-                                }}
-                            />
+                        {this.shouldRenderConfirmationButtons() && 
+                            this.renderConfirmationButtons()
                         }
                     </View>
 

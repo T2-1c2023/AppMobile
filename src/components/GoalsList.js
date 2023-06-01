@@ -6,10 +6,10 @@ import { downloadImage } from '../../services/Media';
 class Goal extends Component {
     constructor(props) {
         super(props)
-        this.handleLongPress = this.handleLongPress.bind(this)
+        // this.handleLongPress = this.handleLongPress.bind(this)
         this.handlePress = this.handlePress.bind(this)
         this.state = {
-            selected: this.props.selected,
+            // selected: this.props.selected,
             uri: null
         }
     }
@@ -19,6 +19,8 @@ class Goal extends Component {
     }
 
     async loadImage() {
+
+        console.log("Goal: " + JSON.stringify(this.props.goal))
         const multimedia_ids = this.props.goal.multimedia_ids;
 
         if (multimedia_ids != null && multimedia_ids.length > 0) {
@@ -34,18 +36,18 @@ class Goal extends Component {
         }
     }
 
-    handleLongPress() {
-        if (this.props.canEdit) {
-            const selected = !this.state.selected
-            this.setState({ selected })
+    // handleLongPress() {
+    //     if (this.props.canEdit) {
+    //         const selected = !this.state.selected
+    //         this.setState({ selected })
 
-            if (selected) {
-                this.props.onSelection(this.props.goal.id)
-            } else {
-                this.props.onDeselection(this.props.goal.id)
-            }
-        }
-    }
+    //         if (selected) {
+    //             this.props.onSelection(this.props.goal.id)
+    //         } else {
+    //             this.props.onDeselection(this.props.goal.id)
+    //         }
+    //     }
+    // }
 
     handlePress() {
         this.props.onPress(this.props.goal)
@@ -56,8 +58,8 @@ class Goal extends Component {
             <Card
                 elevation={3}
                 style={this.state.selected? goalsStyles.cardSelected : goalsStyles.card}
-                onLongPress={this.handleLongPress}
-                onPress={this.props.selectionMode? this.handleLongPress : this.handlePress}
+                // onLongPress={this.handleLongPress}
+                onPress={this.props.selectable? () => console.log("TODO: press when selectable true") : this.handlePress}
             >
                 <View style={{ position: 'relative' }}>
                     {this.state.uri ? (
@@ -121,12 +123,13 @@ export default class GoalsList extends Component {
                         <Goal 
                             goal={goal} 
                             key={goal.id} 
-                            onPress={this.props.onPress} 
-                            onSelection={this.props.onSelection}
-                            onDeselection={this.props.onDeselection}
-                            selectionMode = {this.props.selectedGoalsIds != 0}
-                            selected = {this.props.selectedGoalsIds.includes(goal.id)}
-                            canEdit = {this.props.canEdit}
+                            onPress={this.props.onPress}
+                            selectable={this.props.selectable}
+                            // onSelection={this.props.onSelection}
+                            // onDeselection={this.props.onDeselection}
+                            // selectionMode = {this.props.selectedGoalsIds != 0}
+                            // selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                            // canEdit = {this.props.canEdit}
                         />
                     )}
                 </View>
@@ -138,11 +141,12 @@ export default class GoalsList extends Component {
                             goal={goal} 
                             key={goal.id} 
                             onPress={this.props.onPress}
-                            onSelection={this.props.onSelection}
-                            onDeselection={this.props.onDeselection}
-                            selectionMode = {this.props.selectedGoalsIds != 0}
-                            selected = {this.props.selectedGoalsIds.includes(goal.id)}
-                            canEdit = {this.props.canEdit}
+                            selectable={this.props.selectable}
+                            // onSelection={this.props.onSelection}
+                            // onDeselection={this.props.onDeselection}
+                            // selectionMode = {this.props.selectedGoalsIds != 0}
+                            // selected = {this.props.selectedGoalsIds.includes(goal.id)}
+                            // canEdit = {this.props.canEdit}
                         />
                     )}
                 </View>
