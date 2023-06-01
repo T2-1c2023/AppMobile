@@ -11,7 +11,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText}  from '../src/styles/BaseComponents';
 import { IconButton } from 'react-native-paper'
 import axios from 'axios';
-import Constants from 'expo-constants'
+import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 
@@ -33,6 +33,7 @@ export default class TrainingsListScreen extends Component {
             filteredLevelKeySelected: 0,
             filteredTypeKeyApplied: 0,
             filteredLevelKeyApplied: 0,
+            filteredTitle: '',
             trainingTypes: [],
             visibleFilter: false,
         }
@@ -45,6 +46,7 @@ export default class TrainingsListScreen extends Component {
         this.token = tokenManager.getAccessToken()
         this.type = ''
         this.data = ''
+        this.url = ''
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.refreshActivities();
         });
@@ -119,24 +121,13 @@ export default class TrainingsListScreen extends Component {
             visibleFilter: false,
         }, () => {
             const decodedToken = jwt_decode(this.token);
-            const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
+            let params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
             if (this.state.filteredTypeKeyApplied !== 0) { params.type_id = this.state.filteredTypeKeyApplied }
-            if (this.state.filteredLevelKeyApplied !== 0) { params.severity = this.state.filteredLevelKeyApplied }  
-            axios.get(API_GATEWAY_URL + 'trainings/', {
-                    headers: {
-                        Authorization: tokenManager.getAccessToken()
-                    },
-                    params: params
-                })
-                .then(response => {
-                    console.log("recibí response"); //debug
-                    console.log("response.data: " + response.data);//debug
-                    const trainings = response.data;
-                    this.setState({ trainings });
-                })
-                .catch(function (error) {
-                    console.log("handlesetfilters " + error);
-                });
+            if (this.state.filteredLevelKeyApplied !== 0) { params.severity = this.state.filteredLevelKeyApplied }
+            if (this.state.filteredTitle !== '') {params.title = this.state.filteredTitle}
+            console.log(params)
+            console.log(this.url)
+                this.refreshActivities(params)
             }
         )
 
@@ -151,31 +142,32 @@ export default class TrainingsListScreen extends Component {
         console.log("filter press");
         // agregar logica de pedido de filtrado a usuario
         this.setState({ visibleFilter: true })
-
-        
     }
 
 
-    refreshActivities() {
+    refreshActivities(params) {
+        if (params === undefined) {
+            params = {}
+        }
         console.log("refresh activities");
         const decodedToken = jwt_decode(this.token);
         let url = API_GATEWAY_URL
         switch(this.type) {
             case Type.All:
                 url += 'trainings';
-                params = {blocked: false}
+                params.blocked = false
                 break;
             case Type.Created:
                 url += 'trainings'
-                params = {trainer_id: decodedToken.id}
+                params.trainer_id= decodedToken.id
                 break;
             case Type.Enrolled:
                 url += 'athletes/' + this.data.id + '/subscriptions'
-                params = {blocked: false}
+                params.blocked = false
                 break;
             case Type.Favourites:
                 url += 'athletes/' + this.data.id + '/favorites'
-                params = {blocked: false}
+                params.blocked = false
                 break;
         }
         axios.get(url, {
@@ -187,6 +179,7 @@ export default class TrainingsListScreen extends Component {
             .then(response => {
                 console.log("recibí response activities"); //debug
                 const trainings = response.data;
+                //console.log(trainings)
                 this.setState({ trainings });
             })
             .catch(function (error) {
@@ -214,7 +207,7 @@ export default class TrainingsListScreen extends Component {
 
     handleSearch(searchText) {
 
-        console.log("searching for: ")
+        /*console.log("searching for: ")
         console.log(searchText)
 
         console.log("for training type: ") 
@@ -223,7 +216,8 @@ export default class TrainingsListScreen extends Component {
         
         console.log("for training level: ")
         console.log(this.state.filteredLevelKeySelected)
-        console.log(this.state.filteredLevelKeyApplied)
+        console.log(this.state.filteredLevelKeyApplied)*/
+        this.setState({filteredTitle: searchText}, this.handleSetFilters())
         
     }
 

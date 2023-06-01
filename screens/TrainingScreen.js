@@ -41,7 +41,9 @@ export default class TrainingScreen extends Component {
                 activities: [],
             },
             trainer: {},
-            trainerProfilePic: require('../assets/images/user_predet_image.png')
+            trainerProfilePic: require('../assets/images/user_predet_image.png'),
+            myScore: 2,
+            isAlreadyRated: false
         }
         this.emptyBodyWithToken = { headers: {
             Authorization: tokenManager.getAccessToken()
@@ -223,6 +225,42 @@ export default class TrainingScreen extends Component {
             .catch(function (error) {
                 console.log('loadTrainingInfo ' + error);
             });
+
+
+            const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
+            console.log(url);
+            const params = { athlete_id: this.props.route.params.userData.id }
+            console.log(params);
+            let result = false;
+            axios.get(url, {
+                headers: {
+                    Authorization: tokenManager.getAccessToken()
+                },
+                params: params
+            })
+                .then(response => {
+                    const data = response.data;
+                    console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
+                    if (data.length > 0) {
+                        this.myScore = data[0].score
+                        this.setState({myScore: data[0].score, isAlreadyRated: true})
+                        this.isAlreadyRated = true;
+                    } else {
+                        this.isAlreadyRated = false;
+                    }
+                        
+                })
+                .catch((error) => {
+                    if (error.response && error.response.status === 404) {
+                        console.error("ERROR")
+                        this.setState({isAlreadyRated : false})
+                    }
+                    console.error("alreadyRatedd " + error);
+                })
+
+
+
+
     }
 
     loadTrainerInfo(trainer_id) {
@@ -345,7 +383,11 @@ export default class TrainingScreen extends Component {
 
                 <TrainingData
                     training={this.state.training}
-                    canRate= {true}
+                    userId={this.props.route.params.userData.id}
+                    canRate= {true} //TO_DO sólo si es atleta. Si también es entrenador, si no lo creó él
+                    navigation={this.props.navigation}
+                    myScore={this.myScore}
+                    isAlreadyRated={this.state.isAlreadyRated}
                     style={{
                         marginTop: 20,
                     }}

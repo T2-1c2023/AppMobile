@@ -23,6 +23,8 @@ import TrainingScreen from './screens/TrainingScreen';
 import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
+import TrainingReviewScreen from './screens/TrainingReviewScreen';
+import TrainingsReviewsListScreen from './screens/TrainingsReviewsListScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -167,6 +169,11 @@ export default class App extends Component {
               })}
             />
 
+            <Stack.Screen 
+              name="TrainingsReviewsListScreen"
+              component={TrainingsReviewsListScreen}
+            />
+
             <Stack.Screen
               name="ChangePasswordScreen"
               component={ChangePasswordScreen}
@@ -199,6 +206,12 @@ export default class App extends Component {
                 ),
               })}
             />
+
+            <Stack.Screen 
+              name="TrainingReviewScreen"
+              component={TrainingReviewScreen}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

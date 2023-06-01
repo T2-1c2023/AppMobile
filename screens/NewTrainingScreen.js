@@ -124,6 +124,10 @@ export default class NewTrainingScreen extends Component {
         }
     }
 
+    allFieldsAreValid() {
+        return true;
+    }
+
     render() {
         return (
             <ScrollView 
@@ -203,6 +207,7 @@ export default class NewTrainingScreen extends Component {
                     cancelText="Cancelar"
                     onConfirmPress={this.handleCreatePress}
                     onCancelPress={this.handleCancelPress}
+                    disabled={!this.allFieldsAreValid()}
                     style={{
                         marginTop: 20,
                     }}

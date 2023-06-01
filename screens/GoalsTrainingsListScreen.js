@@ -9,8 +9,15 @@ import axios from 'axios';
 import Constants from 'expo-constants'
 import { ActivityIndicator } from 'react-native-paper';
 import jwt_decode from 'jwt-decode';
+//import Mode from './GoalScreen';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+
+const Mode = {
+    Create: 'create',
+    Edit: 'edit',
+    ReadOnly: 'readOnly'
+}
 
 export default class GoalsTrainingsListScreen extends Component {
     constructor(props) {
@@ -182,7 +189,7 @@ export default class GoalsTrainingsListScreen extends Component {
                 { this.canEdit() &&
                     <SearchInputWithIcon
                         onIconPress={
-                            () => this.props.navigation.navigate('GoalScreen', { data: jwt_decode(tokenManager.getAccessToken()) })
+                            () => this.props.navigation.navigate('GoalScreen', { data: jwt_decode(tokenManager.getAccessToken()), mode: Mode.Create})
                         }
                         onSubmit={this.handleSearch}
                         placeholder="Buscar por título"
