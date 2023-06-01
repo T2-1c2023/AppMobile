@@ -9,8 +9,12 @@ import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 import Constants from 'expo-constants'
+import { HelperText } from 'react-native-paper';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+
+const MIN_TRAINING_TITLE = 2;       //TODO a definir
+const MIN_TRAINING_DESCRIPTION = 2; //TODO a definir
 
 export default class NewTrainingScreen extends Component {
     constructor(props) {
@@ -18,9 +22,11 @@ export default class NewTrainingScreen extends Component {
         this.handleCreatePress = this.handleCreatePress.bind(this)
         this.handleCancelPress = this.handleCancelPress.bind(this)
         this.isNew = this.props.route.params.isNew
-        this.emptyBodyWithToken = { headers: {
-            Authorization: tokenManager.getAccessToken()
-        }}
+        this.emptyBodyWithToken = {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        }
         this.state = {
             trainingTypes: {},
             title: '',
@@ -49,19 +55,19 @@ export default class NewTrainingScreen extends Component {
         const data = await this.getTrainingsTypes()
 
         const trainingTypes = data.map((trainingType) => {
-            return {"key": trainingType.id, "value": trainingType.description}
+            return { "key": trainingType.id, "value": trainingType.description }
         })
         console.log(trainingTypes)
 
         this.setState({ trainingTypes })
     }
 
-    loadTrainingInfo() {     
+    loadTrainingInfo() {
         axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, this.emptyBodyWithToken)
             .then(response => {
                 const training = response.data;
                 console.log(training);//debug
-                this.setState({ 
+                this.setState({
                     initialTitle: training.title,
                     initialDescription: training.description,
                     initialLevel: this.levelStrToInt(training.severity),
@@ -83,7 +89,7 @@ export default class NewTrainingScreen extends Component {
         }
         //console.log(body);
         //console.log(API_GATEWAY_URL + 'trainings')
-        
+
         try {
             let response;
             if (this.isNew) {
@@ -94,9 +100,9 @@ export default class NewTrainingScreen extends Component {
             console.log(response.status)
             if (response.status === 200 || response.status === 201) {
                 if (this.isNew) {
-                    this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data:{id:this.state.trainerId, from:'NewTrainingScreen' } });
+                    this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data: { id: this.state.trainerId, from: 'NewTrainingScreen' } });
                 } else {
-                    this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created'})
+                    this.props.navigation.navigate('TrainingsListScreen', { data: jwt_decode(tokenManager.getAccessToken()), type: 'created' })
                 }
             }
         } catch (error) {
@@ -112,107 +118,162 @@ export default class NewTrainingScreen extends Component {
         console.error(error);
     }
 
-    levelStrToInt (levelStr) {
+    levelStrToInt(levelStr) {
         switch (levelStr) {
             case 'basic':
-              return 1
+                return 1
             case 'intermediate':
-              return 2
+                return 2
             case 'advanced':
-              return 3
+                return 3
         }
     }
 
     allFieldsAreValid() {
-        return true;
+        const { title, description, trainingTypeId } = this.state;
+
+        const titleIsValid = title.length >= MIN_TRAINING_TITLE
+        const descriptionIsValid = description.length >= MIN_TRAINING_DESCRIPTION
+        const trainingTypeIdIsValid = trainingTypeId > 0
+
+        return titleIsValid && descriptionIsValid && trainingTypeIdIsValid
+    }
+
+    titleWarningMode() {
+        return this.state.title.length > 0 && this.state.title.length < MIN_TRAINING_TITLE
+    }
+
+    descriptionWarningMode() {
+        return this.state.description.length > 0 && this.state.description.length < MIN_TRAINING_DESCRIPTION
+    }
+
+    trainingTypeWarningMode() {
+        return this.state.title.length >= MIN_TRAINING_TITLE && this.state.description.length >= MIN_TRAINING_DESCRIPTION && this.state.trainingTypeId == 0
     }
 
     render() {
         return (
-            <ScrollView 
+            <ScrollView
                 automaticallyAdjustKeyboardInsets={true}
                 style={styles.scrollView}
             >
-            
-            <View style={styles.container}>
-                
-                <TextBox 
-                    title="Título"
-                    onChangeText={(title) => this.setState({ title })}
-                    maxLength={60}
-                    placeholder={this.state.initialTitle}
-                    style={{
-                        marginTop: 5,
-                    }}
-                />
-                
-                <TextBox 
-                    title="Descripción"
-                    onChangeText={(description) => this.setState({ description })}
-                    maxLength={250}
-                    placeholder={this.state.initialDescription}
-                    style={{
-                        marginTop: 5,
-                    }}
-                />
 
-                <DividerWithLeftText
-                    text="Tipo"
-                    style={{
-                        marginTop: 5,
-                    }}
-                />
+                <View style={styles.container}>
 
-                <SelectList
-                    setSelected={(trainingTypeId) => this.setState({ trainingTypeId })} 
-                    data={this.state.trainingTypes} 
-                    save="key"
-                    placeholder="Tipo de entrenamiento"
-                    notFoundText="No se encontraron resultados"
-                    searchPlaceholder="Buscar"
-                    boxStyles={{borderRadius: 5, width: 350, marginTop: 10}}
-                    inputStyles={{color: 'black'}}
-                />
+                    <TextBox
+                        title="Título"
+                        onChangeText={(title) => this.setState({ title })}
+                        maxLength={60}
+                        placeholder={this.state.initialTitle}
+                        warningMode={true}
+                        style={{
+                            marginTop: 5,
+                        }}
+                    />
 
-                <DividerWithLeftText
-                    text="Nivel"
-                    style={{
-                        marginTop: 10,
-                    }}
-                />
+                    {this.titleWarningMode() &&
+                        <HelperText
+                            type="error"
+                            style={{
+                                color: 'red',
+                                width: 250,
+                            }}
+                        >
+                            El título debe ser más largo
+                        </HelperText>
+                    }
 
-                <LevelInput 
-                    initialLevel={this.state.initialLevel}
-                    setSelected={(level) => this.setState({ level })}
-                    style={{
-                        marginTop: 10,
-                    }}
-                />
+                    <TextBox
+                        title="Descripción"
+                        onChangeText={(description) => this.setState({ description })}
+                        maxLength={250}
+                        placeholder={this.state.initialDescription}
+                        style={{
+                            marginTop: 5,
+                        }}
+                    />
 
-                <DividerWithLeftText
-                    text="Ubicación"
-                    style={{
-                        marginTop: 10,
-                    }}
-                />
+                    {this.descriptionWarningMode() &&
+                        <HelperText
+                            type="error"
+                            style={{
+                                color: 'red',
+                                width: 250,
+                            }}
+                        >
+                            La descripción debe ser más larga
+                        </HelperText>
+                    }
 
-                {/* TODO: reemplazar por componente de input de ubicación
+                    <DividerWithLeftText
+                        text="Tipo"
+                        style={{
+                            marginTop: 5,
+                        }}
+                    />
+
+                    {this.trainingTypeWarningMode() &&
+                        <HelperText
+                            type="error"
+                            style={{
+                                color: 'red',
+                                width: 250,
+                            }}
+                        >
+                            Debe seleccionar un tipo
+                        </HelperText>
+                    }
+
+                    <SelectList
+                        setSelected={(trainingTypeId) => this.setState({ trainingTypeId })}
+                        data={this.state.trainingTypes}
+                        save="key"
+                        placeholder="Tipo de entrenamiento"
+                        notFoundText="No se encontraron resultados"
+                        searchPlaceholder="Buscar"
+                        boxStyles={{ borderRadius: 5, width: 350, marginTop: 10 }}
+                        inputStyles={{ color: 'black' }}
+                    />
+
+                    <DividerWithLeftText
+                        text="Nivel"
+                        style={{
+                            marginTop: 10,
+                        }}
+                    />
+
+                    <LevelInput
+                        initialLevel={this.state.initialLevel}
+                        setSelected={(level) => this.setState({ level })}
+                        style={{
+                            marginTop: 10,
+                        }}
+                    />
+
+                    <DividerWithLeftText
+                        text="Ubicación"
+                        style={{
+                            marginTop: 10,
+                        }}
+                    />
+
+                    {/* TODO: reemplazar por componente de input de ubicación
                 -------------------- */}
-                <Text>To be implemented </Text>
-                {/* -------------------- */}
+                    <Text>To be implemented </Text>
+                    {/* -------------------- */}
 
-                <ConfirmationButtons 
-                    confirmationText={this.isNew? "Crear entrenamiento" : "Editar entrenamiento"}
-                    cancelText="Cancelar"
-                    onConfirmPress={this.handleCreatePress}
-                    onCancelPress={this.handleCancelPress}
-                    disabled={!this.allFieldsAreValid()}
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
-            </View>
-              
+                    <ConfirmationButtons
+                        confirmationText={this.isNew ? "Crear entrenamiento" : "Editar entrenamiento"}
+                        cancelText="Cancelar"
+                        onConfirmPress={this.handleCreatePress}
+                        onCancelPress={this.handleCancelPress}
+                        disabled={!this.allFieldsAreValid()}
+                        style={{
+                            marginTop: 20,
+                        }}
+                    />
+                </View>
+
             </ScrollView>
         );
     }
