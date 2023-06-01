@@ -5,8 +5,12 @@ import jwt_decode from 'jwt-decode';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // Screens 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
+
 import GoalsListScreen from './GoalsListScreen';
-import GoalScreen from './GoalScreen';
+import { ListMode } from './GoalsListScreen';
+
+import { Mode } from './GoalScreen';
+
 import ProfileScreen from './ProfileScreen';
 import ProfileEditionScreen from './ProfileEditionScreen';
 import TrainingsListScreen from './TrainingsListScreen';
@@ -23,7 +27,9 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 import { CommonActions } from '@react-navigation/native';
 
+import Constants from 'expo-constants'
 const Drawer = createDrawerNavigator();
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 function Test() {
     return (
@@ -36,6 +42,8 @@ function Test() {
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
+        this.createGoalButtonForAthlete = this.createGoalButtonForAthlete.bind(this)
+
         this.data = jwt_decode(tokenManager.getAccessToken())
     }
 
@@ -72,11 +80,59 @@ class HomeScreen extends Component {
         )
     }
 
+    createGoalButton(postUrl) {
+        return (
+            <IconButton
+                icon="plus"
+                iconColor="black"
+                size={30}
+                onPress={() => this.props.navigation.navigate('GoalScreen', 
+                    {
+                        data: this.data, 
+                        mode: Mode.Create,
+                        postUrl: postUrl 
+                    }
+                )}
+            />
+        )
+    }
+
+    createGoalButtonForTrainer() {
+
+    }
+
+    createGoalButtonForAthlete() {
+        const postUrl = API_GATEWAY_URL + "athletes/" + this.id + "/personal-goals"
+        return this.createGoalButton(postUrl)
+    }
+
+    // botón solo para atletas
+    renderPersonalGoalsButton() {
+        return (
+            <Drawer.Screen name="Metas personales"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                    headerRight: this.createGoalButtonForAthlete
+                }}
+            >
+                {() => <GoalsListScreen 
+                        data={this.data} 
+                        navigation={this.props.navigation} 
+                        completed={false} 
+                        listMode={ListMode.AthletePersonalGoalsLeft} />}
+            </Drawer.Screen>
+        )
+    }
+
     render() {
         return (
             <Drawer.Navigator 
                 drawerContent={this.CustomDrawerContent} 
-                initialRouteName="Mi Perfil"
+                initialRouteName="Metas personales"
                 screenOptions={{
                     drawerActiveTintColor: '#5925b0',
                     drawerStyle: {
@@ -108,18 +164,7 @@ class HomeScreen extends Component {
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
-                <Drawer.Screen name="Metas"
-                    options={{
-                        drawerIcon: () => (
-                            <View style={styles.drawerIconContainer}>
-                                <FontAwesome name="bullseye" size={24} color="black" />
-                            </View>
-                        )
-                        
-                    }}
-                >
-                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} completed={false}/>}
-                </Drawer.Screen>
+                {this.data.is_athlete && this.renderPersonalGoalsButton()}
 
                 {this.data.is_athlete ? 
                     <Drawer.Screen 
@@ -133,7 +178,7 @@ class HomeScreen extends Component {
                             headerRight: () =>
                                 <IconButton
                                     icon="plus"
-                                    color="black"
+                                    iconColor="black"
                                     size={30}
                                     onPress={() => 
                                         this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})

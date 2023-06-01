@@ -9,20 +9,29 @@ import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 import Constants from 'expo-constants'
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, IconButton } from 'react-native-paper';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-const Mode = { 
-    Create: 'create', 
-    Edit: 'edit', 
+const Mode = {
+    Create: 'create',
+    Edit: 'edit',
     ReadOnly: 'readOnly'
 }
 
-const ListMode = {
-    trainingGoals_Selectable: 'selectable',
-    trainingGoals_ReadOnly: 'readOnly',
-    personalGoals: 'athlete'
+export const ListMode = {
+    TrainerGoalsCreated: 'trainerGoalsCreated',
+
+    AthletePersonalGoalsLeft: 'athletePersonalGoalsLeft',
+    AthletePersonalGoalsCompleted: 'athletePersonalGoalsCompleted',
+    
+    AthleteAllTrainingsGoalsLeft: 'athleteAllTrainingsGoalsLeft',
+    AthletesAllTrainingsGoalsCompleted: 'athletesAllTrainingsGoalsCompleted',
+    
+    AthleteSingleTrainingGoalsLeft: 'athleteSingleTrainingGoalsLeft',
+    
+    CreatorTrainingGoals: 'creatorTrainingGoals',
+    CreatorTrainingGoalsEdition: 'creatorTrainingGoalsEdition'
 }
 
 export default class GoalsListScreen extends Component {
@@ -33,22 +42,27 @@ export default class GoalsListScreen extends Component {
         this.handleDeselection = this.handleDeselection.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
         this.getTokenData = this.getTokenData.bind(this)
+
+        // this.focusListener = this.props.navigation.addListener('focus', () => {
+        //     this.fetchData();
+        // })
+
+        const props2 = this.props.route !== undefined ? this.props.route.params : this.props 
+        console.log("props2 " + JSON.stringify(this.props2))
+
+        this.props = props
+
+        this.data = this.props.data
+
         this.state = {
             loading: true,
-            title: '',
-            description: '',
-            metric: '',
-            days: 0,
             goals: [],
-            selectedGoalsIds: [],
         }
-        this.tokenData = props.data
-        this.focusListener = this.props.navigation.addListener('focus', () => {
-            this.fetchData();
-        });
-        this.ListMode = props.listMode
-        console.log("listMode " + this.ListMode);
-        this.completed = this.props.route !== undefined ? this.props.route.params.completed : this.props.completed
+        this.listMode = this.props.listMode
+
+        console.log("props " + JSON.stringify(this.props))
+        console.log("data " + JSON.stringify(this.data))
+        console.log("listMode " + this.listMode)
     }
 
     getTokenData() {
@@ -65,7 +79,7 @@ export default class GoalsListScreen extends Component {
     }
 
     handleDeselection(goal_id) {  //TO_DO ver si se puede quitar esta función
-        
+
     }
 
     handlePress = (goal) => {
@@ -89,47 +103,78 @@ export default class GoalsListScreen extends Component {
             params: {
                 completed: this.completed
             }
-         })
-        .then((response) => {
-            this.setState({ goals: response.data});
-            console.log(response.data);
-        }) 
-        .catch((error) => {
-            console.error("fetchData " + error);
         })
-        
+            .then((response) => {
+                this.setState({ goals: response.data });
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error("fetchData " + error);
+            })
+
 
         this.setState({ loading: false });
     }
 
-    setEditButton() {
-        if (this.ListMode == ListMode.trainingGoals_ReadOnly) {
-            this.props.navigation.setOptions({
-                headerRight: () => (
-                    <IconButton
-                        icon="pencil"
-                        color="#21005D"
-                        size={30}
-                        onPress={() => this.props.navigation.navigate('TrainingScreen', { data: this.tokenData, mode: Mode.Edit })}
-                    />
-                ),
-            });
-        }
+    // setEditButton() {
+    //     if (this.ListMode == ListMode.trainingGoals_ReadOnly) {
+    //         this.props.navigation.setOptions({
+    //             headerRight: () => (
+    //                 <IconButton
+    //                     icon="pencil"
+    //                     color="#21005D"
+    //                     size={30}
+    //                     onPress={() => this.props.navigation.navigate('TrainingScreen', { data: this.tokenData, mode: Mode.Edit })}
+    //                 />
+    //             ),
+    //         });
+    //     }
+    // }
+
+    loadGoals(url, params) {
+        console.log("url: " + url)
+        axios.get(url, {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            },
+            params: params
+        })
+            .then((response) => {
+                this.setState({ goals: response.data });
+                console.log("goals retrieve: "+response.data);
+            })
+            .catch((error) => {
+                console.error("fetchData " + error);
+            })
+    }
+
+    loadEditSymbol() {
+
     }
 
     componentDidMount() {
-        this.getTokenData();
-        this.fetchData();
-        this.setEditButton();
+        switch (this.listMode) {
+            case ListMode.AthletePersonalGoalsLeft:
+                const params = {completed: false}
+                const url = API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
+
+                this.loadGoals(url, params)
+                break
+            default:
+                break
+        }
+        // this.getTokenData();
+        // this.fetchData();
+        // this.setEditButton();
     }
 
-    handleSearch (queryText) {
-        console.log(API_GATEWAY_URL + "trainers/" + this.tokenData.id +"/goals");
-        axios.get(API_GATEWAY_URL + "trainers/" + this.tokenData.id +"/goals", {
+    handleSearch(queryText) {
+        console.log(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals");
+        axios.get(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals", {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             }
-            })
+        })
             .then(response => {
                 const goals = response.data;
                 console.log("goals " + goals);
@@ -141,59 +186,33 @@ export default class GoalsListScreen extends Component {
             });
     }
     render() {
-        return (
-            <>
-            <ScrollView 
-                automaticallyAdjustKeyboardInsets={true}
-                style={styles.scrollViewWithFooter}
-            >
-            
-            <View style={styles.container}>
-                
-                <SearchInputWithIcon
-                    onIconPress={
-                        () => {
-                            console.log("data enviada al plus: " + this.tokenData);
-                            this.props.navigation.navigate('GoalScreen', { data: this.tokenData, mode: Mode.Create })
-                        }
-                    }
-                    onSubmit={this.handleSearch}
-                    placeholder="Buscar por título"
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
 
-                {this.state.loading ? 
-                    <View style={{marginTop: 80}}>
-                        <ActivityIndicator size="large" color="#21005D"/>
-                    </View>
-                    :
-                    <GoalsList 
-                    goals={this.state.goals}
-                    style={{
-                        marginTop: 20,
-                    }}
-                    onPress={this.handlePress}
-                    selectedGoalsIds={this.state.selectedGoalsIds}
-                    onSelection={this.handleSelection}
-                    onDeselection={this.handleDeselection}
-                    />
-                }
-
-            </View>
-            {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
-            {/* {!this.state.loading &&
-                <View style={styles.container}>
-                    <ButtonStandard 
-                        title="Refresh"
-                        onPress={this.fetchData}
-                        style={{marginTop: 20}}
-                    />
+        if (this.state.loading) {
+            return (
+                <View style={{ marginTop: 80 }}>
+                    <ActivityIndicator size="large" color="#21005D" />
                 </View>
-            } */}
-            </ScrollView>
-            </>
-        );
+            )
+        } else {
+            return (
+                <ScrollView
+                    automaticallyAdjustKeyboardInsets={true}
+                    style={styles.scrollViewWithFooter}
+                >
+                    <View style={styles.container}>
+                        {/* <GoalsList
+                            goals={this.state.goals}
+                            style={{
+                                marginTop: 20,
+                            }}
+                            onPress={this.handlePress}
+                            selectedGoalsIds={this.state.selectedGoalsIds}
+                            onSelection={this.handleSelection}
+                            onDeselection={this.handleDeselection}
+                        /> */}
+                    </View>
+                </ScrollView>
+            );
+        }
     }
 }
