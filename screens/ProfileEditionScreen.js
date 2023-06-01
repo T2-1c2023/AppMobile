@@ -2,19 +2,21 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import styles from '../src/styles/styles';
 import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator } from 'react-native-paper';
 // Image upload
 import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
+// User changes
+import { updateUserData } from '../src/User';
 
 import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails, ButtonStandard } from '../src/styles/BaseComponents';
 import InterestsList from '../src/components/InterestsList';
 
 import { TextInput, HelperText } from 'react-native-paper';
-
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -31,10 +33,17 @@ export default class ProfileEditionScreen extends Component {
         }}
 
         this.state = {
+            loading: false,
             profilePic: require('../assets/images/user_predet_image.png'),
-            fullname: props.route.params.data.fullname,
+            fullname: props.route.params.data.fullname, 
+            newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
+            newPhone: props.route.params.data.phone_number
         }
+
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.loadUserInfo();
+        });
     }
 
     async componentDidMount() {
@@ -56,9 +65,11 @@ export default class ProfileEditionScreen extends Component {
             this.setState({ profilePic: { uri: imageUrl } });
         }
 
-        const fullname = response.data.fullname
-        const phone = response.data.phone_number
-        this.setState({ fullname, phone })
+        const fullname = response.data.fullname;
+        const newFullName = response.data.fullname;
+        const phone = response.data.phone_number;
+        const newPhone = response.data.phone_number;
+        this.setState({ fullname, newFullName, phone, newPhone });
     }
 
     renderProfilePic() {
@@ -87,46 +98,34 @@ export default class ProfileEditionScreen extends Component {
             'Editar foto de perfil',
             'Desea modificar la foto de perfil?',
             [
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Continuar',
-                    onPress: async () => {
-                        this.uploadProfilePicture();
-                    }
-                }
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Continuar', onPress: this.uploadProfilePicture }
             ]
         );
     }
 
-    // TODO: (extra) modularizar para que sea más legible. Llevarlo a Media.js
     uploadProfilePicture = async () => {
+        this.setState({ loading: true });
         const imageLocalUri = await selectImage();
+        
         if (imageLocalUri != null) {
             this.setState({ profilePic: { uri: imageLocalUri } });
 
             const imageId = await uploadImageFirebase(imageLocalUri);
 
-            // Update image id on back end
-            const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
-            const body = {
-                photo_id: imageId
+            try {
+                // Update image id on back end
+                const userId = this.props.route.params.data.id;
+                const newData = {
+                    photo_id: imageId
+                };
+                await updateUserData(newData, userId);
+            } catch (error) {
+                console.log(error);
+                // TODO: borrar foto de firebase
             }
-            // TODO: Es mejor hacer un load con await?
-            axios.patch(url, body, {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-            })
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.log(error)
-                });
         }
+        this.setState({ loading: false });
     }
 
     nameEmpty() {
@@ -137,14 +136,85 @@ export default class ProfileEditionScreen extends Component {
         return this.state.phone == '';
     }
 
+    handleNameFieldBlur = () => {
+        const { fullname, newFullName } = this.state;
+        if (newFullName.trim() !== fullname.trim()) {
+            Alert.alert(
+                'Desea modificar su nombre de usuario a "' + newFullName + '"?',
+                '',
+                [
+                    { text: 'Cancel', style: 'cancel', 
+                      onPress: () => {this.setState({ newFullName: fullname })}
+                    },
+                    { text: 'Continuar', onPress: this.handleChangeUsername }
+                ],
+                { cancelable: false }
+            );
+        } else console.log('No hubo cambios')
+    };
+
+    handleChangeUsername = async () => {
+        this.setState({ loading: true });
+        try {
+            const { newFullName } = this.state;
+            const userId = this.props.route.params.data.id;
+            const newData = {
+                fullname: newFullName
+            }
+            await updateUserData(newData, userId);
+            this.setState({ fullname: newFullName });
+        } catch (error) {   
+            console.log(error);
+            this.setState({ newFullName: this.state.fullname });
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
+    handlePhoneNumberFieldBlur = () => {
+        const { phone, newPhone } = this.state;
+        if (newPhone.trim() !== phone.trim()) {
+            Alert.alert(
+                'Desea modificar su número de teléfono a "' + newPhone + '"?',
+                '',
+                [
+                    { text: 'Cancel', style: 'cancel', 
+                      onPress: () => {this.setState({ newPhone: phone })}
+                    },
+                    { text: 'Continuar', onPress: this.handleChangePhone }
+                ],
+                { cancelable: false }
+            );
+        } else console.log('No hubo cambios')
+    };
+
+    handleChangePhone = async () => {
+        this.setState({ loading: true });
+        try {
+            const { newPhone } = this.state;
+            const userId = this.props.route.params.data.id;
+            const newData = {
+                phone_number: newPhone
+            }
+            await updateUserData(newData, userId);
+            this.setState({ phone: newPhone });
+        } catch (error) {   
+            console.log(error);
+            this.setState({ newPhone: this.state.phone });
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
     renderNameField() {
         return (
             <React.Fragment>
                 <TextInput
                     label={'Nombre y apellido'}
-                    onChangeText={fullname => this.setState({ fullname })}
+                    onChangeText={(newFullName) => this.setState({ newFullName })}
+                    onBlur={this.handleNameFieldBlur}
                     theme={this.nameEmpty()? editionStyles.themeErrorColors : editionStyles.themeColors}
-                    value={this.state.fullname}
+                    value={this.state.newFullName}
                     mode='flat'
                     style={editionStyles.inputText}
                 />
@@ -167,9 +237,10 @@ export default class ProfileEditionScreen extends Component {
                 <TextInput
                     label={'Teléfono'}
                     keyboardType='numeric'
-                    onChangeText={phone => this.setState({ phone })}
+                    onChangeText={(newPhone) => this.setState({ newPhone })}
+                    onBlur={this.handlePhoneNumberFieldBlur}
                     theme={this.invalidPhone()? editionStyles.themeErrorColors : editionStyles.themeColors}
-                    value={this.state.phone}
+                    value={this.state.newPhone}
                     mode='flat'
                     style={editionStyles.inputText}
                 />
@@ -187,61 +258,11 @@ export default class ProfileEditionScreen extends Component {
     }
 
     onPressChangePassword = () => {
-        this.props.navigation.navigate('ChangePasswordScreen');
+        this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
 
     onPressEnrollFingerprint() {
         console.log('TODO: enroll fingerprint');
-    }
-
-    // TODO: (extra) modularizar para que sea más legible?
-    uploadProfilePicture = async () => {
-        const imageLocalUri = await selectImage();
-        if (imageLocalUri != null) {
-            this.setState({ profilePic: { uri: imageLocalUri } });
-
-            const imageId = await uploadImageFirebase(imageLocalUri);
-
-            // Update image id on back end
-            const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id;
-            const body = {
-                photo_id: imageId
-            }
-            // TODO: Es mejor hacer un load con await?
-            axios.patch(url, body, {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                }
-            })
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.log(error)
-                });
-        }
-    }
-
-
-    // Lets user choose a profile picture from library
-    handleProfilePicturePress = async () => {
-
-        Alert.alert(
-            'Editar foto de perfil',
-            'Desea modificar la foto de perfil?',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Continuar',
-                    onPress: async () => {
-                        this.uploadProfilePicture();
-                    }
-                }
-            ]
-        );
     }
 
     renderLinks() {
@@ -262,25 +283,34 @@ export default class ProfileEditionScreen extends Component {
     }
 
     render() {
-        return (
-            <ScrollView
-                automaticallyAdjustKeyboardInsets={true}
-                style={styles.scrollView}
-            >
-                <View style={styles.container}>
-                    {this.renderProfilePic()}
-                    {this.renderNameField()}
-
-                    {/* TODO: reemplazar por input de nueva ubicación */}
-                    <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
-                    
-                    {this.renderPhoneField()}
-                    <View style={editionStyles.divider} />
-
-                    {this.renderLinks()}
+        if (this.state.loading) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#21005D" />
+                    <Text style={{marginTop: 30}}>Realizando cambio...</Text>
                 </View>
-            </ScrollView>
-        )
+            )
+        } else {
+            return (
+                <ScrollView
+                    automaticallyAdjustKeyboardInsets={true}
+                    style={styles.scrollView}
+                >
+                    <View style={styles.container}>
+                        {this.renderProfilePic()}
+                        {this.renderNameField()}
+
+                        {/* TODO: reemplazar por input de nueva ubicación */}
+                        <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
+                        
+                        {this.renderPhoneField()}
+                        <View style={editionStyles.divider} />
+
+                        {this.renderLinks()}
+                    </View>
+                </ScrollView>
+            )
+        }
     }
 }
 

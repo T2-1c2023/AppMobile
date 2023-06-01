@@ -80,6 +80,7 @@ export default class GoalScreen extends Component {
         this.props = props
         this.data = props.route.params.data
         this.mode = props.route.params.mode
+        this.postUrl = this.props.postUrl
 
         console.log('GoalScreen mode:', this.mode);
         console.log('GoalScreen data:', this.data);

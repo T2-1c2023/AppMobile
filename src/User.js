@@ -2,10 +2,13 @@ import { Alert } from 'react-native';
 import axios from 'axios'
 import { tokenManager } from './TokenManager'
 import Constants from 'expo-constants'
+import { showMessage } from 'react-native-flash-message';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 // TODO: usar constantes para los errores
+
+// Register/Login handling ----------------------------------------------------------------------------------------
 
 export async function register(data) {
 
@@ -134,4 +137,31 @@ function handleLogInGoogleError(error) {
 		Alert.alert('Failed to login', 'Unkown error. Please check your connection or try again later\n\
                 Status code:', error.response.status);
 	}
+}
+
+// Profile Edition ----------------------------------------------------------------------------------------
+// TODO: mover todo el código con requests relacionadas a usuario acá
+export async function updateUserData(newData, userId) {
+	const url = API_GATEWAY_URL + 'users/' + userId;
+    const body = newData;
+    await axios.patch(url, body, {
+        headers: {
+            Authorization: tokenManager.getAccessToken()
+        }
+    })
+        .then((response) => {
+            console.log(response.data);
+            showMessage({
+                message: 'Datos de usuario cambiados con éxito',
+                type: 'success',
+                duration: 3000,
+                backgroundColor: '#00B386',
+                color: '#FFFFFF'
+            });
+        })
+        .catch((error) => {
+            console.log(error)
+            Alert.alert('Error al actualizar datos de usuario', error.message);
+			throw new Error('Failed to update user data');
+        });
 }
