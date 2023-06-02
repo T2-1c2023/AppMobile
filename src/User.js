@@ -44,12 +44,14 @@ export async function logIn(mail, password) {
 }
 
 // TODO: ver manejo de nº de teléfono
-export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer) {
+export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer,
+	                                    expo_push_token) {
 	const data = {
 		token: firebaseToken,
 		phone_number: phone_number,
 		is_athlete: is_athlete,
-		is_trainer: is_trainer
+		is_trainer: is_trainer,
+		expo_push_token: expo_push_token
 	}
 
 	await axios.post(API_GATEWAY_URL + 'register/oauth', data)

@@ -8,7 +8,7 @@ GoogleSignin.configure({
     webClientId: Constants.manifest?.extra?.webClientId
 });   // Default options: you get user email and basic profile info.
 
-export async function googleSignIn(phone_number, is_athlete, is_trainer) {
+export async function googleSignIn(phone_number, is_athlete, is_trainer, expo_push_token) {
     try {
         // Check if your device supports Google Play
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
@@ -20,7 +20,7 @@ export async function googleSignIn(phone_number, is_athlete, is_trainer) {
         await auth().signInWithCredential(googleCredential)
             .then(async (userCredential) => {
                 const firebaseToken = await userCredential.user.getIdToken();
-                await registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer);
+                await registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer, expo_push_token);
             })
             .catch((error) => {
                 console.error(error);

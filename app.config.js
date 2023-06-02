@@ -30,7 +30,16 @@ export default {
         "backgroundColor": "#ffffff"
       }
     },
-    "plugins": ["@react-native-google-signin/google-signin"],
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     },
