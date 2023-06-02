@@ -206,15 +206,15 @@ export default class GoalsTrainingsListScreen extends Component {
                     </View>
                     :
                     <GoalsList 
-                    goals={this.state.goals}
-                    style={{
-                        marginTop: 20,
-                    }}
-                    onPress={this.handlePress}
-                    selectedGoalsIds={this.state.selectedGoalsIds}
-                    onSelection={this.handleSelection}
-                    onDeselection={this.handleDeselection}
-                    canEdit={this.canEdit()}
+                        goals={this.state.goals}
+                        style={{
+                            marginTop: 20,
+                        }}
+                        onPress={this.handlePress}
+                        selectedGoalsIds={this.state.selectedGoalsIds}
+                        onSelection={this.handleSelection}
+                        onDeselection={this.handleDeselection}
+                        canEdit={this.canEdit()}
                     />
                 }
 

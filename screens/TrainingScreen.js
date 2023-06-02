@@ -325,11 +325,17 @@ export default class TrainingScreen extends Component {
     }
 
     onPressTrainingGoals() {
-        this.props.navigation.navigate('GoalsListScreen', {
-            trainingData: this.state.training,
-            id: this.props.route.params.userData.id,
-            listMode: ListMode.trainingGoals_ReadOnly
-        })
+        alert("on development...")
+        // this.props.navigation.navigate('GoalsListScreen', {
+        //     trainingData: this.state.training,
+        //     id: this.props.route.params.userData.id,
+        //     listMode: ListMode.trainingGoals_ReadOnly
+
+        //     // nuevos parametros
+        //     // data={this.data} 
+        //     // navigation={this.props.navigation}
+        //     // listMode={ListMode.AthleteSingleTrainingGoalsLeft} 
+        // })
     }
 
     renderFooter() {
