@@ -13,8 +13,9 @@ import { ActivityIndicator, IconButton } from 'react-native-paper';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-const Mode = {
-    Create: 'create',
+export const Mode = {
+    AthleteCreate: 'athleteCreate',
+    TrainerCreate: 'trainerCreate',
     Edit: 'edit',
     ReadOnly: 'readOnly'
 }

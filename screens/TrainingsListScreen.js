@@ -26,7 +26,7 @@ export default class TrainingsListScreen extends Component {
         this.handleFilterPress = this.handleFilterPress.bind(this)
         this.handleSetFilters = this.handleSetFilters.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
-        this.getType = this.getType.bind(this)
+        //this.getType = this.getType.bind(this)
         this.state = {
             trainings: [],
             filteredTypeKeySelected: 0,
@@ -36,6 +36,7 @@ export default class TrainingsListScreen extends Component {
             filteredTitle: '',
             trainingTypes: [],
             visibleFilter: false,
+            type: 5
         }
         this.levels=[
             {"key": 0, "value": "Todos"}, 
@@ -47,12 +48,16 @@ export default class TrainingsListScreen extends Component {
         this.type = ''
         this.data = ''
         this.url = ''
+        this.trainerId = this.props.route !== undefined ? this.props.route.params.trainerId : this.props.trainerId
+        this.athleteId = this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId
         this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.getType();
             this.refreshActivities();
         });
     }
 
     getType() {
+        console.log("gettype")
         let type;
         let data;
         if (this.props.route !== undefined) {
@@ -66,6 +71,7 @@ export default class TrainingsListScreen extends Component {
         this.data = data;
         switch(type) {
             case 'all':
+                console.log('all')
                 this.type = Type.All
                 break;
             case 'created':
@@ -146,30 +152,35 @@ export default class TrainingsListScreen extends Component {
 
 
     refreshActivities(params) {
+        this.getType();
         if (params === undefined) {
             params = {}
         }
         console.log("refresh activities");
         const decodedToken = jwt_decode(this.token);
         let url = API_GATEWAY_URL
+        console.log('TYPE state' + this.state.type + ' no state ' +this.type)
         switch(this.type) {
             case Type.All:
                 url += 'trainings';
                 params.blocked = false
                 break;
             case Type.Created:
-                url += 'trainings'
-                params.trainer_id= decodedToken.id
+                url += 'trainers/' + (this.props.route !== undefined ? this.props.route.params.trainerId : this.props.trainerId) + '/trainings' //TODO ver por qué no puedo usar this.trainerId
+                params.trainer_id= this.trainerId
                 break;
             case Type.Enrolled:
-                url += 'athletes/' + this.data.id + '/subscriptions'
+                url += 'athletes/' + (this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId) + '/subscriptions' //TODO ver por qué no puedo usar this.athleteId
                 params.blocked = false
                 break;
             case Type.Favourites:
-                url += 'athletes/' + this.data.id + '/favorites'
+                url += 'athletes/' + (this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId) + '/favorites' //TODO ver por qué no puedo usar this.athleteId
                 params.blocked = false
                 break;
         }
+        console.log(this.type)
+        console.log(url)
+        console.log(params)
         axios.get(url, {
             headers: {
                 Authorization: tokenManager.getAccessToken()

@@ -13,8 +13,9 @@ import jwt_decode from 'jwt-decode';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-const Mode = {
-    Create: 'create',
+export const Mode = {
+    AthleteCreate: 'athleteCreate',
+    TrainerCreate: 'trainerCreate',
     Edit: 'edit',
     ReadOnly: 'readOnly'
 }
@@ -189,7 +190,7 @@ export default class GoalsTrainingsListScreen extends Component {
                 { this.canEdit() &&
                     <SearchInputWithIcon
                         onIconPress={
-                            () => this.props.navigation.navigate('GoalScreen', { data: jwt_decode(tokenManager.getAccessToken()), mode: Mode.Create})
+                            () => this.props.navigation.navigate('GoalScreen', { data: jwt_decode(tokenManager.getAccessToken()), mode: Mode.TrainerCreate})
                         }
                         onSubmit={this.handleSearch}
                         placeholder="Buscar por título"
