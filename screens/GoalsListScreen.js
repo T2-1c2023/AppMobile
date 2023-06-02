@@ -140,7 +140,10 @@ export default class GoalsListScreen extends Component {
 
         switch (this.listMode) {
             case ListMode.TrainerGoalsCreated:
-
+                // GET /trainers/{id}/goals
+                params = {}
+                url = API_GATEWAY_URL + "trainers/" + this.data.id + "/goals"
+                this.loadGoals(url, params)
                 break
 
             case ListMode.AthletePersonalGoalsLeft:

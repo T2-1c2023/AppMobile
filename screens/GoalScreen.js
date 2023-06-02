@@ -18,9 +18,6 @@ export const Mode = {
     ReadOnly: 'readOnly'
 }
 
-// endpoint athlete create
-// const postUrl = API_GATEWAY_URL + "athletes/" + this.id + "/personal-goals"
-
 export default class GoalScreen extends Component {
     setTitle(title, subtitle) {
         this.props.navigation.setOptions({headerTitle: () => (

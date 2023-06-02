@@ -43,6 +43,7 @@ class HomeScreen extends Component {
     constructor(props) {
         super(props)
         this.createGoalButtonForAthlete = this.createGoalButtonForAthlete.bind(this)
+        this.createGoalButtonForTrainer = this.createGoalButtonForTrainer.bind(this)
 
         this.data = jwt_decode(tokenManager.getAccessToken())
     }
@@ -97,8 +98,31 @@ class HomeScreen extends Component {
     }
 
     createGoalButtonForTrainer() {
-
+        return this.createGoalButton(Mode.TrainerCreate)
     }
+
+    // botón solo para entrenadores
+    renderTrainerCreatedGoalsButton() {
+        return (
+            <Drawer.Screen name="Metas creadas"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                    headerRight: this.createGoalButtonForTrainer
+                }}
+            >
+                {() => <GoalsListScreen 
+                        data={this.data} 
+                        navigation={this.props.navigation}
+                        listMode={ListMode.TrainerGoalsCreated} 
+                />}
+            </Drawer.Screen>
+        )
+    }
+
 
     createGoalButtonForAthlete() {
         return this.createGoalButton(Mode.AthleteCreate)
@@ -183,6 +207,7 @@ class HomeScreen extends Component {
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
+                {this.data.is_trainer && this.renderTrainerCreatedGoalsButton()}
                 {this.data.is_athlete && this.renderPersonalGoalsLeftButton()}
                 {this.data.is_athlete && this.renderPersonalGoalsCompletedButton()}
                 
