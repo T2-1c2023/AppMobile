@@ -12,6 +12,7 @@ class Goal extends Component {
             // selected: this.props.selected,
             uri: null
         }
+
     }
 
     componentDidMount() {
@@ -90,12 +91,14 @@ class Goal extends Component {
                 <Text 
                     variant="titleMedium"
                     numberOfLines={2}
+                    style={{color: 'black'}}
                 >
                     {this.props.goal.title}
                 </Text>
                 <Text 
                     variant="bodySmall"
                     numberOfLines={4}
+                    style={{color: 'black'}}
                     >
                     {this.props.goal.description}
                 </Text>

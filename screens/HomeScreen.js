@@ -43,6 +43,7 @@ class HomeScreen extends Component {
     constructor(props) {
         super(props)
         this.createGoalButtonForAthlete = this.createGoalButtonForAthlete.bind(this)
+        this.createGoalButtonForTrainer = this.createGoalButtonForTrainer.bind(this)
 
         this.data = jwt_decode(tokenManager.getAccessToken())
     }
@@ -88,7 +89,7 @@ class HomeScreen extends Component {
                 size={30}
                 onPress={() => this.props.navigation.navigate('GoalScreen', 
                     {
-                        data: this.data, 
+                        userData: this.data, 
                         mode: mode,
                     }
                 )}
@@ -97,17 +98,40 @@ class HomeScreen extends Component {
     }
 
     createGoalButtonForTrainer() {
-
+        return this.createGoalButton(Mode.TrainerCreate)
     }
+
+    // botón solo para entrenadores
+    renderTrainerCreatedGoalsButton() {
+        return (
+            <Drawer.Screen name="Metas creadas"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                    headerRight: this.createGoalButtonForTrainer
+                }}
+            >
+                {() => <GoalsListScreen 
+                        data={this.data} 
+                        navigation={this.props.navigation}
+                        listMode={ListMode.TrainerGoalsCreated} 
+                />}
+            </Drawer.Screen>
+        )
+    }
+
 
     createGoalButtonForAthlete() {
         return this.createGoalButton(Mode.AthleteCreate)
     }
 
     // botón solo para atletas
-    renderPersonalGoalsButton() {
+    renderPersonalGoalsLeftButton() {
         return (
-            <Drawer.Screen name="Metas personales"
+            <Drawer.Screen name="Metas personales en proceso"
                 options={{
                     drawerIcon: () => (
                         <View style={styles.drawerIconContainer}>
@@ -119,9 +143,30 @@ class HomeScreen extends Component {
             >
                 {() => <GoalsListScreen 
                         data={this.data} 
-                        navigation={this.props.navigation} 
-                        completed={false} 
-                        listMode={ListMode.AthletePersonalGoalsLeft} />}
+                        navigation={this.props.navigation}
+                        listMode={ListMode.AthletePersonalGoalsLeft} 
+                />}
+            </Drawer.Screen>
+        )
+    }
+
+    // botón solo para atletas
+    renderPersonalGoalsCompletedButton() {
+        return (
+            <Drawer.Screen name={"Metas personales cumplidas"}
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                }}
+            >
+                {() => <GoalsListScreen 
+                        data={this.data} 
+                        navigation={this.props.navigation}
+                        listMode={ListMode.AthletePersonalGoalsCompleted} 
+                />}
             </Drawer.Screen>
         )
     }
@@ -130,7 +175,7 @@ class HomeScreen extends Component {
         return (
             <Drawer.Navigator 
                 drawerContent={this.CustomDrawerContent} 
-                initialRouteName="Metas personales"
+                initialRouteName="Metas personales en proceso"
                 screenOptions={{
                     drawerActiveTintColor: '#5925b0',
                     drawerStyle: {
@@ -162,7 +207,10 @@ class HomeScreen extends Component {
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
-                {this.data.is_athlete && this.renderPersonalGoalsButton()}
+                {this.data.is_trainer && this.renderTrainerCreatedGoalsButton()}
+                {this.data.is_athlete && this.renderPersonalGoalsLeftButton()}
+                {this.data.is_athlete && this.renderPersonalGoalsCompletedButton()}
+                
 
                 {this.data.is_athlete ? 
                     <Drawer.Screen 

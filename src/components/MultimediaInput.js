@@ -69,6 +69,7 @@ export default class MultimediaInput extends Component {
                         {this.uploadItem()}
                     </View>
                 }
+                
                 {this.state.uploadedImagesUris.map((uploadUri) => 
                     <View key={uploadUri} style={multimediaStyles.itemContainer}>
                         <TouchableOpacity onPress={() => this.handleImageAlredyUploadPress(uploadUri)}>
@@ -79,6 +80,7 @@ export default class MultimediaInput extends Component {
                         </TouchableOpacity>
                     </View>
                 )}
+
                 {this.state.localImagesUris.map((localUri) => 
                     <View key={localUri} style={multimediaStyles.itemContainer}>
                         <TouchableOpacity onPress={() => this.handleImagePress(localUri)}>
