@@ -84,11 +84,13 @@ export default class GoalScreen extends Component {
         super(props)
         this.handleCreatePress = this.handleCreatePress.bind(this)
         this.handleCancelPress = this.handleCancelPress.bind(this)
+        this.onPressSaveChanges = this.onPressSaveChanges.bind(this)
 
         this.props = props
 
         this.userData = props.route.params.userData
         this.goalData = props.route.params.goalData
+        this.goalCompleted = props.route.params.goalCompleted
         console.log("goalData: " + JSON.stringify(this.goalData))
         console.log("userData: " + JSON.stringify(this.userData))
 
@@ -107,12 +109,16 @@ export default class GoalScreen extends Component {
             (this.goalData.multimedia_ids? this.goalData.multimedia_ids : [])
             : 
             []
+
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.componentDidMount()
+        })
     }
 
     isOwner(creatorId) {
 
         console.log('this.userData.id:', this.userData.id);
-        console.log('this.state.creatorId:', this.state.creatorId);
+        console.log('this.state.creatorId:', creatorId);
 
         return this.userData.id == creatorId
     }
@@ -134,21 +140,26 @@ export default class GoalScreen extends Component {
     }
 
     validateAndSetEditHeader(creatorId) {
-        if ((this.mode === Mode.ReadOnly) && this.isOwner(creatorId)) {
+        if ((this.mode === Mode.ReadOnly) && this.isOwner(creatorId) && !this.goalCompleted) {
             this.props.navigation.setOptions({
                 headerRight: () => (
                     <IconButton
                         icon={'pencil'}
                         iconColor='#21005D'
                         size={30}
-                        onPress={() => this.props.navigation.push('GoalScreen', { userData: this.userData, goalData: this.goalData, mode: Mode.Edit })} />
+                        onPress={() => this.props.navigation.replace('GoalScreen', { userData: this.userData, goalData: this.goalData, mode: Mode.Edit })} />
                 ),
             });
         }
     }
 
-    async handleSaveChangesPress() {
-        alert('to be implemented')
+    getPatchUrl() {
+        const urlTrainer = API_GATEWAY_URL + "goals/" + this.goalId
+        const urlAthlete = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+        if (this.mode === Mode.Edit) 
+            return this.userData.is_trainer? urlTrainer : urlAthlete
+        else
+            throw new Error('Should not need a put url for this mode')
     }
 
     getPostUrl() {
@@ -162,6 +173,21 @@ export default class GoalScreen extends Component {
             default:
                 throw new Error('Should not need a post url for this mode');
         }
+    }
+
+    async sendPutRequest(newMultimediaIds) {
+        const url = this.getPatchUrl()
+        const body = {
+            "title": this.state.title,
+            "description": this.state.description,
+            "objective": this.state.objective,
+            "multimedia_ids": this.initialImageIds.concat(newMultimediaIds)
+        }
+        console.log('body del put:', body)
+        const header = { headers: { Authorization: tokenManager.getAccessToken() } }
+        console.log('putting in url: ', url);
+
+        await axios.patch(url, body, header)
     }
 
     async sendPostRequest(multimediaIds) {
@@ -185,6 +211,23 @@ export default class GoalScreen extends Component {
             return uploadImageFirebase(localUri);
         });
         return Promise.all(uploadPromises)
+    }
+
+    async onPressSaveChanges() {
+        this.setState({ loading: true })
+
+        try {
+            console.log('this.initialImageIds:', this.initialImageIds);
+            console.log('this.state.mediaLocalUris:', this.state.mediaLocalUris);
+            console.log('this.state' + this.state)
+            const multimediaIds = await this.getMultimediaIds()
+            console.log('new multimediaIds:', multimediaIds);
+            await this.sendPutRequest(multimediaIds)
+        } catch (error) {
+            console.log(error);
+        }
+
+        this.props.navigation.goBack();
     }
 
     async handleCreatePress() {
@@ -216,7 +259,7 @@ export default class GoalScreen extends Component {
             <ConfirmationButtons
                 confirmationText={creationMode? "Crear" : "Guardar cambios"}
                 cancelText="Cancelar"
-                onConfirmPress={creationMode? this.handleCreatePress : this.handleSaveChangesPress}
+                onConfirmPress={creationMode? this.handleCreatePress : this.onPressSaveChanges}
                 onCancelPress={this.handleCancelPress}
                 style={{
                     marginTop: 20,

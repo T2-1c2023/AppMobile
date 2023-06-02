@@ -40,7 +40,6 @@ export default class GoalsListScreen extends Component {
         this.onPressGoal = this.onPressGoal.bind(this)
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
-        // this.handleSearch = this.handleSearch.bind(this)
         this.getTokenData = this.getTokenData.bind(this)
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -81,7 +80,9 @@ export default class GoalsListScreen extends Component {
 
     onPressGoal(goal) {
         console.log("onPressGoal " + JSON.stringify(goal));
-        this.props.navigation.navigate('GoalScreen', { goalData: goal, userData: this.props.data, mode: Mode.ReadOnly })
+        const goalCompleted = this.listMode === ListMode.AthletePersonalGoalsCompleted || this.listMode === ListMode.AthletesAllTrainingsGoalsCompleted
+
+        this.props.navigation.navigate('GoalScreen', { goalData: goal, userData: this.props.data, mode: Mode.ReadOnly, goalCompleted })
     }
 
     fetchData = async () => {
@@ -114,21 +115,6 @@ export default class GoalsListScreen extends Component {
         this.setState({ loading: false });
     }
 
-    // setEditButton() {
-    //     if (this.ListMode == ListMode.trainingGoals_ReadOnly) {
-    //         this.props.navigation.setOptions({
-    //             headerRight: () => (
-    //                 <IconButton
-    //                     icon="pencil"
-    //                     color="#21005D"
-    //                     size={30}
-    //                     onPress={() => this.props.navigation.navigate('TrainingScreen', { data: this.tokenData, mode: Mode.Edit })}
-    //                 />
-    //             ),
-    //         });
-    //     }
-    // }
-
     loadGoals(url, params) {
         console.log("token: " + tokenManager.getAccessToken())
         console.log("url: " + url)
@@ -146,10 +132,6 @@ export default class GoalsListScreen extends Component {
             .catch((error) => {
                 console.error("loadGoals error " + error);
             })
-    }
-
-    loadEditSymbol() {
-
     }
 
     componentDidMount() {
@@ -178,28 +160,8 @@ export default class GoalsListScreen extends Component {
         }
 
         this.setState({ loading: false });
-        // this.getTokenData();
-        // this.fetchData();
-        // this.setEditButton();
     }
 
-    // handleSearch(queryText) {
-    //     console.log(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals");
-    //     axios.get(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals", {
-    //         headers: {
-    //             Authorization: tokenManager.getAccessToken()
-    //         }
-    //     })
-    //         .then(response => {
-    //             const goals = response.data;
-    //             console.log("goals " + goals);
-    //             const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
-    //             this.setState({ goals: filteredGoals })
-    //         })
-    //         .catch(function (error) {
-    //             console.log("handleSearch " + error);
-    //         });
-    // }
     render() {
 
         if (this.state.loading) {

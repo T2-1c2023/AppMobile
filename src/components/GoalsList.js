@@ -12,6 +12,7 @@ class Goal extends Component {
             // selected: this.props.selected,
             uri: null
         }
+
     }
 
     componentDidMount() {
