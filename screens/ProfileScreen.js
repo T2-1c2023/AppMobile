@@ -22,8 +22,6 @@ export default class ProfileScreen extends Component {
         super(props);
         this.onPressCreatedTrainings = this.onPressCreatedTrainings.bind(this);
         this.onPressSubscribedTrainings = this.onPressSubscribedTrainings.bind(this);
-        this.onPressCurrentGoals = this.onPressCurrentGoals.bind(this);
-        this.onPressCompletedGoals = this.onPressCompletedGoals.bind(this);
         this.onPressFollowers = this.onPressFollowers.bind(this);
         this.onPressFollowing = this.onPressFollowing.bind(this);
         this.onPressFollow = this.onPressFollow.bind(this);
@@ -108,14 +106,6 @@ export default class ProfileScreen extends Component {
 
     onPressFavoriteTrainings() {
         this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites', athleteId:this.id})
-    }
-    
-    onPressCurrentGoals() {
-        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), completed:false})
-    }
-    
-    onPressCompletedGoals() {
-        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), completed:true})
     }
 
     onPressFollowers() {
@@ -316,19 +306,6 @@ export default class ProfileScreen extends Component {
         )
     }
 
-    renderGoalsInfo() {
-        return (
-            <React.Fragment>
-                {this.renderSectionTitle('Metas')}
-                
-                {this.renderLinkedTexts([
-                    {title: 'Ver metas actuales', handler: this.onPressCurrentGoals},
-                    {title: 'Ver metas cumplidas', handler: this.onPressCompletedGoals}
-                ])}
-            </React.Fragment>
-        )
-    }
-
     render() {
         return (
             <ScrollView
@@ -341,7 +318,6 @@ export default class ProfileScreen extends Component {
                     {this.renderContactInfo()}
                     {this.renderInterests()}
                     {this.renderTrainingsInfo()}
-                    {this.renderGoalsInfo()}
                 </View>
             </ScrollView>
         );

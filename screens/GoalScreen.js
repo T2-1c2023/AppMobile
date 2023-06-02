@@ -275,7 +275,9 @@ export default class GoalScreen extends Component {
     shouldRenderCompleteGoalButton() {
         const mayBeCompleted = this.mode === Mode.ReadOnly && !this.goalCompleted
 
-        const canBeCompleted = mayBeCompleted && (this.isOwner(this.state.creatorId) || this.isSubscribed)  
+        const isMyPersonalGoal = this.isOwner(this.state.creatorId) && this.personalGoal
+
+        const canBeCompleted = mayBeCompleted && ( isMyPersonalGoal || this.isSubscribed)  
         
         return canBeCompleted
     }
