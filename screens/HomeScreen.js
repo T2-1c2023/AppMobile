@@ -184,7 +184,7 @@ class HomeScreen extends Component {
                                 />
                         }}
                     >
-                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' />}
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' athleteId={this.data.id}/>}
 
                     </Drawer.Screen>
                 : null}
@@ -209,7 +209,7 @@ class HomeScreen extends Component {
                                 />
                         }}
                     >
-                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} />}
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} athleteId={this.data.id} />}
 
                     </Drawer.Screen>
                 : null }
@@ -234,7 +234,7 @@ class HomeScreen extends Component {
                                 />
                         }}
                     >
-                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'created'} />}
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'created'} trainerId={this.data.id} />}
 
                     </Drawer.Screen>
                 : null}

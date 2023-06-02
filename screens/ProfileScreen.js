@@ -99,15 +99,15 @@ export default class ProfileScreen extends Component {
     }
 
     onPressCreatedTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created'})
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created', trainerId:this.id})
     }
     
     onPressSubscribedTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled'})
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled', athleteId:this.id})
     }
 
     onPressFavoriteTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites'})
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites', athleteId:this.id})
     }
     
     onPressCurrentGoals() {

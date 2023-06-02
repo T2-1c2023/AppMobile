@@ -35,7 +35,8 @@ export default class GoalScreen extends Component {
     initializeVariables() {
         let state
         switch (this.mode) {
-            case Mode.AthleteCreate || Mode.TrainerCreate:
+            case Mode.AthleteCreate:
+            case Mode.TrainerCreate:
                 state = {
                     title: '',
                     description: '',

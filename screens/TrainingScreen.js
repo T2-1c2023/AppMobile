@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, Image, StyleSheet } from 'react-native';
-import { DividerWithLeftText, TextBox, TextLinked} from '../src/styles/BaseComponents';
+import { View, ScrollView, Text, Image, StyleSheet, Pressable } from 'react-native';
+import { DividerWithLeftText, TextBox, TextLinked } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { ConfirmationButtons, ButtonStandard, ButtonWithLeftIcon } from '../src/styles/BaseComponents';
 import ActivityList from '../src/components/ActivityList.js'
@@ -8,7 +8,7 @@ import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
 import TrainingsList from '../src/components/TrainingsList';
 import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
-import { TextDetails, TextSubheader, DividerWithMiddleText}  from '../src/styles/BaseComponents';
+import { TextDetails, TextSubheader, DividerWithMiddleText } from '../src/styles/BaseComponents';
 import Constants from 'expo-constants'
 
 import { IconButton } from 'react-native-paper'
@@ -51,9 +51,11 @@ export default class TrainingScreen extends Component {
             myScore: 2,
             isAlreadyRated: false
         }
-        this.emptyBodyWithToken = { headers: {
-            Authorization: tokenManager.getAccessToken()
-        }}
+        this.emptyBodyWithToken = {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
+        }
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.componentDidMount();
         });
@@ -64,18 +66,18 @@ export default class TrainingScreen extends Component {
         this.changeFavoriteStatus(newIsInFavorites).then(() => {
             this.checkFavoriteStatus();
         })
-        .catch(function (error) {
-            console.log('handleFavoriteButtonPress' + error);
-        });
-        
+            .catch(function (error) {
+                console.log('handleFavoriteButtonPress' + error);
+            });
+
     }
 
     async changeFavoriteStatus(newValue) {
         const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/favorites'
-        const body = {training_id:  this.props.route.params.trainingId}
+        const body = { training_id: this.props.route.params.trainingId }
         let response;
         try {
-            if (newValue === true ) {
+            if (newValue === true) {
                 response = await axios.post(url, body, this.emptyBodyWithToken)
             } else {
                 response = await axios.delete(url, {
@@ -100,30 +102,30 @@ export default class TrainingScreen extends Component {
                 Authorization: this.props.route.params.token
             }
         })
-        .then(response => {
-            //console.log("isInFavorites response " + JSON.stringify(response.data));
-            const favorites = response.data;
-            isInFavorites = false
-            if (favorites.some(f => f.id === this.props.route.params.trainingId)) {
-                isInFavorites = true
-            }
-            this.setState({isInFavorites})
-            return isInFavorites;
-        })
-        .catch(function (error) {
-            console.log('isInFavorites ' + error);
-        });
+            .then(response => {
+                //console.log("isInFavorites response " + JSON.stringify(response.data));
+                const favorites = response.data;
+                isInFavorites = false
+                if (favorites.some(f => f.id === this.props.route.params.trainingId)) {
+                    isInFavorites = true
+                }
+                this.setState({ isInFavorites })
+                return isInFavorites;
+            })
+            .catch(function (error) {
+                console.log('isInFavorites ' + error);
+            });
         return isInFavorites
     }
 
     checkFavoriteStatus() {
-        
+
         this.isInFavorites().then(isInFavorites => {
-            this.setState({isInFavorites} )
+            this.setState({ isInFavorites })
             this.props.navigation.setOptions({
                 headerRight: () => (
                     <IconButton
-                        icon={isInFavorites? 'heart' : 'heart-outline'}
+                        icon={isInFavorites ? 'heart' : 'heart-outline'}
                         iconColor='#21005D'
                         size={30}
                         onPress={this.handleFavoriteButtonPress}
@@ -145,25 +147,25 @@ export default class TrainingScreen extends Component {
     }
 
     async subscribe() {
-        const body = {training_id: this.props.route.params.trainingId}
+        const body = { training_id: this.props.route.params.trainingId }
         //console.log(this.props.route.params.trainingId);
         axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
                 Authorization: this.props.route.params.token
             }
         })
-        .then(response => {
-            //console.log("subscribe response " + response);
-            const isSubscribed = true;
-            this.setState({ isSubscribed });
-        })
-        .catch(function (error) {
-            console.log('subscribe ' + error);
-        });
+            .then(response => {
+                //console.log("subscribe response " + response);
+                const isSubscribed = true;
+                this.setState({ isSubscribed });
+            })
+            .catch(function (error) {
+                console.log('subscribe ' + error);
+            });
     }
 
     async unsubscribe() {
-        const body = {training_id: this.props.route.params.trainingId}
+        const body = { training_id: this.props.route.params.trainingId }
         const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions'
         axios.delete(url, {
             data: body,
@@ -171,21 +173,21 @@ export default class TrainingScreen extends Component {
                 Authorization: this.props.route.params.token
             },
         })
-        .then(response => {
-            const isSubscribed = false;
-            this.setState({ isSubscribed });
-        })
-        .catch(function (error) {
-            console.log('unsubscribe ' + error);
-            if( error.response ){
-                console.log(error.response.data); // => the response payload 
-            }
-        });
+            .then(response => {
+                const isSubscribed = false;
+                this.setState({ isSubscribed });
+            })
+            .catch(function (error) {
+                console.log('unsubscribe ' + error);
+                if (error.response) {
+                    console.log(error.response.data); // => the response payload 
+                }
+            });
     }
 
     async checkSubscriptionStatus() {
         if (!this.props.route.params.userData.is_athlete) {
-           // console.log("no es atleta");
+            // console.log("no es atleta");
             const isSubscribed = false;
             this.setState({ isSubscribed });
             //console.log("seteo");
@@ -196,16 +198,16 @@ export default class TrainingScreen extends Component {
                     Authorization: this.props.route.params.token
                 }
             })
-            .then(response => {
-                const subscribedTrainings = response.data;
-                //console.log(subscribedTrainings);//debug
-                const isSubscribed = (subscribedTrainings.filter(t => t.id === this.props.route.params.trainingId).length > 0);
-                //console.log("isSubscribed " + isSubscribed);
-                this.setState({ isSubscribed });
-            })
-            .catch(function (error) {
-                console.log('isSubscribed' + error);
-            });
+                .then(response => {
+                    const subscribedTrainings = response.data;
+                    //console.log(subscribedTrainings);//debug
+                    const isSubscribed = (subscribedTrainings.filter(t => t.id === this.props.route.params.trainingId).length > 0);
+                    //console.log("isSubscribed " + isSubscribed);
+                    this.setState({ isSubscribed });
+                })
+                .catch(function (error) {
+                    console.log('isSubscribed' + error);
+                });
         }
     }
 
@@ -215,12 +217,12 @@ export default class TrainingScreen extends Component {
         this.checkSubscriptionStatus();
     }
 
-    loadTrainingInfo() {     
+    loadTrainingInfo() {
         axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
-                headers: {
-                    Authorization: this.props.route.params.token
-                }
-            })
+            headers: {
+                Authorization: this.props.route.params.token
+            }
+        })
             .then(response => {
                 const training = response.data;
                 console.log(training);//debug
@@ -233,36 +235,36 @@ export default class TrainingScreen extends Component {
             });
 
 
-            const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
-            console.log(url);
-            const params = { athlete_id: this.props.route.params.userData.id }
-            console.log(params);
-            let result = false;
-            axios.get(url, {
-                headers: {
-                    Authorization: tokenManager.getAccessToken()
-                },
-                params: params
+        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
+        console.log(url);
+        const params = { athlete_id: this.props.route.params.userData.id }
+        console.log(params);
+        let result = false;
+        axios.get(url, {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            },
+            params: params
+        })
+            .then(response => {
+                const data = response.data;
+                console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
+                if (data.length > 0) {
+                    this.myScore = data[0].score
+                    this.setState({ myScore: data[0].score, isAlreadyRated: true })
+                    this.isAlreadyRated = true;
+                } else {
+                    this.isAlreadyRated = false;
+                }
+
             })
-                .then(response => {
-                    const data = response.data;
-                    console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
-                    if (data.length > 0) {
-                        this.myScore = data[0].score
-                        this.setState({myScore: data[0].score, isAlreadyRated: true})
-                        this.isAlreadyRated = true;
-                    } else {
-                        this.isAlreadyRated = false;
-                    }
-                        
-                })
-                .catch((error) => {
-                    if (error.response && error.response.status === 404) {
-                        console.error("ERROR")
-                        this.setState({isAlreadyRated : false})
-                    }
-                    console.error("alreadyRatedd " + error);
-                })
+            .catch((error) => {
+                if (error.response && error.response.status === 404) {
+                    console.error("ERROR")
+                    this.setState({ isAlreadyRated: false })
+                }
+                console.error("alreadyRatedd " + error);
+            })
 
 
 
@@ -275,20 +277,20 @@ export default class TrainingScreen extends Component {
                 Authorization: this.props.route.params.token
             }
         })
-        .then(response => {
-            const trainer = response.data;
-            this.setState({ trainer });
-            // Update profile picture if needed
-            this.getUriById(trainer.photo_id);
-            return response.data
-        })
-        .catch(function (error) {
-            console.log('TRAINER ' + error);
-        });
+            .then(response => {
+                const trainer = response.data;
+                this.setState({ trainer });
+                // Update profile picture if needed
+                this.getUriById(trainer.photo_id);
+                return response.data
+            })
+            .catch(function (error) {
+                console.log('TRAINER ' + error);
+            });
     }
 
     handleActivityEditPress() {
-        this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: this.state.training, data:{id:this.state.trainer.id }, from:'TrainingScreen' });
+        this.props.navigation.navigate('TrainingActivitiesScreen', { trainingData: this.state.training, data: { id: this.state.trainer.id }, from: 'TrainingScreen' });
     }
 
     handleDataEditPress() {
@@ -301,49 +303,51 @@ export default class TrainingScreen extends Component {
                 Authorization: this.props.route.params.token
             }
         })
-        .then(response => {
-            alert('Entrenamiento eliminado');
-            this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'created'});//al pasársela así cree que es la segunda pantalla, no desde drawer?
-        })
-        .catch(function (error) {
-            console.log('handleDeletePress ' + error);
-        });
+            .then(response => {
+                alert('Entrenamiento eliminado');
+                this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type: 'created', trainerId:this.state.trainer.id });//al pasársela así cree que es la segunda pantalla, no desde drawer?
+            })
+            .catch(function (error) {
+                console.log('handleDeletePress ' + error);
+            });
     }
 
     handleBackToTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'created'})
+        this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type: 'created', trainerId:this.state.trainer.id })
     }
 
     async getUriById(image_id) {
-        if(image_id != undefined && image_id != '') {
+        if (image_id != undefined && image_id != '') {
             const imageUri = await downloadImage(image_id);
-            if (imageUri != null) 
-                this.setState({ trainerProfilePic: {uri: imageUri}}); 
-        }   
+            if (imageUri != null)
+                this.setState({ trainerProfilePic: { uri: imageUri } });
+        }
     }
 
     onPressTrainingGoals() {
-        this.props.navigation.navigate('GoalsListScreen', { 
-            trainingData: this.state.training, 
-            id:this.props.route.params.userData.id,  
+        this.props.navigation.navigate('GoalsListScreen', {
+            trainingData: this.state.training,
+            id: this.props.route.params.userData.id,
             listMode: ListMode.trainingGoals_ReadOnly
         })
     }
 
     renderFooter() {
         return (
-            <View style={{flexDirection: 'row', width: '100%', marginTop: 10, alignItems: 'center'}}>
-                <View style={{flex: 0.4, alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', width: '100%', marginTop: 10, alignItems: 'center' }}>
+                <View style={{ flex: 0.4, alignItems: 'center' }}>
                     <Text style={trainigStyles.creatorTitle}>Creador</Text>
-                    <Image
-                        source={this.state.trainerProfilePic}
-                        style={ trainigStyles.creatorImage }
-                        resizeMode= 'contain'
-                    />
+                    <Pressable onPress={() => this.props.navigation.navigate('ProfileScreen', {data:this.data, navigation:this.props.navigation, owner:false, data:this.state.trainer})}>
+                        <Image
+                            source={this.state.trainerProfilePic}
+                            style={trainigStyles.creatorImage}
+                            resizeMode='contain'
+                        />
+                    </Pressable>
                     <Text style={trainigStyles.creatorName}>{this.state.trainer.fullname}</Text>
                 </View>
-                <View style={{ flex: 0.3 }}/>
-                <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center'}}>
+                <View style={{ flex: 0.3 }} />
+                <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center' }}>
                     <TextLinked
                         linkedText="Ver metas del entrenamiento"
                         onPress={this.onPressTrainingGoals}
@@ -361,113 +365,117 @@ export default class TrainingScreen extends Component {
     }
 
     canSubscribe() {
-        return this.props.route.params.userData.is_athlete
+        return this.props.route.params.userData.is_athlete && (this.state.training.trainer_id !== this.props.route.params.userData.id)
     }
-    
+
     canDelete() {
         return this.state.training.trainer_id === this.props.route.params.userData.id
     }
 
+    canRate() {
+        return this.props.route.params.userData.is_athlete && (this.state.training.trainer_id != this.props.route.params.userData.id)
+    }
+
     render() {
         return (
-            <ScrollView 
+            <ScrollView
                 automaticallyAdjustKeyboardInsets={true}
                 style={styles.scrollView}
             >
-            
-            <View style={styles.container}>
 
-                <DividerWithLeftText
-                    text={this.state.training.title}
-                    style={{
-                        marginTop: 10,
-                    }}
-                    editButtonPress = {this.canEdit()? this.handleDataEditPress : null}
-                />
+                <View style={styles.container}>
 
-                <TextDetails
-                    body={this.state.training.description}
-                    style={{
-                        marginTop: 5,
-                        width: '90%',
-                    }}
-                    alignLeft
-                />
-
-                <TrainingData
-                    training={this.state.training}
-                    userId={this.props.route.params.userData.id}
-                    canRate= {true} //TO_DO sólo si es atleta. Si también es entrenador, si no lo creó él
-                    navigation={this.props.navigation}
-                    myScore={this.myScore}
-                    isAlreadyRated={this.state.isAlreadyRated}
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
-
-                <DividerWithLeftText
-                    text="Lista de actividades"
-                    maxCounter={MAX_ACTIVITIES}
-                    counter = {this.state.training.activities.length}
-                    style={{
-                        marginTop: 20,
-                    }}
-                    editButtonPress = {this.canEdit()? this.handleActivityEditPress : null }
-                />
-                
-                <ActivityList
-                    activities={this.state.training.activities}
-                    onChange={this.refreshActivities}
-                    style={{
-                        marginTop: 10,
-                    }}
+                    <DividerWithLeftText
+                        text={this.state.training.title}
+                        style={{
+                            marginTop: 10,
+                        }}
+                        editButtonPress={this.canEdit() ? this.handleDataEditPress : null}
                     />
 
-                <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey'}} />
+                    <TextDetails
+                        body={this.state.training.description}
+                        style={{
+                            marginTop: 5,
+                            width: '90%',
+                        }}
+                        alignLeft
+                    />
 
-                {this.renderFooter()}
-
-                <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey'}} />
-                {/* <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey'}} /> */}
-
-                { this.canSubscribe() &&
-                    <ButtonStandard 
-                        onPress={this.handleSubscribeButtonPress}
-                        title={this.state.isSubscribed? "Cancelar suscripción" : "Suscribirse"}
+                    <TrainingData
+                        training={this.state.training}
+                        userId={this.props.route.params.userData.id}
+                        canRate={this.canRate()}
+                        navigation={this.props.navigation}
+                        myScore={this.myScore}
+                        isAlreadyRated={this.state.isAlreadyRated}
                         style={{
                             marginTop: 20,
                         }}
-                        icon={this.state.isSubscribed? 'bookmark-off' : 'bookmark'}
-                        warningTheme={this.state.isSubscribed}
                     />
-                }
 
-                { this.canDelete() &&
-                    <ButtonStandard 
-                        onPress={this.handleDeletePress}
-                        title={"Eliminar entrenamiento"}
+                    <DividerWithLeftText
+                        text="Lista de actividades"
+                        maxCounter={MAX_ACTIVITIES}
+                        counter={this.state.training.activities.length}
                         style={{
                             marginTop: 20,
-                            marginBottom: 20,
                         }}
-                        icon={'delete'}
-                        warningTheme
+                        editButtonPress={this.canEdit() ? this.handleActivityEditPress : null}
                     />
-                }
 
-                <ButtonStandard 
-                    //TO_DO debería volver a la pantalla TrainingsListScreen, pero ahí no me aparece la barra lateral para ir después adonde quiera,
-                    //quedo atrapado o tener que ir atrás, atrás, atrás, así que por ahora hago que vuelva a HomeScreen
-                    onPress={() =>  this.props.navigation.replace('HomeScreen')}
-                    title={"Volver a Home"}
-                    style={{
-                        marginTop: 5,
-                    }}
-                    icon={this.state.isSubscribed? 'bookmark-off' : 'bookmark'}
-                />                
+                    <ActivityList
+                        activities={this.state.training.activities}
+                        onChange={this.refreshActivities}
+                        style={{
+                            marginTop: 10,
+                        }}
+                    />
 
-            </View>
+                    <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
+
+                    {this.renderFooter()}
+
+                    <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
+                    {/* <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey'}} /> */}
+
+                    {this.canSubscribe() &&
+                        <ButtonStandard
+                            onPress={this.handleSubscribeButtonPress}
+                            title={this.state.isSubscribed ? "Cancelar suscripción" : "Suscribirse"}
+                            style={{
+                                marginTop: 20,
+                            }}
+                            icon={this.state.isSubscribed ? 'bookmark-off' : 'bookmark'}
+                            warningTheme={this.state.isSubscribed}
+                        />
+                    }
+
+                    {this.canDelete() &&
+                        <ButtonStandard
+                            onPress={this.handleDeletePress}
+                            title={"Eliminar entrenamiento"}
+                            style={{
+                                marginTop: 20,
+                                marginBottom: 20,
+                            }}
+                            icon={'delete'}
+                            warningTheme
+                        />
+                    }
+
+                    <ButtonStandard
+                        //TO_DO debería volver a la pantalla TrainingsListScreen, pero ahí no me aparece la barra lateral para ir después adonde quiera,
+                        //quedo atrapado o tener que ir atrás, atrás, atrás, así que por ahora hago que vuelva a HomeScreen
+                        onPress={() => this.props.navigation.replace('HomeScreen')}
+                        title={"Volver a Home"}
+                        style={{
+                            marginTop: 5,
+                        }}
+                        icon={this.state.isSubscribed ? 'bookmark-off' : 'bookmark'}
+                    />
+
+                </View>
             </ScrollView>
         );
     }
@@ -478,7 +486,7 @@ const trainigStyles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: 'grey',
-    }, 
+    },
 
     creatorImage: {
         height: 100,

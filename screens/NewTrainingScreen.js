@@ -102,7 +102,7 @@ export default class NewTrainingScreen extends Component {
                 if (this.isNew) {
                     this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data: { id: this.state.trainerId, from: 'NewTrainingScreen' } });
                 } else {
-                    this.props.navigation.navigate('TrainingsListScreen', { data: jwt_decode(tokenManager.getAccessToken()), type: 'created' })
+                    this.props.navigation.navigate('TrainingsListScreen', { data: jwt_decode(tokenManager.getAccessToken()), type: 'created', trainerId:this.state.trainerId })
                 }
             }
         } catch (error) {
