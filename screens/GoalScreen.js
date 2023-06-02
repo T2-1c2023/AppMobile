@@ -32,89 +32,97 @@ export default class GoalScreen extends Component {
           )})
     }
     
-    initializeVariables() {
-        let state
-        switch (this.mode) {
-            case Mode.AthleteCreate || Mode.TrainerCreate:
-                state = {
-                    title: '',
-                    description: '',
-                    metric: '',
-                    mediaLocalUris: [],
-                    loading: true,
-                }
-                this.initialImageIds = []
-                break;
-            case Mode.ReadOnly:
-                let goalInfo = this.data;
-                state = {
-                    loading: true,
-                    goalId: goalInfo.id,
-                    title: goalInfo.title,
-                    description: goalInfo.description,
-                    metric: goalInfo.objective,
-                    mediaLocalUris: [],
-                }
-                this.initialImageIds = goalInfo.multimedia_ids
-                this.setTitle("Meta", goalInfo.title)
-                break;
-            case Mode.Edit:
-                let goalInfo2 = this.data;
-                state = {
-                    loading: true,
-                    goalId: goalInfo2.id,
-                    title: goalInfo2.title,
-                    description: goalInfo2.description,
-                    metric: goalInfo2.objective,
-                    mediaLocalUris: [],
-                }
-                this.initialImageIds = goalInfo2.multimedia_ids
-                this.setTitle("Editar meta", goalInfo2.title)
-                break;
-            default:
-                throw new Error('Invalid mode');
-                break;
-        }
-        this.state = state
+    loadExistingGoalInfo() {
+        this.goalId = this.props.route.params.goalData.id
+        
+        let url
+
+        if (this.userData.is_trainer)
+            url = API_GATEWAY_URL + "goals/" + this.goalId
+        if (this.userData.is_athlete)
+            url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+
+        console.log('url:', url);
+
+        axios.get(url, { headers: { Authorization: tokenManager.getAccessToken() } })
+            .then((response) => {
+                console.log('Éxito');
+                console.log(response.data);
+
+                const goalData = response.data
+                this.setExistingGoalState(goalData)
+            })
+            .catch((error) => {
+                console.log(error);
+            }
+        )
+    }
+
+    setExistingGoalState(goalData) {
+        if (this.mode != Mode.ReadOnly && this.mode != Mode.Edit)
+            throw new Error('Should not need to set existing goal state for this mode');
+
+
+        const creatorId = goalData.trainer_id? goalData.trainer_id : goalData.creator_id
+        this.setState({
+            creatorId: creatorId,
+            goalId: goalData.id,
+            title: goalData.title,
+            description: goalData.description,
+            objective: goalData.objective,
+        }, 
+            this.validateAndSetEditHeader(creatorId)
+        )
+
+        if (this.mode === Mode.Edit)
+            this.setTitle("Editar meta", goalData.title)
+        if (this.mode === Mode.ReadOnly)
+            this.setTitle("Meta", goalData.title)
     }
 
     constructor(props) {
         super(props)
-
-        this.props = props
-        this.data = props.route.params.data
-        this.mode = props.route.params.mode
-        this.postUrl = this.props.postUrl
-
-        console.log('GoalScreen mode:', this.mode);
-        console.log('GoalScreen data:', this.data);
-
         this.handleCreatePress = this.handleCreatePress.bind(this)
         this.handleCancelPress = this.handleCancelPress.bind(this)
-        this.initializeVariables()
+
+        this.props = props
+
+        this.userData = props.route.params.userData
+        this.goalData = props.route.params.goalData
+        console.log("goalData: " + JSON.stringify(this.goalData))
+        console.log("userData: " + JSON.stringify(this.userData))
+
+        this.mode = props.route.params.mode
+        console.log('GoalScreen mode:', this.mode);
+
+        this.state = {
+            loading: true,
+            creatorId:"",
+            title: "",
+            description: "",
+            objective: "",
+            mediaLocalUris: [],
+        }
+        this.initialImageIds = this.goalData? 
+            (this.goalData.multimedia_ids? this.goalData.multimedia_ids : [])
+            : 
+            []
     }
 
-    isOwner() {
-        // console.log('trainer_id:', this.data.trainer_id);
-        // console.log('tokenManager.getUserId():', tokenManager.getUserId());
-        // return this.data.trainer_id === tokenManager.getUserId()
-        return true
+    isOwner(creatorId) {
+
+        console.log('this.userData.id:', this.userData.id);
+        console.log('this.state.creatorId:', this.state.creatorId);
+
+        return this.userData.id == creatorId
     }
 
     componentDidMount() {
+        
+        if (this.mode === Mode.Edit || this.mode === Mode.ReadOnly)
+            this.loadExistingGoalInfo()
+        
         this.setState({ loading: false })
-        if ((this.mode === Mode.ReadOnly) && this.isOwner()) {
-            this.props.navigation.setOptions({
-                headerRight: () => (
-                    <IconButton
-                        icon={'pencil'}
-                        iconColor='#21005D'
-                        size={30}
-                        onPress={() => this.props.navigation.push('GoalScreen', { data: this.data, mode: Mode.Edit })}
-                    />
-                ),
-            })
-        }
     }
 
     updateMediaUris = (uris) => {
@@ -125,6 +133,20 @@ export default class GoalScreen extends Component {
         });
     }
 
+    validateAndSetEditHeader(creatorId) {
+        if ((this.mode === Mode.ReadOnly) && this.isOwner(creatorId)) {
+            this.props.navigation.setOptions({
+                headerRight: () => (
+                    <IconButton
+                        icon={'pencil'}
+                        iconColor='#21005D'
+                        size={30}
+                        onPress={() => this.props.navigation.push('GoalScreen', { userData: this.userData, goalData: this.goalData, mode: Mode.Edit })} />
+                ),
+            });
+        }
+    }
+
     async handleSaveChangesPress() {
         alert('to be implemented')
     }
@@ -132,10 +154,10 @@ export default class GoalScreen extends Component {
     getPostUrl() {
         switch (this.mode) {
             case Mode.TrainerCreate:
-                return API_GATEWAY_URL + "trainers/" + this.data.id + "/goals"
+                return API_GATEWAY_URL + "trainers/" + this.userData.id + "/goals"
             
             case Mode.AthleteCreate:
-                return API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
+                return API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals"
 
             default:
                 throw new Error('Should not need a post url for this mode');
@@ -147,10 +169,11 @@ export default class GoalScreen extends Component {
         const body = {
             "title": this.state.title,
             "description": this.state.description,
-            "objective": this.state.metric,
+            "objective": this.state.objective,
             "multimedia_ids": multimediaIds
         }
         const header = { headers: { Authorization: tokenManager.getAccessToken() } }
+        console.log('posting in url: ', url);
         const response = await axios.post(url, body, header)
 
         console.log('Éxito');
@@ -255,8 +278,8 @@ export default class GoalScreen extends Component {
 
                         <TextBox
                             title="Métrica objetivo"
-                            onChangeText={(metric) => this.setState({ metric })}
-                            value={this.state.metric}
+                            onChangeText={(objective) => this.setState({ objective })}
+                            value={this.state.objective}
                             nonEditable={this.mode === Mode.ReadOnly || this.mode === Mode.Edit}
                             maxLength={100}
                             style={{

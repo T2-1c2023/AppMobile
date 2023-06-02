@@ -40,11 +40,11 @@ export default class GoalsListScreen extends Component {
         this.onPressGoal = this.onPressGoal.bind(this)
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
-        this.handleSearch = this.handleSearch.bind(this)
+        // this.handleSearch = this.handleSearch.bind(this)
         this.getTokenData = this.getTokenData.bind(this)
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
-            this.componentDidMount();
+            this.componentDidMount()
         })
 
         this.props = props
@@ -80,7 +80,8 @@ export default class GoalsListScreen extends Component {
     }
 
     onPressGoal(goal) {
-        this.props.navigation.navigate('GoalScreen', { data: goal, mode: Mode.ReadOnly })
+        console.log("onPressGoal " + JSON.stringify(goal));
+        this.props.navigation.navigate('GoalScreen', { goalData: goal, userData: this.props.data, mode: Mode.ReadOnly })
     }
 
     fetchData = async () => {
@@ -152,13 +153,26 @@ export default class GoalsListScreen extends Component {
     }
 
     componentDidMount() {
-        switch (this.listMode) {
-            case ListMode.AthletePersonalGoalsLeft:
-                const params = {completed: false}
-                const url = API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
+        let params
+        let url
 
+        switch (this.listMode) {
+            case ListMode.TrainerGoalsCreated:
+
+                break
+
+            case ListMode.AthletePersonalGoalsLeft:
+                params = {completed: false}
+                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
                 this.loadGoals(url, params)
                 break
+
+            case ListMode.AthletePersonalGoalsCompleted:
+                params = {completed: true}
+                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
+                this.loadGoals(url, params)
+                break
+
             default:
                 break
         }
@@ -169,23 +183,23 @@ export default class GoalsListScreen extends Component {
         // this.setEditButton();
     }
 
-    handleSearch(queryText) {
-        console.log(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals");
-        axios.get(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals", {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-            .then(response => {
-                const goals = response.data;
-                console.log("goals " + goals);
-                const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
-                this.setState({ goals: filteredGoals })
-            })
-            .catch(function (error) {
-                console.log("handleSearch " + error);
-            });
-    }
+    // handleSearch(queryText) {
+    //     console.log(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals");
+    //     axios.get(API_GATEWAY_URL + "trainers/" + this.tokenData.id + "/goals", {
+    //         headers: {
+    //             Authorization: tokenManager.getAccessToken()
+    //         }
+    //     })
+    //         .then(response => {
+    //             const goals = response.data;
+    //             console.log("goals " + goals);
+    //             const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
+    //             this.setState({ goals: filteredGoals })
+    //         })
+    //         .catch(function (error) {
+    //             console.log("handleSearch " + error);
+    //         });
+    // }
     render() {
 
         if (this.state.loading) {
