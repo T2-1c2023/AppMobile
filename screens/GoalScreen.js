@@ -34,10 +34,13 @@ export default class GoalScreen extends Component {
         
         let url
 
-        if (this.userData.is_trainer)
-            url = API_GATEWAY_URL + "goals/" + this.goalId
-        if (this.userData.is_athlete)
+        console.log('this.personalGoal:', this.personalGoal);
+
+        if (this.personalGoal)
             url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+        else
+            url = API_GATEWAY_URL + "goals/" + this.goalId
+
 
         console.log('url:', url);
 
@@ -82,12 +85,16 @@ export default class GoalScreen extends Component {
         this.handleCreatePress = this.handleCreatePress.bind(this)
         this.handleCancelPress = this.handleCancelPress.bind(this)
         this.onPressSaveChanges = this.onPressSaveChanges.bind(this)
+        this.onPressCompleteGoal = this.onPressCompleteGoal.bind(this)
 
         this.props = props
 
         this.userData = props.route.params.userData
         this.goalData = props.route.params.goalData
         this.goalCompleted = props.route.params.goalCompleted
+        this.personalGoal = props.route.params.personalGoal
+        this.isSubscribed = props.route.params.isSubscribed
+
         console.log("goalData: " + JSON.stringify(this.goalData))
         console.log("userData: " + JSON.stringify(this.userData))
 
@@ -265,6 +272,34 @@ export default class GoalScreen extends Component {
         )
     }
 
+    shouldRenderCompleteGoalButton() {
+        const mayBeCompleted = this.mode === Mode.ReadOnly && !this.goalCompleted
+
+        const canBeCompleted = mayBeCompleted && (this.isOwner(this.state.creatorId) || this.isSubscribed)  
+        
+        return canBeCompleted
+    }
+    
+    onPressCompleteGoal() {
+        let body={}
+        let config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        let url
+        if (this.personalGoal)
+            url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+        else
+            url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/subscriptions/goals/" + this.goalId
+
+        axios.put(url, body, config)
+            .then((response) => {
+                console.log('Éxito');
+                console.log(response.data);
+                this.props.navigation.goBack();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
     render() {
         if (this.state.loading) {
             return (
@@ -329,6 +364,16 @@ export default class GoalScreen extends Component {
 
                         {this.shouldRenderConfirmationButtons() && 
                             this.renderConfirmationButtons()
+                        }
+
+                        {this.shouldRenderCompleteGoalButton() &&
+                            <ButtonStandard
+                                onPress={this.onPressCompleteGoal}
+                                title="Completar meta"
+                                style={{
+                                    marginTop: 15,
+                                }}
+                            />
                         }
                     </View>
 

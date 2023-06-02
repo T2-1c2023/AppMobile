@@ -31,7 +31,9 @@ export const ListMode = {
     AthleteSingleTrainingGoalsLeft: 'athleteSingleTrainingGoalsLeft',
     
     CreatorTrainingGoals: 'creatorTrainingGoals',
-    CreatorTrainingGoalsEdition: 'creatorTrainingGoalsEdition'
+    
+    // TODO: Ventana nueva
+    // CreatorTrainingGoalsEdition: 'creatorTrainingGoalsEdition'
 }
 
 export default class GoalsListScreen extends Component {
@@ -81,8 +83,11 @@ export default class GoalsListScreen extends Component {
     onPressGoal(goal) {
         console.log("onPressGoal " + JSON.stringify(goal));
         const goalCompleted = this.listMode === ListMode.AthletePersonalGoalsCompleted || this.listMode === ListMode.AthletesAllTrainingsGoalsCompleted
+        const personalGoal = this.listMode === ListMode.AthletePersonalGoalsLeft || this.listMode === ListMode.AthletePersonalGoalsCompleted 
 
-        this.props.navigation.navigate('GoalScreen', { goalData: goal, userData: this.props.data, mode: Mode.ReadOnly, goalCompleted })
+        const isSubscribed = this.listMode === ListMode.AthleteAllTrainingsGoalsLeft || this.listMode === ListMode.AthleteSingleTrainingGoalsLeft
+
+        this.props.navigation.navigate('GoalScreen', { goalData: goal, userData: this.props.data, mode: Mode.ReadOnly, goalCompleted, personalGoal, isSubscribed })
     }
 
     fetchData = async () => {
@@ -158,7 +163,21 @@ export default class GoalsListScreen extends Component {
                 this.loadGoals(url, params)
                 break
 
+            case ListMode.AthleteAllTrainingsGoalsLeft:
+                params = {completed: false}
+                // GET /athletes/{id}/subscriptions/goals?completed=false
+                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/subscriptions/goals"
+                this.loadGoals(url, params)
+                break
+
+            case ListMode.AthletesAllTrainingsGoalsCompleted:
+                params = {completed: true}
+                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/subscriptions/goals"
+                this.loadGoals(url, params)
+                break
+
             default:
+                throw new Error("ListMode not implemented: " + this.listMode)
                 break
         }
 
