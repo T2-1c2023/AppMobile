@@ -207,7 +207,7 @@ class HomeScreen extends Component {
                         ),
                     }}
                 >
-                    {() => <ChatTest />}
+                    {() => <ChatTest data={this.data} />}
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Notificaciones Test"
