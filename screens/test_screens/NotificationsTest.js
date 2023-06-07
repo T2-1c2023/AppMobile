@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, Button, Text, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import messaging from '@react-native-firebase/messaging';
 
 // Handler that will cause the notification to show the alert
 // (even when user is not currently using the application)
@@ -15,7 +14,7 @@ Notifications.setNotificationHandler({
     })
 });
 
-class NotificationTest extends Component {
+class NotificationsTest extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -83,7 +82,7 @@ class NotificationTest extends Component {
                 alert('Failed to get push token for push notification!');
                 return;
             }
-            token = (await Notifications.getExpoPushTokenAsync()).data;
+            token = (await Notifications.getDevicePushTokenAsync()).data;
             console.log(token);
         } else {
             alert('Must use physical device for Push Notifications');
@@ -129,4 +128,67 @@ class NotificationTest extends Component {
     }
 }
 
+export default NotificationsTest;
+
+//--------------------------------------------------------------------------------
+/*
+import React, { Component } from 'react';
+import { View, Button, Text, Alert } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { registerForPushNotificationsAsync } from '../../src/Notifications';
+
+class NotificationTest extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            expoPushToken: '',
+            notification: false,
+        };
+    }
+
+    componentDidMount() {
+        registerForPushNotificationsAsync().then((token) => 
+            this.setState({ expoPushToken: token })
+        );
+    }
+
+    schedulePushNotification = async () => {
+        Alert.alert("Programando Notificación");
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "You've got mail! 📬",
+                body: 'Here is the notification body',
+                data: { data: 'goes here' },
+            },
+            trigger: { seconds: 2},
+        });
+    };
+
+    render() {
+        const  { expoPushToken, notification } = this.state;
+        
+        return (
+            <View
+                style={{
+                    flex:1,
+                    alignItems: 'center',
+                    justifyContent: 'space-around'
+                }}
+            >
+                <Text>Your expo push token: {expoPushToken}</Text>
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Text>Title: {notification && notification.request.content.title} </Text>
+                    <Text>Title: {notification && notification.request.content.body} </Text>
+                    <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
+                </View>
+                <Button
+                    title="Press to schedule a notification"
+                    onPress={this.schedulePushNotification}
+                />
+            </View>
+        )
+    }
+}
+
 export default NotificationTest;
+*/

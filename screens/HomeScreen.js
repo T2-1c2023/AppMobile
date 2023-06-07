@@ -14,6 +14,8 @@ import ChangePasswordScreen from './ChangePasswordScreen';
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
+import NotificationsTest from './test_screens/NotificationsTest';
+import ChatTest from './test_screens/ChatTest';
 
 
 
@@ -195,6 +197,31 @@ class HomeScreen extends Component {
 
                     </Drawer.Screen>
                 : null}
+
+                <Drawer.Screen name="Mensajes"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="comment" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                >
+                    {() => <ChatTest />}
+                </Drawer.Screen>
+
+                <Drawer.Screen name="Notificaciones Test"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="bell" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                >
+                    {() => <NotificationsTest />}
+                </Drawer.Screen>
+
             </Drawer.Navigator>
         );
     }

@@ -33,6 +33,7 @@ import * as Notifications from 'expo-notifications';
 
 // Chat Test (borrar)
 import ChatTest from './screens/test_screens/ChatTest';
+import NotificationsTest from './screens/test_screens/NotificationsTest';
 
 // Handler that will cause the notification to show the alert
 // (even when user is not currently using the application)
@@ -111,6 +112,10 @@ export default class App extends Component {
             <Stack.Screen 
               name='ChatTest'
               component={ChatTest}
+            />
+            <Stack.Screen 
+              name='NotificationsTest'
+              component={NotificationsTest}
             />
 
             <Stack.Screen

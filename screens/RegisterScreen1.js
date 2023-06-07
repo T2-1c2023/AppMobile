@@ -36,8 +36,9 @@ export default class RegisterScreen1 extends Component {
             return
 
         this.setState({ loading: true })
-        
-        let expo_push_token = await registerForPushNotificationsAsync();
+        // TODO: fix
+        // let expo_push_token = await registerForPushNotificationsAsync();
+        let expo_push_token = undefined;
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
@@ -67,7 +68,9 @@ export default class RegisterScreen1 extends Component {
         const is_athlete = this.props.route.params.athlete;
         const is_trainer = this.props.route.params.trainer;
 
-        let expo_push_token = await registerForPushNotificationsAsync();
+        // TODO: fix
+        // let expo_push_token = await registerForPushNotificationsAsync();
+        let expo_push_token = undefined;
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
