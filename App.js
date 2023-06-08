@@ -25,6 +25,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
 import TrainingReviewScreen from './screens/TrainingReviewScreen';
 import TrainingsReviewsListScreen from './screens/TrainingsReviewsListScreen';
+import ValidatePasswordScreen from './screens/ValidatePasswordScreen';
+import InterestsScreen from './screens/InterestsScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -129,6 +131,10 @@ export default class App extends Component {
               component={RegisterScreen1}
             />
             <Stack.Screen
+              name="InterestsScreen"
+              component={InterestsScreen}
+            />
+            <Stack.Screen
               name="ProfileSelectionScreen"
               component={ProfileSelectionScreen}
             />
@@ -226,6 +232,12 @@ export default class App extends Component {
               name="ChangePasswordScreen"
               component={ChangePasswordScreen}
               options={{ title: "Cambio de contraseña" }}
+            />
+
+            <Stack.Screen
+              name="ValidatePasswordScreen"
+              component={ValidatePasswordScreen}
+              options={{ title: "Validar contraseña" }}
             />
 
             <Stack.Screen 

@@ -8,6 +8,7 @@ import styles from '../src/styles/styles';
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
 import { googleSignIn } from '../src/GoogleAccount';
+import jwt_decode from 'jwt-decode';
 // Navigation
 import { CommonActions } from '@react-navigation/native';
 // Notifications
@@ -37,10 +38,10 @@ export default class RegisterScreen1 extends Component {
 
         this.setState({ loading: true })
         
-        let expo_push_token = await registerForPushNotificationsAsync();
+        /*let expo_push_token = await registerForPushNotificationsAsync();
         if (expo_push_token === undefined) {
             expo_push_token = '';
-        }
+        }*/
         const data = {
             fullname: this.state.fullName,
             mail: this.state.email,
@@ -49,12 +50,15 @@ export default class RegisterScreen1 extends Component {
             is_trainer: this.props.route.params.trainer,
             is_athlete: this.props.route.params.athlete,
             password: this.state.password,
-            expo_push_token: expo_push_token
+            //expo_push_token: expo_push_token
         }
         await register(data);
 
         if (this.userIsLogged()) {
-            this.props.navigation.replace('HomeScreen');
+            if (data.is_athlete)
+                this.props.navigation.replace('InterestsScreen', {userId: jwt_decode(tokenManager.getAccessToken()).id});
+            else
+                this.props.navigation.replace('HomeScreen');
         }
         
         this.setState({ loading: false });

@@ -10,6 +10,7 @@ export class FingerprintInput extends Component {
     
     handleOnPress = () => {
         // TODO: validar fingerprint
+        //console.log('huella');
         this.props.onValidFingerprint();
     }
 

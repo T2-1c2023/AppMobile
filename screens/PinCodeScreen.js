@@ -8,9 +8,14 @@ import styles from '../src/styles/styles';
 export default class PinCodeScreen extends Component {
     constructor(props) {
         super(props)
+        this.handleVerifyPin = this.handleVerifyPin.bind(this);
         this.state = {
             pin: '',
         }
+    }
+
+    handleVerifyPin() {
+        console.log('pin: ', this.state.pin);
     }
 
     render() {
@@ -43,7 +48,7 @@ export default class PinCodeScreen extends Component {
 
                 <ButtonStandard 
                     onPress={() => { 
-                        console.log('pin: ', this.state.pin) 
+                        this.handleVerifyPin(); 
                     }} 
                     title="Verificar"
                     style={{

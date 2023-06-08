@@ -261,8 +261,8 @@ export default class ProfileEditionScreen extends Component {
         this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
 
-    onPressEnrollFingerprint() {
-        console.log('TODO: enroll fingerprint');
+    onPressEnrollFingerprint = () => {
+        this.props.navigation.navigate('ValidatePasswordScreen', {data: this.props.route.params.data});
     }
 
     renderLinks() {
