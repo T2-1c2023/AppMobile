@@ -14,10 +14,13 @@ import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails, ButtonStandard } from '../src/styles/BaseComponents';
 import InterestsList from '../src/components/InterestsList';
 
+import { UserContext } from '../src/contexts/UserContext';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class ProfileScreen extends Component {
+    static contextType = UserContext;
+    
     constructor(props) {
         super(props);
         this.onPressCreatedTrainings = this.onPressCreatedTrainings.bind(this);
@@ -314,6 +317,7 @@ export default class ProfileScreen extends Component {
             >
                 <View style={styles.container}>
                     {this.renderHeader()}
+                    <Text>{"fullname: " + this.context.fullName}</Text>
                     {this.owner && this.renderPersonalData()}
                     {this.renderContactInfo()}
                     {this.renderInterests()}

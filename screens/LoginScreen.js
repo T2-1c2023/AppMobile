@@ -9,7 +9,11 @@ import { tokenManager } from '../src/TokenManager';
 import { logIn } from '../src/User';
 import { googleLogIn } from '../src/GoogleAccount';
 
+import { UserContext } from '../src/contexts/UserContext';
+
 export default class LoginScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.handleLogin = this.handleLogin.bind(this);
@@ -36,7 +40,10 @@ export default class LoginScreen extends Component {
         await logIn(email, password)
             
         if (this.alreadyLogged()) {
+            console.log(this.context)
+            await this.context.setFullName('mi full name')
             this.props.navigation.replace('HomeScreen');
+            
         }
 
         this.setState({ loading: false });
