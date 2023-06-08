@@ -21,12 +21,14 @@ export default class RegisterScreen1 extends Component {
         this.state = {
             loading: false,
             fullName: '',
+            phone: '',
             email: '',
             password: '',
             confirmPassword: '',
             errorMessage: undefined,
         }
 
+        this.phoneInput = React.createRef()
         this.emailInput = React.createRef()
         this.passwordInput = React.createRef()
         this.confirmPasswordInput = React.createRef()
@@ -42,23 +44,23 @@ export default class RegisterScreen1 extends Component {
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }*/
+        const expo_push_token = '4356' //sólo hasta que ande lo del token
+
         const data = {
             fullname: this.state.fullName,
             mail: this.state.email,
-            phone_number: '0123456789',
+            phone_number: this.state.phone,
             blocked: false,
             is_trainer: this.props.route.params.trainer,
             is_athlete: this.props.route.params.athlete,
             password: this.state.password,
-            //expo_push_token: expo_push_token
+            expo_push_token: expo_push_token
         }
         await register(data);
 
         if (this.userIsLogged()) {
-            if (data.is_athlete)
-                this.props.navigation.replace('InterestsScreen', {userId: jwt_decode(tokenManager.getAccessToken()).id});
-            else
-                this.props.navigation.replace('HomeScreen');
+            const token = tokenManager.getAccessToken();
+            this.props.navigation.replace('PinCodeScreen', {decodedToken: jwt_decode(token), token: token});
         }
         
         this.setState({ loading: false });
@@ -190,9 +192,22 @@ export default class RegisterScreen1 extends Component {
                         onChangeText={(input) => { 
                             this.setState({ fullName: input }) 
                         }}
-                        onSubmitEditing={() => this.emailInput.current.focus()}
+                        onSubmitEditing={() => this.phoneInput.current.focus()}
                         style={{
                             marginTop: 20,
+                        }} 
+                    />
+
+                    <InputData 
+                        placeholder="Número de teléfono"
+                        ref={this.phoneInput}
+                        maxLength={30} 
+                        onChangeText={(input) => { 
+                            this.setState({ phone: input }) 
+                        }}
+                        onSubmitEditing={() => this.emailInput.current.focus()}
+                        style={{
+                            marginTop: 5,
                         }} 
                     />
 
