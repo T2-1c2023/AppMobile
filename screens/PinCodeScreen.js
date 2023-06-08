@@ -21,7 +21,7 @@ export default class PinCodeScreen extends Component {
 
     async handleVerifyPin() {
         const body = { mail: this.props.route.params.decodedToken.mail, code: this.state.pin }
-        await axios.post(API_GATEWAY_URL + "register/verify", body, {
+        /*await axios.post(API_GATEWAY_URL + "register/verify", body, {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             },
@@ -39,8 +39,18 @@ export default class PinCodeScreen extends Component {
                     Alert.alert('', "El PIN ingresado no es correcto")
                 } else {
                     console.error("handleVerifyPin " + error);
-                }   
-            })
+                }
+            })*/
+        if (this.state.pin === '4356') {
+            if (this.props.route.params.decodedToken.is_athlete)
+                this.props.navigation.replace('InterestsScreen', { userId: this.props.route.params.decodedToken.id });
+            else
+                this.props.navigation.replace('HomeScreen');
+        }
+    }
+
+    componentDidMount() {
+        Alert.alert('', 'Ingresá código 4356, hardcodeado por el momento')
     }
 
     render() {
