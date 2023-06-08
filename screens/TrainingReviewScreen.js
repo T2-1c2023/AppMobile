@@ -180,6 +180,7 @@ export default class TrainingReviewScreen extends Component {
                         {this.starRatingOptions.map((option) => (
                             <TouchableOpacity onPress={() => { /*console.log("USERID " + this.props.route.params.userId); console.log(this.state.review);*/ this.setState({ starRating: option }); }}>
                                 <MaterialIcons
+                                    key={option}
                                     name={this.state.starRating >= option ? 'star' : 'star-border'}
                                     size={50}
                                     style={this.state.starRating >= option ? styles.starSelected : styles.starUnselected}
