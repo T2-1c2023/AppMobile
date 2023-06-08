@@ -29,11 +29,19 @@ export default class LoginScreen extends Component {
     }
 
     async updateContextAndRedirect() {
-        await this.context.setFullName(tokenManager.getFullName())
+        // await this.context.setFullName(tokenManager.getFullName())
         await this.context.setUserId(tokenManager.getUserId())
 
-        //TODO: logica de elección de rol
-        //if (tokenManager.isMixedUser())
+        if (tokenManager.isMixedUser())
+            // TODO: handle mixed user
+            alert('Usuario mixto en desarrollo')
+        else
+            tokenManager.isAthlete()? await this.context.setAsAthlete()
+            :
+            tokenManager.isTrainer()? await this.context.setAsTrainer()
+            :
+            alert('No se encontró un rol asignado. Usuario invalido')
+            
         this.props.navigation.replace('HomeScreen')
     }
 

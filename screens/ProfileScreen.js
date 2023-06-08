@@ -94,7 +94,7 @@ export default class ProfileScreen extends Component {
         try {
             this.loadInterests()
             this.loadUserInfo()
-            console.log(this.context)
+            console.log("contexto: ", this.context)
         } catch (error) {
             console.log(error)
         }

@@ -20,8 +20,16 @@ class TokenManager {
         return this.payload.id
     }
 
-    isAMixedUser() {
+    isMixedUser() {
         return this.payload.is_athlete && this.payload.is_trainer
+    }
+
+    isAthlete() {
+        return this.payload.is_athlete
+    }
+
+    isTrainer() {
+        return this.payload.is_trainer
     }
 
     getAccessToken() {
@@ -49,16 +57,6 @@ class TokenManager {
     // }
     updatePayload() {
         this.payload = jwt_decode(this.accessToken)
-    }
-
-    setAsAthlete() {
-        this.payload.isAthlete = true
-        this.payload.isTrainer = false
-    }
-
-    setAsTrainer() {
-        this.payload.isAthlete = false
-        this.payload.isTrainer = true
     }
 
     async updateTokens(accessToken) {
