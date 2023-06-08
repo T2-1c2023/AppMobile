@@ -28,6 +28,15 @@ export default class LoginScreen extends Component {
         this.passwordInput = React.createRef()
     }
 
+    async updateContextAndRedirect() {
+        await this.context.setFullName(tokenManager.getFullName())
+        await this.context.setUserId(tokenManager.getUserId())
+
+        //TODO: logica de elección de rol
+        //if (tokenManager.isMixedUser())
+        this.props.navigation.replace('HomeScreen')
+    }
+
     async handleLogin() {
         this.setState({ loading: true })
 
@@ -40,10 +49,7 @@ export default class LoginScreen extends Component {
         await logIn(email, password)
             
         if (this.alreadyLogged()) {
-            console.log(this.context)
-            await this.context.setFullName('mi full name')
-            this.props.navigation.replace('HomeScreen');
-            
+            await this.updateContextAndRedirect()
         }
 
         this.setState({ loading: false });
@@ -62,20 +68,21 @@ export default class LoginScreen extends Component {
         this.setState({ loading: true })
         await googleLogIn();
         if (this.alreadyLogged()) {
-            this.props.navigation.replace('HomeScreen');
+            await this.updateContextAndRedirect()
         } else {
             this.setState({ loading: false })
         }
     }
 
-    componentDidMount() {
-        tokenManager._loadTokens().then(() => {
+    async componentDidMount() {
+        await tokenManager._loadTokens()
+        // .then(() => {
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('HomeScreen');
+                await this.updateContextAndRedirect()
             } else {
                 this.setState({ loading: false })
             }
-        })
+        // })
     }
 
     navigateToEnrollmentScreen = () => {

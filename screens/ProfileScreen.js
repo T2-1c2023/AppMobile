@@ -94,6 +94,7 @@ export default class ProfileScreen extends Component {
         try {
             this.loadInterests()
             this.loadUserInfo()
+            console.log(this.context)
         } catch (error) {
             console.log(error)
         }
@@ -317,7 +318,6 @@ export default class ProfileScreen extends Component {
             >
                 <View style={styles.container}>
                     {this.renderHeader()}
-                    <Text>{"fullname: " + this.context.fullName}</Text>
                     {this.owner && this.renderPersonalData()}
                     {this.renderContactInfo()}
                     {this.renderInterests()}
