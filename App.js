@@ -38,6 +38,8 @@ import * as Notifications from 'expo-notifications';
 // Chat Test (borrar)
 import ChatTest from './screens/test_screens/ChatTest';
 
+import { AppProvider } from './src/contexts/UserContext';
+
 // Handler that will cause the notification to show the alert
 // (even when user is not currently using the application)
 Notifications.setNotificationHandler({
@@ -101,7 +103,7 @@ export default class App extends Component {
       );
     }
     return (
-      <PaperProvider>
+      <PaperProvider><AppProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={"LoginScreen"}
             screenOptions={{
@@ -275,7 +277,7 @@ export default class App extends Component {
           </Stack.Navigator>
         </NavigationContainer>
         <FlashMessage position="bottom" />
-      </PaperProvider>
+        </AppProvider></PaperProvider>
     )
   };
 }

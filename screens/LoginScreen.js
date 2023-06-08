@@ -9,7 +9,11 @@ import { tokenManager } from '../src/TokenManager';
 import { logIn } from '../src/User';
 import { googleLogIn } from '../src/GoogleAccount';
 
+import { UserContext } from '../src/contexts/UserContext';
+
 export default class LoginScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.handleLogin = this.handleLogin.bind(this);
@@ -24,6 +28,23 @@ export default class LoginScreen extends Component {
         this.passwordInput = React.createRef()
     }
 
+    async updateContextAndRedirect() {
+        // await this.context.setFullName(tokenManager.getFullName())
+        await this.context.setUserId(tokenManager.getUserId())
+
+        if (tokenManager.isMixedUser())
+            // TODO: handle mixed user
+            alert('Usuario mixto en desarrollo')
+        else
+            tokenManager.isAthlete()? await this.context.setAsAthlete()
+            :
+            tokenManager.isTrainer()? await this.context.setAsTrainer()
+            :
+            alert('No se encontró un rol asignado. Usuario invalido')
+            
+        this.props.navigation.replace('HomeScreen')
+    }
+
     async handleLogin() {
         this.setState({ loading: true })
 
@@ -36,7 +57,7 @@ export default class LoginScreen extends Component {
         await logIn(email, password)
             
         if (this.alreadyLogged()) {
-            this.props.navigation.replace('HomeScreen');
+            await this.updateContextAndRedirect()
         }
 
         this.setState({ loading: false });
@@ -55,20 +76,21 @@ export default class LoginScreen extends Component {
         this.setState({ loading: true })
         await googleLogIn();
         if (this.alreadyLogged()) {
-            this.props.navigation.replace('HomeScreen');
+            await this.updateContextAndRedirect()
         } else {
             this.setState({ loading: false })
         }
     }
 
-    componentDidMount() {
-        tokenManager._loadTokens().then(() => {
+    async componentDidMount() {
+        await tokenManager._loadTokens()
+        // .then(() => {
             if (this.alreadyLogged()) {
-                this.props.navigation.replace('HomeScreen');
+                await this.updateContextAndRedirect()
             } else {
                 this.setState({ loading: false })
             }
-        })
+        // })
     }
 
     navigateToEnrollmentScreen = () => {
