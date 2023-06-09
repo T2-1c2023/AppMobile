@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import StarsScore from '../src/components/StarsScore';
 import { titleManager } from '../src/TitleManager';
+import jwt_decode from 'jwt-decode';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -85,7 +86,7 @@ export default class TrainingsReviewsListScreen extends Component {
         axios.get(url, this.emptyBodyWithToken)
             .then(response => {
                 console.log(response.data)
-                this.props.navigation.navigate('ProfileScreen', { data: response.data, navigation: this.props.navigation, owner: false })
+                this.props.navigation.navigate('ProfileScreen', { data: response.data, owner: athleteId === jwt_decode(tokenManager.getAccessToken()).id })
             })
             .catch(function (error) {
                 console.error('handlePressedReview ' + error);
@@ -114,6 +115,7 @@ export default class TrainingsReviewsListScreen extends Component {
                             return (
 
                                 <TouchableOpacity
+                                    key={review.review}
                                     style={{ flex: 1 }}
                                     onPress={() => this.handlePressedReview(review.athlete_id)}
 
@@ -127,7 +129,7 @@ export default class TrainingsReviewsListScreen extends Component {
 
                                         <View style={{ flexDirection: 'row' }}>
 
-                                            <Text key={review.review} style={trainingStyles.titleText} multiline>
+                                            <Text style={trainingStyles.titleText} multiline>
                                                 {review.review}
                                             </Text>
 

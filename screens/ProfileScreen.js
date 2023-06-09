@@ -66,6 +66,7 @@ export default class ProfileScreen extends Component {
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.loadInterests();
             this.loadUserInfo();
+            this.loadFollowingInfo();
         });
     }
 
@@ -92,10 +93,29 @@ export default class ProfileScreen extends Component {
         if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, response.data.fullname, 22)}
     }
 
+    loadFollowingInfo() {      
+        const token =  tokenManager.getAccessToken()
+        const decodedToken = jwt_decode(token)
+        const id = decodedToken.id
+        if (id !== this.id) {
+            const url = API_GATEWAY_URL + 'users/' + id + '/followed';
+            axios.get(url, this.emptyBodyWithToken)
+                .then(response => {
+                    const following = (response.data.filter(f => f.id === this.id).length > 0);
+                    this.setState({ following });
+                })
+                .catch(function (error) {
+                    console.log('onPressFollowing ' + error);
+                });
+        }
+        
+    }
+
     async componentDidMount() {
         try {
             this.loadInterests()
             this.loadUserInfo()
+            this.loadFollowingInfo()
             console.log("contexto: ", this.context)
         } catch (error) {
             console.log(error)
@@ -123,11 +143,33 @@ export default class ProfileScreen extends Component {
     }
 
     onPressFollow() {
-        console.log('Follow pressed');
+        const url = API_GATEWAY_URL + 'users/' + jwt_decode(tokenManager.getAccessToken()).id + '/followed';
+        const body = {followed_id: this.id}
+        axios.post(url, body, this.emptyBodyWithToken)
+            .then(response => {
+                this.setState({ following: true });
+            })
+            .catch(function (error) {
+                console.log('onPressFollowing ' + error);
+            });
     }
 
     onPressUnfollow() {
-        console.log('Unfollow pressed');
+        const token = tokenManager.getAccessToken()
+        const url = API_GATEWAY_URL + 'users/' + jwt_decode(token).id + '/followed';
+        const body = {followed_id: this.id}
+        axios.delete(url, {
+            data: body,
+            headers: {
+                Authorization: token
+            },
+        })
+            .then(response => {
+                this.setState({ following: false });
+            })
+            .catch(function (error) {
+                console.log('onPressUnfollow ' + error);
+            });
     }
 
     onPressSendMessage() {

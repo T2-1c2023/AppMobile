@@ -48,14 +48,14 @@ export default class TrainingReviewScreen extends Component {
             this.loadReviewInfo();
         }
         this.setState({
-            title: this.props.route.params.training.title,
-            description: this.props.route.params.training.description,
+            title: this.props.route.params.trainingTitle,
+            description: this.props.route.params.trainingDescription,
         });
         console.log(this.props.route.params.alreadyRated);
     }
 
     loadRatingInfo() {
-        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.training.id + '/ratings';
+        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
         console.log(url)
 
         const params = { athlete_id: this.props.route.params.userId }
@@ -80,7 +80,7 @@ export default class TrainingReviewScreen extends Component {
     }
 
     loadReviewInfo() {
-        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.training.id + '/reviews';
+        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/reviews';
         console.log(url)
 
         const params = { athlete_id: this.props.route.params.userId }
@@ -107,7 +107,7 @@ export default class TrainingReviewScreen extends Component {
     }
 
     handleSendReview = async () => {
-        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.training.id + '/ratings';
+        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
         const body = {athlete_id: this.props.route.params.userId, score: this.state.starRating}
         await this.axiosRatingMethod(url, body, {
             headers: {
@@ -118,7 +118,7 @@ export default class TrainingReviewScreen extends Component {
                 //this.setState({ goals: response.data });
                 console.log("rating post " + response.data);
                 this.sendTextReview();
-                this.props.navigation.navigate('TrainingScreen', {userData: jwt_decode(this.token), token:this.token, trainingId: this.props.route.params.training.id})
+                this.props.navigation.navigate('TrainingScreen', {userData: jwt_decode(this.token), token:this.token, trainingId: this.props.route.params.trainingId})
             })
             .catch((error) => {
                 console.error("handleSendReview " + error);
@@ -128,7 +128,7 @@ export default class TrainingReviewScreen extends Component {
     sendTextReview = async () => {
         if (this.state.review.length > 0)
         {
-            const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.training.id + '/reviews';
+            const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/reviews';
             //console.log(url);
             const body = {athlete_id: this.props.route.params.userId, review: this.state.review}
             //console.log(body);
