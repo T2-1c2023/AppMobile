@@ -101,7 +101,7 @@ export default class GoalsListScreen extends Component {
                     icon="pencil"
                     iconColor="#21005D"
                     size={30}
-                    onPress={() => this.props.navigation.navigate('TrainingGoalsEditionScreen', { 
+                    onPress={() => this.props.navigation.replace('TrainingGoalsEditionScreen', { 
                         trainingId: this.props.trainingId?? this.props.route.params.trainingId 
                     })}
                 />
@@ -164,8 +164,9 @@ export default class GoalsListScreen extends Component {
         this.setState({ loading: false });
     }
 
-    render() {
 
+
+    render() {
         if (this.state.loading) {
             return (
                 <View style={{ marginTop: 80 }}>

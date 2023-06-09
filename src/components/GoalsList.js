@@ -113,48 +113,61 @@ export default class GoalsList extends Component {
         super(props)
     }
 
-    render() {
-        const goals_left = this.props.goals.filter((goal, index) => index % 2 === 0);
-        const goals_right = this.props.goals.filter((goal, index) => index % 2 === 1);
+    emptyList() {
+        return this.props.goals.length === 0
+    }
 
-        return (
-            <View style={[this.props.style,{flexDirection: 'row'}]}>
-                <View style={{
-                    width: '50%',
-                }}>
-                    {goals_left.map((goal) => 
-                        <Goal 
-                            goal={goal} 
-                            key={goal.id} 
-                            onPress={this.props.onPress}
-                            selectable={this.props.selectable}
-                            onSelection={this.props.onSelection}
-                            onDeselection={this.props.onDeselection}
-                            selectionMode = {this.props.selectedGoalsIds != 0}
-                            selected = {this.props.selectedGoalsIds? this.props.selectedGoalsIds.includes(goal.id) : false}
-                            canEdit = {this.props.canEdit}
-                        />
-                    )}
+    render() {
+        if (this.emptyList()) {
+            return (
+                <View style={[this.props.style, {justifyContent: 'center', alignItems: 'center'}]}>
+                    <Text style={{color: 'black'}}>No hay metas para mostrar</Text>
                 </View>
-                <View style={{
-                    width: '50%',
-                }}>
-                    {goals_right.map((goal) => 
-                        <Goal 
-                            goal={goal} 
-                            key={goal.id} 
-                            onPress={this.props.onPress}
-                            selectable={this.props.selectable}
-                            onSelection={this.props.onSelection}
-                            onDeselection={this.props.onDeselection}
-                            selectionMode = {this.props.selectedGoalsIds != 0}
-                            selected = {this.props.selectedGoalsIds? this.props.selectedGoalsIds.includes(goal.id) : false}
-                            canEdit = {this.props.canEdit}
-                        />
-                    )}
+            )
+        } else {
+        
+            const goals_left = this.props.goals.filter((goal, index) => index % 2 === 0);
+            const goals_right = this.props.goals.filter((goal, index) => index % 2 === 1);
+
+            return (
+                <View style={[this.props.style,{flexDirection: 'row'}]}>
+                    <View style={{
+                        width: '50%',
+                    }}>
+                        {goals_left.map((goal) => 
+                            <Goal 
+                                goal={goal} 
+                                key={goal.id} 
+                                onPress={this.props.onPress}
+                                selectable={this.props.selectable}
+                                onSelection={this.props.onSelection}
+                                onDeselection={this.props.onDeselection}
+                                selectionMode = {this.props.selectedGoalsIds != 0}
+                                selected = {this.props.selectedGoalsIds? this.props.selectedGoalsIds.includes(goal.id) : false}
+                                canEdit = {this.props.canEdit}
+                            />
+                        )}
+                    </View>
+                    <View style={{
+                        width: '50%',
+                    }}>
+                        {goals_right.map((goal) => 
+                            <Goal 
+                                goal={goal} 
+                                key={goal.id} 
+                                onPress={this.props.onPress}
+                                selectable={this.props.selectable}
+                                onSelection={this.props.onSelection}
+                                onDeselection={this.props.onDeselection}
+                                selectionMode = {this.props.selectedGoalsIds != 0}
+                                selected = {this.props.selectedGoalsIds? this.props.selectedGoalsIds.includes(goal.id) : false}
+                                canEdit = {this.props.canEdit}
+                            />
+                        )}
+                    </View>
                 </View>
-            </View>
-        )               
+            )
+        }
     }
 }
 

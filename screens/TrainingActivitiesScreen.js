@@ -22,6 +22,8 @@ export default class TrainingActivitiesScreen extends Component {
         super(props)
         this.handleContinuePress = this.handleContinuePress.bind(this)
         this.refreshActivities = this.refreshActivities.bind(this)
+        
+        this.newTraining = this.props.route.params.newTraining
         this.state = {
             activities: [],
             trainerData: {},
@@ -41,10 +43,13 @@ export default class TrainingActivitiesScreen extends Component {
 
     handleContinuePress() {
         console.log("this.state.trainingData " + JSON.stringify(this.state.trainingData));
-        this.props.route.params.from === 'TrainingScreen'
-        ? this.props.navigation.navigate('TrainingScreen', { userData: jwt_decode(tokenManager.getAccessToken()), token:tokenManager.getAccessToken(), trainingId: this.state.trainingData.id })
-        : this.props.navigation.navigate('TrainingGoalsEditionScreen', { trainingData: this.state.trainingData, id:this.state.trainerData.id });
-        
+        this.newTraining? 
+            this.props.navigation.replace('TrainingGoalsEditionScreen', { 
+                trainingData: this.state.trainingData,
+                trainingId:this.state.trainingData.id 
+            })
+        :
+        this.props.navigation.goBack()
     }
 
     refreshActivities() {

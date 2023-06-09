@@ -86,6 +86,9 @@ export default class TrainingGoalsEditionScreen extends Component {
         urlTrainerGoals = API_GATEWAY_URL + "trainers/" + this.context.userId + "/goals"
         urlActualTrainingGoals = API_GATEWAY_URL + "trainings/" + this.trainingId + "/goals"
 
+        console.log("[TrainingGoalsEditionScreen] urlTrainerGoals: ", urlTrainerGoals)
+        console.log("[TrainingGoalsEditionScreen] urlActualTrainingGoals: ", urlActualTrainingGoals)
+
         const trainerGoalsPromise = axios.get(urlTrainerGoals, config)
             
         const actualTrainingGoalsPromise = axios.get(urlActualTrainingGoals, config)
@@ -127,32 +130,34 @@ export default class TrainingGoalsEditionScreen extends Component {
             
             <View style={styles.container}>
 
-                {this.state.loading ? 
+                {this.state.loading ?
                     <View style={{marginTop: 80}}>
                         <ActivityIndicator size="large" color="#21005D"/>
                     </View>
                     :
-                    <GoalsList 
-                        goals={this.state.goals}
-                        style={{
-                            marginTop: 20,
-                        }}
-                        onPress={this.handlePress}
-                        selectedGoalsIds={this.state.selectedGoalsIds}
-                        onSelection={this.handleSelection}
-                        onDeselection={this.handleDeselection}
-                        canEdit
-                    />
+                    <React.Fragment>
+                        <Text style={{color: 'black'}}>Las metas seleccionadas forman parte del entrenamiento</Text>
+                        <GoalsList 
+                            goals={this.state.goals}
+                            style={{
+                                marginTop: 20,
+                            }}
+                            onPress={this.handlePress}
+                            selectedGoalsIds={this.state.selectedGoalsIds}
+                            onSelection={this.handleSelection}
+                            onDeselection={this.handleDeselection}
+                            canEdit
+                        />
+                        <ButtonStandard 
+                            title="Continuar"
+                            onPress={() => this.props.navigation.goBack()}
+                            style={{
+                                marginTop: 20
+                            }}
+                        />
+                    </React.Fragment>
                 }
-
-                <View style={styles.container}>
-                    <ButtonStandard 
-                        title="Continuar"
-                        onPress={() => this.props.navigation.replace('TrainingScreen',
-                            {token:tokenManager.getAccessToken(), userData:jwt_decode(tokenManager.getAccessToken()), trainingId: this.trainingId})}
-                        style={{marginTop: 20}}
-                    />
-                </View>
+                
             </View>
             {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
             {/* {!this.state.loading &&

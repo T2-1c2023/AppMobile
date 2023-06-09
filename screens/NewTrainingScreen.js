@@ -102,9 +102,11 @@ export default class NewTrainingScreen extends Component {
             console.log(response.status)
             if (response.status === 200 || response.status === 201) {
                 if (this.isNew) {
-                    this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data: { id: this.state.trainerId, from: 'NewTrainingScreen' } });
+                    // caso de creacion de entrenamiento (1er paso)
+                    this.props.navigation.replace('TrainingActivitiesScreen', { trainingData: response.data, data: { id: this.state.trainerId }, newTraining: true });
                 } else {
-                    this.props.navigation.navigate('TrainingsListScreen', { data: jwt_decode(tokenManager.getAccessToken()), type: 'created', trainerId:this.state.trainerId })
+                    // caso de edicion de entrenamiento
+                    this.props.navigation.goBack()
                 }
             }
         } catch (error) {
