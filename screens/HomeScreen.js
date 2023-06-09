@@ -16,6 +16,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
 import NotificationsTest from './test_screens/NotificationsTest';
 import ChatTest from './test_screens/ChatTest';
+import VerificationTest from './test_screens/VerificationTest';
 
 
 
@@ -221,6 +222,20 @@ class HomeScreen extends Component {
                 >
                     {() => <NotificationsTest />}
                 </Drawer.Screen>
+
+                {this.data.is_trainer ?
+                    <Drawer.Screen name="Verification Test"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="check" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                    >
+                        {() => <VerificationTest data={this.data} />}
+                    </Drawer.Screen>
+                : null }
 
             </Drawer.Navigator>
         );
