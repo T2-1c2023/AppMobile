@@ -136,7 +136,7 @@ export default class TrainingGoalsEditionScreen extends Component {
                     </View>
                     :
                     <React.Fragment>
-                        <Text style={{color: 'black'}}>Las metas seleccionadas forman parte del entrenamiento</Text>
+                        <Text style={{color: 'black', marginTop: 20}}>Las metas seleccionadas forman parte del entrenamiento</Text>
                         <GoalsList 
                             goals={this.state.goals}
                             style={{
