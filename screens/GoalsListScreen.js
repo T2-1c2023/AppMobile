@@ -51,12 +51,7 @@ export default class GoalsListScreen extends Component {
             this.componentDidMount()
         })
 
-        // {"navigation":{},"route":{"key":"GoalsListScreen-iBzT8Xh2ofol1u6rolAvp","name":"GoalsListScreen","params":{"trainingId":2,"listMode":"athleteSingleTrainingGoalsLeft"}}}
-        
-        console.log("[-GoalListScreen] props" + JSON.stringify(props))
-        console.log("[-GoalListScreen] props: " + JSON.stringify(props))
         this.props = props
-        console.log("[+GoalListScreen] props: " + JSON.stringify(this.props))
 
         this.state = {
             loading: true,

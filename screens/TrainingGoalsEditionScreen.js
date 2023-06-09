@@ -21,10 +21,9 @@ export const Mode = {
     ReadOnly: 'readOnly'
 }
 
-export default class GoalsTrainingsListScreen extends Component {
+export default class TrainingGoalsEditionScreen extends Component {
     constructor(props) {
         super(props)
-        this.handlePress = this.handlePress.bind(this)
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
@@ -174,10 +173,6 @@ export default class GoalsTrainingsListScreen extends Component {
             });
     }
 
-    canEdit() {
-        return this.props.route.params.trainingData.trainer_id === jwt_decode(tokenManager.getAccessToken()).id
-    }
-
     render() {
         return (
             <>
@@ -215,7 +210,7 @@ export default class GoalsTrainingsListScreen extends Component {
                         selectedGoalsIds={this.state.selectedGoalsIds}
                         onSelection={this.handleSelection}
                         onDeselection={this.handleDeselection}
-                        canEdit={this.canEdit()}
+                        canEdit
                     />
                 }
 
