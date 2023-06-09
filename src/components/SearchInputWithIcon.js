@@ -19,6 +19,7 @@ export default class SearchInputWithIcon extends Component {
             >
                 <Searchbar
                     style={searchStyles.searchbar}
+                    theme={searchStyles.searchBarTheme}
                     placeholder={this.props.placeholder}
                     onChangeText={(queryText) => this.setState({ queryText })}
                     onIconPress={() => this.props.onSubmit(this.state.queryText)}
@@ -48,6 +49,19 @@ const searchStyles = StyleSheet.create({
         height: 60,
         backgroundColor: '#CCC2DC',
         borderWidth: 1,
+    },
+
+    searchBarTheme: {
+        colors: { 
+            //placeholder unfocus (big and small)
+            onSurfaceVariant: 'black',
+            
+            //underline unfocus
+            onSurface: 'black',
+
+            //underline and title focus
+            primary: '#21005D',        
+        }
     },
 
     iconButton: {
