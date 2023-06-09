@@ -25,6 +25,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
 import TrainingReviewScreen from './screens/TrainingReviewScreen';
 import TrainingsReviewsListScreen from './screens/TrainingsReviewsListScreen';
+import ValidatePasswordScreen from './screens/ValidatePasswordScreen';
+import InterestsScreen from './screens/InterestsScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -131,6 +133,10 @@ export default class App extends Component {
               component={RegisterScreen1}
             />
             <Stack.Screen
+              name="InterestsScreen"
+              component={InterestsScreen}
+            />
+            <Stack.Screen
               name="ProfileSelectionScreen"
               component={ProfileSelectionScreen}
             />
@@ -230,6 +236,12 @@ export default class App extends Component {
               options={{ title: "Cambio de contraseña" }}
             />
 
+            <Stack.Screen
+              name="ValidatePasswordScreen"
+              component={ValidatePasswordScreen}
+              options={{ title: "Validar contraseña" }}
+            />
+
             <Stack.Screen 
               name="GoalsTrainingsListScreen"
               component={GoalsTrainingsListScreen}
@@ -248,13 +260,6 @@ export default class App extends Component {
             <Stack.Screen
               name='TrainingScreen'
               component={TrainingScreen}
-              options={() => ({
-                headerTitle: () => (
-                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center', width: 250 }}>
-                    Aumentar fuerza de brazos
-                  </Text>
-                ),
-              })}
             />
 
             <Stack.Screen 

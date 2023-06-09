@@ -10,6 +10,7 @@ import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 import Constants from 'expo-constants'
 import { HelperText } from 'react-native-paper';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -48,6 +49,7 @@ export default class NewTrainingScreen extends Component {
     }
 
     async componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Crear entrenamiento", 22)
         if (!this.isNew) {
             //this.getTrainingData();
             this.loadTrainingInfo();

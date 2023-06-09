@@ -10,6 +10,7 @@ import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText } from '../src/styles/BaseComponents';
 import Constants from 'expo-constants'
+import { titleManager } from '../src/TitleManager';
 
 import { IconButton } from 'react-native-paper'
 
@@ -239,6 +240,7 @@ export default class TrainingScreen extends Component {
                 console.log(this.props.route.params.userData);
                 this.setState({ training });
                 this.loadTrainerInfo(training.trainer_id);
+                titleManager.setTitle(this.props.navigation, this.state.training.title, 22)
             })
             .catch(function (error) {
                 console.log('loadTrainingInfo ' + error);

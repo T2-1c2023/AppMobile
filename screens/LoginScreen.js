@@ -10,6 +10,7 @@ import { logIn } from '../src/User';
 import { googleLogIn } from '../src/GoogleAccount';
 
 import { UserContext } from '../src/contexts/UserContext';
+import { titleManager } from '../src/TitleManager';
 
 export default class LoginScreen extends Component {
     static contextType = UserContext;
@@ -93,10 +94,11 @@ export default class LoginScreen extends Component {
             
             
         // })
+        titleManager.setTitle(this.props.navigation, "FiuFit", 22)
     }
 
     navigateToEnrollmentScreen = () => {
-        this.props.navigation.replace('EnrollmentScreen');
+        this.props.navigation.navigate('ValidatePasswordScreen');
     }
 
     alreadyLogged() {

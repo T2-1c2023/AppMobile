@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import { DividerWithLeftText } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { ButtonStandard } from '../src/styles/BaseComponents';
@@ -10,6 +10,8 @@ import jwt_decode from 'jwt-decode';
 // Requests
 import Constants from 'expo-constants';
 import axios from 'axios';
+
+import { titleManager } from '../src/TitleManager';
 
 const MAX_ACTIVITIES = 20;
 
@@ -34,6 +36,7 @@ export default class TrainingActivitiesScreen extends Component {
         this.setState({ trainerData });
 
         this.refreshActivities();
+        titleManager.setTitle(this.props.navigation, "Actividades", 22)
     }
 
     handleContinuePress() {

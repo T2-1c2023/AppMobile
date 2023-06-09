@@ -10,6 +10,7 @@ import Constants from 'expo-constants'
 import { ActivityIndicator } from 'react-native-paper';
 import jwt_decode from 'jwt-decode';
 //import Mode from './GoalScreen';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -154,7 +155,7 @@ export default class GoalsTrainingsListScreen extends Component {
 
     componentDidMount() {
         this.fetchData();
-        // TODO: averiguar como hacer para que se reinicie siempre que vuelva el foco a esta pantalla
+        titleManager.setTitle(this.props.navigation, "Metas del entrenamiento", 18)
     }
 
     handleSearch (queryText) {

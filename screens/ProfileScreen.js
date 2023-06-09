@@ -7,6 +7,7 @@ import { selectImage, uploadImageFirebase, downloadImage } from '../services/Med
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
+import { titleManager } from '../src/TitleManager';
 // for componentDidMount() (TODO: it shouldn't be needed?)
 import jwt_decode from 'jwt-decode';
 
@@ -88,6 +89,7 @@ export default class ProfileScreen extends Component {
         const fullname = response.data.fullname
         const phone_number = response.data.phone_number
         this.setState({ fullname, phone_number })
+        if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, response.data.fullname, 22)}
     }
 
     async componentDidMount() {

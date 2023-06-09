@@ -5,40 +5,22 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import StarsScore from '../src/components/StarsScore';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingsReviewsListScreen extends Component {
     constructor(props) {
         super(props)
+        this.handlePressedReview = this.handlePressedReview.bind(this)
         this.state = {
-            trainings: [{ "blocked": false, "description": "más flexiones", "id": 55, "score": "3.00", "severity": 2, "title": "más flexiones", "trainer_id": 52, "type": "Fuerza", "type_id": 1 }, { "blocked": false, "description": "caminata larga", "id": 61, "score": "3.00", "severity": 2, "title": "Caminata", "trainer_id": 52, "type": "Resistencia", "type_id": 2 }, { "blocked": false, "description": "full body workout", "id": 76, "score": "3.00", "severity": 1, "title": "Full body", "trainer_id": 34, "type": "Fuerza", "type_id": 1 }],
-            reviews: [
-                /*{
-                    "training_id": 55,
-                    "athlete_id": 51,
-                    "review": "Me gustó mucho",
-                    "score": 3
-                },
-                {
-                    "training_id": 55,
-                    "athlete_id": 51,
-                    "review": "",
-                    "score": 4
-                },
-                {
-                    "training_id": 55,
-                    "athlete_id": 51,
-                    "review": "Muy exigente",
-                    "score": 4
-                },
-                {
-                    "training_id": 55,
-                    "athlete_id": 51,
-                    "review": "Excelente, me sirvió para entrenar todo",
-                    "score": 5
-                }*/
-            ]
+            reviews: [],
+            //reviewersMap: '',
+        }
+        this.emptyBodyWithToken = {
+            headers: {
+                Authorization: tokenManager.getAccessToken()
+            }
         }
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.fetchReviews();
@@ -47,6 +29,7 @@ export default class TrainingsReviewsListScreen extends Component {
 
     componentDidMount() {
         this.fetchReviews();
+        titleManager.setTitle(this.props.navigation, "Ver calificaciones", 22)
     }
 
     fetchReviews() {
@@ -61,12 +44,61 @@ export default class TrainingsReviewsListScreen extends Component {
                 console.log("recibí response fetchReviews"); //debug
                 const reviews = response.data;
                 //console.log(trainings)
-                this.setState({ reviews });
+                this.setState({ reviews }/*, this.fetchReviewersData(reviews)*/);
             })
             .catch(function (error) {
                 console.log("refreshActivities " + error);
             });
     }
+
+    /*fetchReviewersData(reviews) {
+        let map = new Map();
+        const token = tokenManager.getAccessToken();
+        reviews.forEach(review => {
+            let url = API_GATEWAY_URL + 'users/' + review.athlete_id
+            axios.get(url, {
+                headers: {
+                    Authorization: token
+                },
+            })
+                .then(response => {
+                    //console.log("recibí response fetchReviews"); //debug
+                    //const reviews = response.data;
+                    //console.log(trainings)
+                    //this.setState({ reviews }, this.fetchReviewersData(reviews));
+                    console.log(response.data)
+                    map.set(review.athlete_id, response.data.fullname)
+                    console.log(JSON.stringify(map))
+                    console.log(map.get(review.athlete_id))
+                })
+                .catch(function (error) {
+                    console.log("refreshActivities " + error);
+                });
+        });
+        this.setState({ reviewersMap: map })
+    }*/
+
+    handlePressedReview(athleteId) {
+        //console.log(JSON.stringify(this.state.reviewersMap.get(athleteId)))
+        console.log('pressed review ' + athleteId)
+        const url = API_GATEWAY_URL + 'users/' + athleteId
+        axios.get(url, this.emptyBodyWithToken)
+            .then(response => {
+                console.log(response.data)
+                this.props.navigation.navigate('ProfileScreen', { data: response.data, navigation: this.props.navigation, owner: false })
+            })
+            .catch(function (error) {
+                console.error('handlePressedReview ' + error);
+            });
+    }
+
+    /*renderReviewerInfo(review) {
+        return (
+            <Text key={review.athlete_id} style={trainingStyles.titleText} multiline>
+                {this.state.reviewersMap.get(review.athlete_id)}
+            </Text>
+        )
+    }*/
 
     render() {
         return (
@@ -83,7 +115,8 @@ export default class TrainingsReviewsListScreen extends Component {
 
                                 <TouchableOpacity
                                     style={{ flex: 1 }}
-                                    onPress={() => console.log("pressed review")}
+                                    onPress={() => this.handlePressedReview(review.athlete_id)}
+
                                 >
                                     <View style={[trainingStyles.reviewContainer]}>
 
@@ -94,9 +127,13 @@ export default class TrainingsReviewsListScreen extends Component {
 
                                         <View style={{ flexDirection: 'row' }}>
 
-                                            <Text style={trainingStyles.titleText} multiline>
+                                            <Text key={review.review} style={trainingStyles.titleText} multiline>
                                                 {review.review}
                                             </Text>
+
+                                            
+
+                                            
 
                                             <View style={{ flexGrow: 1, flexDirection: 'row' }}>
 
