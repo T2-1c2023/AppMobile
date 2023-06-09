@@ -27,6 +27,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 import { CommonActions } from '@react-navigation/native';
 
+import { UserContext } from '../src/contexts/UserContext';
+
 import Constants from 'expo-constants'
 const Drawer = createDrawerNavigator();
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
@@ -40,12 +42,15 @@ function Test() {
 }
 
 class HomeScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.createGoalButtonForAthlete = this.createGoalButtonForAthlete.bind(this)
         this.createGoalButtonForTrainer = this.createGoalButtonForTrainer.bind(this)
 
-        this.data = jwt_decode(tokenManager.getAccessToken())
+        // this.data = jwt_decode(tokenManager.getAccessToken())
+        this.data = tokenManager.getPayload()
     }
 
     handleLogout = async () => {
@@ -89,7 +94,7 @@ class HomeScreen extends Component {
                 size={30}
                 onPress={() => this.props.navigation.navigate('GoalScreen', 
                     {
-                        userData: this.data, 
+                        userData: this.data,
                         mode: mode,
                     }
                 )}
@@ -114,8 +119,7 @@ class HomeScreen extends Component {
                     headerRight: this.createGoalButtonForTrainer
                 }}
             >
-                {() => <GoalsListScreen 
-                        data={this.data} 
+                {() => <GoalsListScreen
                         navigation={this.props.navigation}
                         listMode={ListMode.TrainerGoalsCreated} 
                 />}
@@ -141,8 +145,7 @@ class HomeScreen extends Component {
                     headerRight: this.createGoalButtonForAthlete
                 }}
             >
-                {() => <GoalsListScreen 
-                        data={this.data} 
+                {() => <GoalsListScreen
                         navigation={this.props.navigation}
                         listMode={ListMode.AthletePersonalGoalsLeft} 
                 />}
@@ -162,8 +165,7 @@ class HomeScreen extends Component {
                     ),
                 }}
             >
-                {() => <GoalsListScreen 
-                        data={this.data} 
+                {() => <GoalsListScreen
                         navigation={this.props.navigation}
                         listMode={ListMode.AthletePersonalGoalsCompleted} 
                 />}
@@ -182,8 +184,7 @@ class HomeScreen extends Component {
                     ),
                 }}
             >
-                {() => <GoalsListScreen 
-                        data={this.data} 
+                {() => <GoalsListScreen
                         navigation={this.props.navigation}
                         listMode={completed? 
                             ListMode.AthletesAllTrainingsGoalsCompleted 
@@ -201,7 +202,7 @@ class HomeScreen extends Component {
         return (
             <Drawer.Navigator 
                 drawerContent={this.CustomDrawerContent} 
-                initialRouteName="Mi Perfil"
+                initialRouteName="Entrenamientos suscriptos"
                 screenOptions={{
                     drawerActiveTintColor: '#5925b0',
                     drawerStyle: {

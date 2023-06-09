@@ -36,6 +36,10 @@ class TokenManager {
         return this.accessToken
     }
 
+    getPayload() {
+        return this.payload
+    }
+
     
     //  ejemplo de payload
     // {

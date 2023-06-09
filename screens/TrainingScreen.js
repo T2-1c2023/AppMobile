@@ -19,17 +19,23 @@ import axios from 'axios';
 import { downloadImage } from '../services/Media';
 import { tokenManager } from '../src/TokenManager';
 
+import { UserContext } from '../src/contexts/UserContext';
+
+import { ListMode } from './GoalsListScreen';
+
 const MAX_ACTIVITIES = 20;
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-const ListMode = {
-    trainingGoals_Selectable: 'selectable',
-    trainingGoals_ReadOnly: 'readOnly',
-    personalGoals: 'athlete'
-}
+// const ListMode = {
+//     trainingGoals_Selectable: 'selectable',
+//     trainingGoals_ReadOnly: 'readOnly',
+//     personalGoals: 'athlete'
+// }
 
 export default class TrainingScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.handleDataEditPress = this.handleDataEditPress.bind(this)
@@ -38,6 +44,8 @@ export default class TrainingScreen extends Component {
         this.handleDeletePress = this.handleDeletePress.bind(this)
         this.handleBackToTrainings = this.handleBackToTrainings.bind(this)
         this.handleSubscribeButtonPress = this.handleSubscribeButtonPress.bind(this)
+        this.onPressTrainingGoals = this.onPressTrainingGoals.bind(this)
+
         this.state = {
             isInFavorites: false,
             isSubscribed: false,
@@ -60,6 +68,8 @@ export default class TrainingScreen extends Component {
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.componentDidMount();
         });
+
+        console.log("[TrainingScreen] this.props.navigation ", this.props.navigation)
     }
 
     handleFavoriteButtonPress() {
@@ -84,7 +94,7 @@ export default class TrainingScreen extends Component {
                 response = await axios.delete(url, {
                     data: body,
                     headers: {
-                        Authorization: this.props.route.params.token
+                        Authorization: tokenManager.getAccessToken()
                     },
                 })
             }
@@ -100,7 +110,7 @@ export default class TrainingScreen extends Component {
         const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/favorites'
         await axios.get(url, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -152,7 +162,7 @@ export default class TrainingScreen extends Component {
         //console.log(this.props.route.params.trainingId);
         axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -171,7 +181,7 @@ export default class TrainingScreen extends Component {
         axios.delete(url, {
             data: body,
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             },
         })
             .then(response => {
@@ -196,7 +206,7 @@ export default class TrainingScreen extends Component {
             //axios.get(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', {
             axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', {
                 headers: {
-                    Authorization: this.props.route.params.token
+                    Authorization: tokenManager.getAccessToken()
                 }
             })
                 .then(response => {
@@ -221,7 +231,7 @@ export default class TrainingScreen extends Component {
     loadTrainingInfo() {
         axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -265,19 +275,15 @@ export default class TrainingScreen extends Component {
                 if (error.response && error.response.status === 404) {
                     console.error("ERROR")
                     this.setState({ isAlreadyRated: false })
-                }
-                console.error("alreadyRatedd " + error);
+                } 
+                console.error("alreadyRatedd" + error);
             })
-
-
-
-
     }
 
     loadTrainerInfo(trainer_id) {
         axios.get(API_GATEWAY_URL + 'users/' + trainer_id, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -303,7 +309,7 @@ export default class TrainingScreen extends Component {
     handleDeletePress() {
         axios.delete(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -328,42 +334,75 @@ export default class TrainingScreen extends Component {
     }
 
     onPressTrainingGoals() {
-        alert("on development...")
-        // this.props.navigation.navigate('GoalsListScreen', {
-        //     trainingData: this.state.training,
-        //     id: this.props.route.params.userData.id,
-        //     listMode: ListMode.trainingGoals_ReadOnly
+        const listMode = this.isOwner()?
+            ListMode.CreatorTrainingGoals 
+            :
+            ListMode.AthleteSingleTrainingGoalsLeft
+        
+        console.log("[onPressTrainingGoals] ListMode: ", listMode)
 
-        //     // nuevos parametros
-        //     // data={this.data} 
-        //     // navigation={this.props.navigation}
-        //     // listMode={ListMode.AthleteSingleTrainingGoalsLeft} 
-        // })
+        this.props.navigation.navigate('GoalsListScreen', {
+            trainingId: this.props.route.params.trainingId,
+            listMode: listMode
+        })
     }
 
-    renderFooter() {
+    renderCreatorImage() {
+        return (
+            <React.Fragment>
+                <Text style={trainigStyles.creatorTitle}>Creador</Text>
+                <Pressable onPress={() => this.props.navigation.navigate('ProfileScreen', {data:this.data, navigation:this.props.navigation, owner:false, data:this.state.trainer})}>
+                    <Image
+                        source={this.state.trainerProfilePic}
+                        style={trainigStyles.creatorImage}
+                        resizeMode='contain'
+                    />
+                </Pressable>
+                <Text style={trainigStyles.creatorName}>{this.state.trainer.fullname}</Text>
+            </React.Fragment>
+        )
+    }
+
+    shouldRenderGoalsButton() {
+        return this.isOwner() || this.state.isSubscribed
+    }
+
+    isOwner() {
+        console.log("[isOwner] userId: ", this.context.userId)
+        console.log("[isOwner] trainerId: ", this.state.training.trainer_id)
+        return this.state.training.trainer_id === this.context.userId
+    }
+
+    renderGoalsButton() {
+        const buttonName = this.isOwner()?
+            "Ver metas del entrenamiento" 
+            : 
+            "Ver metas restantes para completar el entrenamiento"
+        
+        return (
+            <TextLinked
+                linkedText={buttonName} 
+                onPress={this.onPressTrainingGoals}
+                style={{
+                    marginRight: 20,
+                }}
+            />
+        )
+    }
+
+    renderCreatorAndGoalsArea() {
         return (
             <View style={{ flexDirection: 'row', width: '100%', marginTop: 10, alignItems: 'center' }}>
                 <View style={{ flex: 0.4, alignItems: 'center' }}>
-                    <Text style={trainigStyles.creatorTitle}>Creador</Text>
-                    <Pressable onPress={() => this.props.navigation.navigate('ProfileScreen', {data:this.data, navigation:this.props.navigation, owner:false, data:this.state.trainer})}>
-                        <Image
-                            source={this.state.trainerProfilePic}
-                            style={trainigStyles.creatorImage}
-                            resizeMode='contain'
-                        />
-                    </Pressable>
-                    <Text style={trainigStyles.creatorName}>{this.state.trainer.fullname}</Text>
+                    {this.renderCreatorImage()}
                 </View>
+                
                 <View style={{ flex: 0.3 }} />
+                
                 <View style={{ flex: 0.3, alignItems: 'flex-end', justifyContent: 'center' }}>
-                    <TextLinked
-                        linkedText="Ver metas del entrenamiento"
-                        onPress={this.onPressTrainingGoals}
-                        style={{
-                            marginRight: 20,
-                        }}
-                    />
+                    {this.shouldRenderGoalsButton() && 
+                        this.renderGoalsButton()
+                    }
                 </View>
             </View>
         )
@@ -383,6 +422,12 @@ export default class TrainingScreen extends Component {
 
     canRate() {
         return this.props.route.params.userData.is_athlete && (this.state.training.trainer_id != this.props.route.params.userData.id)
+    }
+
+    renderDivider() {
+        return (
+            <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
+        )
     }
 
     render() {
@@ -441,12 +486,11 @@ export default class TrainingScreen extends Component {
                         }}
                     />
 
-                    <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
+                    {this.renderDivider()}
 
-                    {this.renderFooter()}
+                    {this.renderCreatorAndGoalsArea()}
 
-                    <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
-                    {/* <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey'}} /> */}
+                    {this.renderDivider()}
 
                     {this.canSubscribe() &&
                         <ButtonStandard
@@ -472,17 +516,6 @@ export default class TrainingScreen extends Component {
                             warningTheme
                         />
                     }
-
-                    <ButtonStandard
-                        //TO_DO debería volver a la pantalla TrainingsListScreen, pero ahí no me aparece la barra lateral para ir después adonde quiera,
-                        //quedo atrapado o tener que ir atrás, atrás, atrás, así que por ahora hago que vuelva a HomeScreen
-                        onPress={() => this.props.navigation.replace('HomeScreen')}
-                        title={"Volver a Home"}
-                        style={{
-                            marginTop: 5,
-                        }}
-                        icon={this.state.isSubscribed ? 'bookmark-off' : 'bookmark'}
-                    />
 
                 </View>
             </ScrollView>

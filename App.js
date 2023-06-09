@@ -20,7 +20,7 @@ import TrainingsListScreen from './screens/TrainingsListScreen';
 
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import TrainingScreen from './screens/TrainingScreen'; 
-import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
+import TrainingGoalsEditionScreen from './screens/TrainingGoalsEditionScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
 import TrainingReviewScreen from './screens/TrainingReviewScreen';
@@ -243,8 +243,8 @@ export default class App extends Component {
             />
 
             <Stack.Screen 
-              name="GoalsTrainingsListScreen"
-              component={GoalsTrainingsListScreen}
+              name="TrainingGoalsEditionScreen"
+              component={TrainingGoalsEditionScreen}
             />
 
             <Stack.Screen 

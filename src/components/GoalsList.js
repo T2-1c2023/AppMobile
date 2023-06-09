@@ -60,7 +60,7 @@ class Goal extends Component {
                 elevation={3}
                 style={this.state.selected? goalsStyles.cardSelected : goalsStyles.card}
                 onLongPress={this.handleLongPress}
-                onPress={this.props.selectable? () => console.log("TODO: press when selectable true") : this.handlePress}
+                onPress={this.props.canEdit? this.handleLongPress : this.handlePress}
             >
                 <View style={{ position: 'relative' }}>
                     {this.state.uri ? (

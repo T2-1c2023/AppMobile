@@ -91,6 +91,8 @@ export default class LoginScreen extends Component {
             } else {
                 this.setState({ loading: false })
             }
+            
+            
         // })
         titleManager.setTitle(this.props.navigation, "FiuFit", 22)
     }

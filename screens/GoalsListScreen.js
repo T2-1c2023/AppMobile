@@ -11,14 +11,18 @@ import axios from 'axios';
 import Constants from 'expo-constants'
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 
+import { UserContext } from '../src/contexts/UserContext';
+
+import { Mode } from './GoalScreen';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-export const Mode = {
-    AthleteCreate: 'athleteCreate',
-    TrainerCreate: 'trainerCreate',
-    Edit: 'edit',
-    ReadOnly: 'readOnly'
-}
+// export const Mode = {
+//     AthleteCreate: 'athleteCreate',
+//     TrainerCreate: 'trainerCreate',
+//     Edit: 'edit',
+//     ReadOnly: 'readOnly'
+// }
 
 export const ListMode = {
     TrainerGoalsCreated: 'trainerGoalsCreated',
@@ -32,17 +36,14 @@ export const ListMode = {
     AthleteSingleTrainingGoalsLeft: 'athleteSingleTrainingGoalsLeft',
     
     CreatorTrainingGoals: 'creatorTrainingGoals',
-    
-    // TODO: Ventana nueva
-    // CreatorTrainingGoalsEdition: 'creatorTrainingGoalsEdition'
 }
 
 export default class GoalsListScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.onPressGoal = this.onPressGoal.bind(this)
-        this.handleSelection = this.handleSelection.bind(this)
-        this.handleDeselection = this.handleDeselection.bind(this)
         this.getTokenData = this.getTokenData.bind(this)
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -51,16 +52,12 @@ export default class GoalsListScreen extends Component {
 
         this.props = props
 
-        this.data = this.props.data
-
         this.state = {
             loading: true,
             goals: [],
         }
-        this.listMode = this.props.listMode
-
-        console.log("props " + JSON.stringify(this.props))
-        console.log("data " + JSON.stringify(this.data))
+        
+        this.listMode = this.props.listMode?? this.props.route.params.listMode
         console.log("listMode " + this.listMode)
     }
 
@@ -68,57 +65,13 @@ export default class GoalsListScreen extends Component {
         this.tokenData = this.props.route !== undefined ? this.props.route.params.data : this.props.data
     }
 
-    handleSelection(goal_id) {  //TO_DO ver si se puede quitar esta función
-        const ids = [...this.state.selectedGoalsIds, goal_id]
-
-        const body = {
-            training_id: 1,
-            goal_id: goal_id
-        }
-    }
-
-    handleDeselection(goal_id) {  //TO_DO ver si se puede quitar esta función
-
-    }
-
     onPressGoal(goal) {
         console.log("onPressGoal " + JSON.stringify(goal));
         const goalCompleted = this.listMode === ListMode.AthletePersonalGoalsCompleted || this.listMode === ListMode.AthletesAllTrainingsGoalsCompleted
         const personalGoal = this.listMode === ListMode.AthletePersonalGoalsLeft || this.listMode === ListMode.AthletePersonalGoalsCompleted 
-
         const isSubscribed = this.listMode === ListMode.AthleteAllTrainingsGoalsLeft || this.listMode === ListMode.AthleteSingleTrainingGoalsLeft
 
         this.props.navigation.navigate('GoalScreen', { goalData: goal, userData: this.props.data, mode: Mode.ReadOnly, goalCompleted, personalGoal, isSubscribed })
-    }
-
-    fetchData = async () => {
-        //console.log("data " + JSON.stringify(this.tokenData));
-        let endpoint;
-        if (this.tokenData.is_trainer) {   //TO_DO qué pasa si alguno es entrenador y atleta?
-            endpoint = 'trainers/'
-        } else if (this.tokenData.is_athlete) {
-            endpoint = 'athletes/'
-        }
-        console.log(API_GATEWAY_URL + endpoint + this.tokenData.id + "/goals")
-        console.log(tokenManager.getAccessToken());
-        await axios.get(API_GATEWAY_URL + endpoint + this.tokenData.id + "/goals", {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            },
-            params: {
-                completed: this.completed
-            }
-        })
-            .then((response) => {
-                this.setState({ goals: response.data });
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.error("fetchData " + error);
-            })
-
-
-        this.setState({ loading: false });
     }
 
     loadGoals(url, params) {
@@ -140,48 +93,74 @@ export default class GoalsListScreen extends Component {
             })
     }
 
+    setEditButton() {
+        console.log("setEditButton")
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <IconButton
+                    icon="pencil"
+                    iconColor="#21005D"
+                    size={30}
+                    onPress={() => this.props.navigation.navigate('TrainingGoalsEditionScreen', { 
+                        trainingId: this.props.trainingId?? this.props.route.params.trainingId 
+                    })}
+                />
+            ),
+        });
+    }
+
     componentDidMount() {
         let params
         let url
 
+        let userId = this.context.userId
+
         switch (this.listMode) {
             case ListMode.TrainerGoalsCreated:
-                // GET /trainers/{id}/goals
                 params = {}
-                url = API_GATEWAY_URL + "trainers/" + this.data.id + "/goals"
-                this.loadGoals(url, params)
+                url = API_GATEWAY_URL + "trainers/" + userId + "/goals"
                 break
 
             case ListMode.AthletePersonalGoalsLeft:
                 params = {completed: false}
-                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
-                this.loadGoals(url, params)
+                url = API_GATEWAY_URL + "athletes/" + userId + "/personal-goals"
                 break
 
             case ListMode.AthletePersonalGoalsCompleted:
                 params = {completed: true}
-                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/personal-goals"
-                this.loadGoals(url, params)
+                url = API_GATEWAY_URL + "athletes/" + userId + "/personal-goals"
                 break
 
             case ListMode.AthleteAllTrainingsGoalsLeft:
                 params = {completed: false}
-                // GET /athletes/{id}/subscriptions/goals?completed=false
-                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/subscriptions/goals"
-                this.loadGoals(url, params)
+                url = API_GATEWAY_URL + "athletes/" + userId + "/subscriptions/goals"            
                 break
 
             case ListMode.AthletesAllTrainingsGoalsCompleted:
                 params = {completed: true}
-                url = API_GATEWAY_URL + "athletes/" + this.data.id + "/subscriptions/goals"
-                this.loadGoals(url, params)
+                url = API_GATEWAY_URL + "athletes/" + userId + "/subscriptions/goals"
+                break
+
+            case ListMode.AthleteSingleTrainingGoalsLeft:
+                params = {
+                    completed: false, 
+                    training_id: this.props.trainingId?? this.props.route.params.trainingId
+                }
+                url = API_GATEWAY_URL + "athletes/" + userId + "/subscriptions/goals"
+                break
+
+            case ListMode.CreatorTrainingGoals:
+                let trainingId = this.props.trainingId?? this.props.route.params.trainingId
+                params = {}
+                url = API_GATEWAY_URL + "trainings/" + trainingId + "/goals"
+                this.setEditButton()
                 break
 
             default:
                 throw new Error("ListMode not implemented: " + this.listMode)
-                break
         }
 
+        this.loadGoals(url, params)
         this.setState({ loading: false });
     }
 

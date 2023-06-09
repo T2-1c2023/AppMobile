@@ -90,7 +90,7 @@ export const DividerWithLeftText = (props) => {
             {props.editButtonPress &&
                 <IconButton
                     icon="pencil"
-                    color="#000000"
+                    iconColor="black"
                     size={20}
                     onPress={() => props.editButtonPress()}
                 />
