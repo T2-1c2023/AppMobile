@@ -96,7 +96,7 @@ export default class TrainingData extends Component {
                 <View style={{ flex: 0.5, backgroundColor: 'transparent', paddingTop: 2 }}>
                     <TextLinked
                         onPress={() => rate
-                            ? this.props.navigation.navigate('TrainingReviewScreen', {alreadyRated: this.props.isAlreadyRated, training:this.props.training, userId:this.props.userId})
+                            ? this.props.navigation.navigate('TrainingReviewScreen', {alreadyRated: this.props.isAlreadyRated, trainingTitle:this.props.training.title, trainingDescription:this.props.training.description, trainingId:this.props.training.id, userId:this.props.userId})
                             : this.props.navigation.navigate('TrainingsReviewsListScreen', {trainingId:this.props.training.id })}
                         linkedText={text}
                     />

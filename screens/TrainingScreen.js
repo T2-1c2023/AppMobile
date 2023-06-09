@@ -252,6 +252,7 @@ export default class TrainingScreen extends Component {
                 const data = response.data;
                 console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
                 if (data.length > 0) {
+                    console.log("alreadyRated ok")
                     this.myScore = data[0].score
                     this.setState({ myScore: data[0].score, isAlreadyRated: true })
                     this.isAlreadyRated = true;
