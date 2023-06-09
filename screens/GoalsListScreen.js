@@ -13,14 +13,16 @@ import { ActivityIndicator, IconButton } from 'react-native-paper';
 
 import { UserContext } from '../src/contexts/UserContext';
 
+import { Mode } from './GoalScreen';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
-export const Mode = {
-    AthleteCreate: 'athleteCreate',
-    TrainerCreate: 'trainerCreate',
-    Edit: 'edit',
-    ReadOnly: 'readOnly'
-}
+// export const Mode = {
+//     AthleteCreate: 'athleteCreate',
+//     TrainerCreate: 'trainerCreate',
+//     Edit: 'edit',
+//     ReadOnly: 'readOnly'
+// }
 
 export const ListMode = {
     TrainerGoalsCreated: 'trainerGoalsCreated',
@@ -34,9 +36,6 @@ export const ListMode = {
     AthleteSingleTrainingGoalsLeft: 'athleteSingleTrainingGoalsLeft',
     
     CreatorTrainingGoals: 'creatorTrainingGoals',
-    
-    // TODO: Ventana nueva
-    // CreatorTrainingGoalsEdition: 'creatorTrainingGoalsEdition'
 }
 
 export default class GoalsListScreen extends Component {
@@ -94,6 +93,22 @@ export default class GoalsListScreen extends Component {
             })
     }
 
+    setEditButton() {
+        console.log("setEditButton")
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <IconButton
+                    icon="pencil"
+                    iconColor="#21005D"
+                    size={30}
+                    onPress={() => this.props.navigation.navigate('TrainingGoalsEditionScreen', { 
+                        trainingId: this.props.trainingId?? this.props.route.params.trainingId 
+                    })}
+                />
+            ),
+        });
+    }
+
     componentDidMount() {
         let params
         let url
@@ -135,15 +150,14 @@ export default class GoalsListScreen extends Component {
                 break
 
             case ListMode.CreatorTrainingGoals:
-                // GET trainings/:id/goals
                 let trainingId = this.props.trainingId?? this.props.route.params.trainingId
                 params = {}
                 url = API_GATEWAY_URL + "trainings/" + trainingId + "/goals"
+                this.setEditButton()
                 break
 
             default:
                 throw new Error("ListMode not implemented: " + this.listMode)
-                break
         }
 
         this.loadGoals(url, params)

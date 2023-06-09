@@ -9,8 +9,8 @@ import axios from 'axios';
 import Constants from 'expo-constants'
 import { ActivityIndicator } from 'react-native-paper';
 import jwt_decode from 'jwt-decode';
-//import Mode from './GoalScreen';
 import { titleManager } from '../src/TitleManager';
+import { UserContext } from '../src/contexts/UserContext';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -22,11 +22,16 @@ export const Mode = {
 }
 
 export default class TrainingGoalsEditionScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.handleSelection = this.handleSelection.bind(this)
         this.handleDeselection = this.handleDeselection.bind(this)
-        this.handleSearch = this.handleSearch.bind(this)
+
+        this.trainingId = this.props.route.params.trainingId
+        console.log("[TrainingGoalsEditionScreen] trainingId: ", this.trainingId)
+
         this.state = {
             loading: true,
             title: '',
@@ -36,103 +41,58 @@ export default class TrainingGoalsEditionScreen extends Component {
             goals: [],
             selectedGoalsIds: [],
         }
-        this.focusListener = this.props.navigation.addListener('focus', () => {
-            this.fetchData();
-        });
     }
 
     handleSelection(goal_id) {
-        if (this.canEdit()) {
-            const ids = [...this.state.selectedGoalsIds, goal_id]
-
-            const body = {
-                training_id: this.props.route.params.trainingData.id,
-                goal_id: goal_id
-            }
-            axios.put(
-                API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
-                body, 
-                {
-                    headers: {
-                        Authorization: tokenManager.getAccessToken()
-                    }
-                })
-                .then(response => {
-                    console.log(ids)
-                    this.setState({ selectedGoalsIds: ids })
-                })
-                .catch(error => {
-                    console.log(error)
-                })
+        const url = API_GATEWAY_URL + "trainings/" + this.trainingId + "/goals/" + goal_id.toString()
+        const body = {
+            training_id: this.trainingId,
+            goal_id: goal_id
         }
+        const config = { headers: {Authorization: tokenManager.getAccessToken()} }
+
+        const ids = [...this.state.selectedGoalsIds, goal_id]
+        
+        axios.put(url, body, config)
+            .then(response => {
+                console.log(ids)
+                this.setState({ selectedGoalsIds: ids })
+            })
+            .catch(error => {
+                console.log(error)
+            })
     }
 
     handleDeselection(goal_id) {
-        if (this.props.route.params.trainingData.trainer_id === this.props.route.params.id) {
-            const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
+        const config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        const url = API_GATEWAY_URL + "trainings/" + this.trainingId + "/goals/" + goal_id.toString()
+        const ids = this.state.selectedGoalsIds.filter(id => id !== goal_id)
 
-            axios.delete(
-                API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals/" + goal_id.toString(), 
-                {
-                    headers: {
-                        Authorization: tokenManager.getAccessToken()
-                    }
-                })
-                .then(response => {
-                    this.setState({ selectedGoalsIds: ids })
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-            
-        }
+        axios.delete(url,config)
+            .then(response => {
+                this.setState({ selectedGoalsIds: ids })
+            })
+            .catch(error => {
+                console.log(error)
+            })
     }
 
     handlePress = (goal) => {
         alert('id de meta: ' + goal.goal_id + '\n' + 'Titulo: ' + goal.title)
     }
 
-    fetchData = async () => {
-        this.canEdit() ? this.fetchDataForTrainer() : this.fetchDataForAthlete();
-    }
+    async fetchDataForTrainer() {
+        const config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        urlTrainerGoals = API_GATEWAY_URL + "trainers/" + this.context.userId + "/goals"
+        urlActualTrainingGoals = API_GATEWAY_URL + "trainings/" + this.trainingId + "/goals"
 
-    fetchDataForAthlete = async () => {     
-        this.setState({ loading: true });
-
-        axios.get(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals", {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-        .then(response => {
-            const goals = response.data;
-            const selectedGoalsIds = response.data.map(goal => goal.id);
-            this.setState({ goals, selectedGoalsIds });
-        })
-        .catch(error => {
-            console.log(error)
-        })
-        this.setState({ loading: false });
-    }
-
-    fetchDataForTrainer = async () => {
-        const trainerGoalsPromise = axios.get(API_GATEWAY_URL + "trainers/" + this.props.route.params.trainingData.trainer_id + "/goals", {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
+        const trainerGoalsPromise = axios.get(urlTrainerGoals, config)
             
-        const trainingGoalsPromise = axios.get(API_GATEWAY_URL + "trainings/" + this.props.route.params.trainingData.id + "/goals", {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-
-        // TODO: al seleccionar una foto salta [AxiosError: Request failed with status code 401]
+        const actualTrainingGoalsPromise = axios.get(urlActualTrainingGoals, config)
         
         this.setState({ loading: true });
 
-        await Promise.all([trainerGoalsPromise, trainingGoalsPromise])
+        await Promise.all([trainerGoalsPromise, actualTrainingGoalsPromise])
             .then(responses => {
                 const goals = responses[0].data;
                 const selectedGoalsIds = responses[1].data.map(goal => goal.id);
@@ -153,24 +113,8 @@ export default class TrainingGoalsEditionScreen extends Component {
     }
 
     componentDidMount() {
-        this.fetchData();
+        this.fetchDataForTrainer();
         titleManager.setTitle(this.props.navigation, "Metas del entrenamiento", 18)
-    }
-
-    handleSearch (queryText) {
-        axios.get(API_GATEWAY_URL + "trainers/" + props.route.params.trainingData.trainer_id +"/goals", {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-            .then(response => {
-                const goals = response.data;
-                const filteredGoals = goals.filter(goal => goal.title.toLowerCase().includes(queryText.trim().toLowerCase()))
-                this.setState({ goals: filteredGoals })
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
     }
 
     render() {
@@ -182,19 +126,6 @@ export default class TrainingGoalsEditionScreen extends Component {
             >
             
             <View style={styles.container}>
-                
-                { this.canEdit() &&
-                    <SearchInputWithIcon
-                        onIconPress={
-                            () => this.props.navigation.navigate('GoalScreen', { data: jwt_decode(tokenManager.getAccessToken()), mode: Mode.TrainerCreate})
-                        }
-                        onSubmit={this.handleSearch}
-                        placeholder="Buscar por título"
-                        style={{
-                            marginTop: 20,
-                        }}
-                    />
-                }
 
                 {this.state.loading ? 
                     <View style={{marginTop: 80}}>
@@ -214,18 +145,18 @@ export default class TrainingGoalsEditionScreen extends Component {
                     />
                 }
 
-            </View>
-            {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
-            {!this.state.loading &&
                 <View style={styles.container}>
                     <ButtonStandard 
                         title="Continuar"
                         onPress={() => this.props.navigation.replace('TrainingScreen',
-                            {token:tokenManager.getAccessToken(), userData:jwt_decode(tokenManager.getAccessToken()), trainingId:this.props.route.params.trainingData.id})}
+                            {token:tokenManager.getAccessToken(), userData:jwt_decode(tokenManager.getAccessToken()), trainingId: this.trainingId})}
                         style={{marginTop: 20}}
                     />
                 </View>
-            }
+            </View>
+            {/* TODO: este view no debería estar, debería actualizarse solo al volver. Como? */}
+            {/* {!this.state.loading &&
+            } */}
             </ScrollView>
             </>
         );

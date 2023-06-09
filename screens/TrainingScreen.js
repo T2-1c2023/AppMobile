@@ -94,7 +94,7 @@ export default class TrainingScreen extends Component {
                 response = await axios.delete(url, {
                     data: body,
                     headers: {
-                        Authorization: this.props.route.params.token
+                        Authorization: tokenManager.getAccessToken()
                     },
                 })
             }
@@ -110,7 +110,7 @@ export default class TrainingScreen extends Component {
         const url = API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/favorites'
         await axios.get(url, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -162,7 +162,7 @@ export default class TrainingScreen extends Component {
         //console.log(this.props.route.params.trainingId);
         axios.post(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', body, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -181,7 +181,7 @@ export default class TrainingScreen extends Component {
         axios.delete(url, {
             data: body,
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             },
         })
             .then(response => {
@@ -206,7 +206,7 @@ export default class TrainingScreen extends Component {
             //axios.get(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', {
             axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', {
                 headers: {
-                    Authorization: this.props.route.params.token
+                    Authorization: tokenManager.getAccessToken()
                 }
             })
                 .then(response => {
@@ -231,7 +231,7 @@ export default class TrainingScreen extends Component {
     loadTrainingInfo() {
         axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -282,7 +282,7 @@ export default class TrainingScreen extends Component {
     loadTrainerInfo(trainer_id) {
         axios.get(API_GATEWAY_URL + 'users/' + trainer_id, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
@@ -308,7 +308,7 @@ export default class TrainingScreen extends Component {
     handleDeletePress() {
         axios.delete(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
             headers: {
-                Authorization: this.props.route.params.token
+                Authorization: tokenManager.getAccessToken()
             }
         })
             .then(response => {
