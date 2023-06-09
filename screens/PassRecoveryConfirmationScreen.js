@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import { TextHeader, TextDetails, ButtonStandard, LoginImage, InputData } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { HelperText } from 'react-native-paper';
 import axios from 'axios';
 import Constants from 'expo-constants'
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -22,6 +23,10 @@ export default class PassRecoveryConfirmationScreen extends Component {
         this.token = React.createRef()
         this.passwordInput = React.createRef()
         this.confirmPasswordInput = React.createRef()
+    }
+
+    componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Nueva contraseña", 22)
     }
 
     validateToken() {

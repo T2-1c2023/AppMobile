@@ -14,6 +14,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -118,6 +119,7 @@ export default class TrainingsListScreen extends Component {
         this.refreshTrainingsTypes();
         
         trainingCreationAvailable = jwt_decode(this.token).is_trainer;
+        if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, "Entrenamientos", 22)}
     }
 
     handleSetFilters() {

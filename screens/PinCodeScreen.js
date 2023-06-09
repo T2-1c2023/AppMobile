@@ -7,6 +7,7 @@ import styles from '../src/styles/styles';
 import { tokenManager } from '../src/TokenManager';
 import axios from 'axios';
 import Constants from 'expo-constants'
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -51,6 +52,7 @@ export default class PinCodeScreen extends Component {
 
     componentDidMount() {
         Alert.alert('', 'Ingresá código 4356, hardcodeado por el momento')
+        titleManager.setTitle(this.props.navigation, "Validar PIN", 22)
     }
 
     render() {

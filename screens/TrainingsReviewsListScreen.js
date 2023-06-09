@@ -5,6 +5,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import StarsScore from '../src/components/StarsScore';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -26,9 +27,10 @@ export default class TrainingsReviewsListScreen extends Component {
         });
     }
 
-    /*componentDidMount() {
+    componentDidMount() {
         this.fetchReviews();
-    }*/
+        titleManager.setTitle(this.props.navigation, "Ver calificaciones", 22)
+    }
 
     fetchReviews() {
 

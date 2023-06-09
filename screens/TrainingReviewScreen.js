@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { TextDetails } from '../src/styles/BaseComponents';
 import { TextBox } from '../src/styles/BaseComponents';
@@ -10,6 +10,7 @@ import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -37,6 +38,7 @@ export default class TrainingReviewScreen extends Component {
     }
 
     componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Calificar entrenamientos", 22)
         //console.log(this.props.route.params.training)
         //console.log("alreadyrated " + this.props.route.params.alreadyRated)
         if (this.props.route.params.alreadyRated)

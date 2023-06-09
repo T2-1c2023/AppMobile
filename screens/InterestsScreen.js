@@ -11,6 +11,7 @@ import axios from 'axios';
 import Constants from 'expo-constants'
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import InterestsList from '../src/components/InterestsList';
+import { titleManager } from '../src/TitleManager';
 
 import { StyleSheet, Keyboard, Image } from 'react-native';
 import { TextInput, Button, Card } from 'react-native-paper';
@@ -128,6 +129,7 @@ export default class InterestsScreen extends Component {
     componentDidMount() {
         this.loadInterestsTypes();
         this.setState({ loading: false });
+        titleManager.setTitle(this.props.navigation, "Elegir intereses", 22)
     }
 
     render() {

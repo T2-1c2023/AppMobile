@@ -260,13 +260,6 @@ export default class App extends Component {
             <Stack.Screen
               name='TrainingScreen'
               component={TrainingScreen}
-              options={() => ({
-                headerTitle: () => (
-                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center', width: 250 }}>
-                    Aumentar fuerza de brazos
-                  </Text>
-                ),
-              })}
             />
 
             <Stack.Screen 

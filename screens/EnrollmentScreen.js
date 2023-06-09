@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { TextHeader, TextDetails, ButtonStandard, FingerprintImage } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -7,6 +7,7 @@ import ReactNativeBiometrics from 'react-native-biometrics';
 import {
     RSA
 } from 'react-native-rsa-native';
+import { titleManager } from '../src/TitleManager';
 
 export default class EnrollmentScreen extends Component {
     constructor(props) {
@@ -16,6 +17,10 @@ export default class EnrollmentScreen extends Component {
             fingerprint: '',
             props: props
         }
+    }
+
+    componentDidMount() {
+        titleManager.setTitle(this.props.mavigation, "Agregar huella", 22)
     }
 
     async handleEnrollment() {

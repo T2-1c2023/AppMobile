@@ -14,6 +14,8 @@ import { CommonActions } from '@react-navigation/native';
 // Notifications
 import { registerForPushNotificationsAsync } from '../src/Notifications';
 
+import { titleManager } from '../src/TitleManager';
+
 export default class RegisterScreen1 extends Component {
     constructor(props) {
         super(props)
@@ -32,6 +34,10 @@ export default class RegisterScreen1 extends Component {
         this.emailInput = React.createRef()
         this.passwordInput = React.createRef()
         this.confirmPasswordInput = React.createRef()
+    }
+
+    componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Registrarse", 22)
     }
 
     async handleProceed() {
