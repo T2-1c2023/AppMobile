@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, Alert } from 'react-native';
 import Video from 'react-native-video';
 // TODO: adaptar Media.js para que funcione con videos
 import * as ImagePicker from 'expo-image-picker';
 import storage from '@react-native-firebase/storage';
 
-// TODO: subir video a firebase
 // TODO: pegarle al api gateway
 
 
@@ -26,8 +25,30 @@ class VerificationTest extends Component {
         if (!result.canceled) {
             const videoUri = result.assets[0].uri;
             this.setState({ videoUri });
+            Alert.alert(
+                'Confirmar',
+                'Desea subir el video?',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Continuar', onPress: () => this.uploadVideoFirebase(videoUri) }
+                ]
+            );
         }
     };
+
+    // Tries to upload image to firebase. On succes, returns the stored image id
+    uploadVideoFirebase = async (uri) => {
+        try {
+        // Image id for firebase storage
+        const videoId = Date.now().toString();
+        const storageRef = storage().ref().child(`videos/${videoId}`);
+        await storageRef.putFile(uri);
+        // For future requests of image stored in firebase storage
+        // return imageId;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     render() {
         const { videoUri } = this.state;
