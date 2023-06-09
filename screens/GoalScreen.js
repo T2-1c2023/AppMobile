@@ -8,6 +8,8 @@ import { uploadImageFirebase } from '../services/Media';
 import Constants from 'expo-constants'
 import { tokenManager } from '../src/TokenManager';
 import { IconButton } from 'react-native-paper';
+import { UserContext } from '../src/contexts/UserContext';
+
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -19,6 +21,8 @@ export const Mode = {
 }
 
 export default class GoalScreen extends Component {
+    static contextType = UserContext;
+    
     setTitle(title, subtitle) {
         this.props.navigation.setOptions({headerTitle: () => (
             <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
@@ -88,6 +92,7 @@ export default class GoalScreen extends Component {
         this.handleCancelPress = this.handleCancelPress.bind(this)
         this.onPressSaveChanges = this.onPressSaveChanges.bind(this)
         this.onPressCompleteGoal = this.onPressCompleteGoal.bind(this)
+        this.onPressDeleteButton = this.onPressDeleteButton.bind(this)
 
         this.props = props
 
@@ -306,6 +311,40 @@ export default class GoalScreen extends Component {
             })
     }
 
+    async onPressDeleteButton() {
+        let url
+        if (this.context.isTrainer)
+            url = API_GATEWAY_URL + "goals/" + this.goalId
+        else
+            url = API_GATEWAY_URL + "athletes/" + this.context.userId + "/personal-goals/" + this.goalId
+        
+        let config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        try {
+            await axios.delete(url, config)
+            this.props.navigation.goBack();
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    shouldRenderDeleteButton() {
+        return (this.mode === Mode.ReadOnly) && this.isOwner(this.state.creatorId) && !this.goalCompleted
+    }
+
+    renderDeleteButton() {
+        return (
+            <ButtonStandard
+                onPress={this.onPressDeleteButton}
+                title="Eliminar meta"
+                style={{
+                    marginTop: 15,
+                }}
+                warningTheme
+                icon={'trash-can'}
+            />
+        )
+    }
+
     render() {
         if (this.state.loading) {
             return (
@@ -379,7 +418,13 @@ export default class GoalScreen extends Component {
                                 style={{
                                     marginTop: 15,
                                 }}
+                                icon={'check'}
+                                succeededTheme
                             />
+                        }
+
+                        {this.shouldRenderDeleteButton() &&
+                            this.renderDeleteButton()
                         }
                     </View>
 

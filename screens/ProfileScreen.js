@@ -347,7 +347,7 @@ export default class ProfileScreen extends Component {
         
         return (
             <React.Fragment>
-                {this.renderSectionTitle('Entrenamiento')}
+                {this.renderSectionTitle('Entrenamientos')}
 
                 {this.renderLinkedTexts(linkedTexts)}
             </React.Fragment>

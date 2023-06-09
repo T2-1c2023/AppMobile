@@ -86,6 +86,8 @@ export default class GoalsListScreen extends Component {
         axios.get(url, config)
             .then((response) => {
                 this.setState({ goals: response.data });
+                this.setState({ loading: false });
+                
                 console.log("goals retrieve: "+response.data);
             })
             .catch((error) => {
@@ -161,7 +163,6 @@ export default class GoalsListScreen extends Component {
         }
 
         this.loadGoals(url, params)
-        this.setState({ loading: false });
     }
 
 

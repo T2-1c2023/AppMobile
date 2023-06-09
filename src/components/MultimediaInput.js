@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { selectImage, downloadImage } from '../../services/Media';
 
@@ -43,12 +43,12 @@ export default class MultimediaInput extends Component {
     handleUploadPress = async () => {
         const localImageUri = await selectImage();
         
-        this.setState((prevState) => ({
-            localImagesUris: [...prevState.localImagesUris, localImageUri]
-        }));
-
-        // Update Uris on GoalScreen
-        this.props.onUpload(this.state.localImagesUris);
+        if (localImageUri != null) {
+            this.setState((prevState) => ({
+                localImagesUris: [...prevState.localImagesUris, localImageUri]
+            }));
+            this.props.onUpload(this.state.localImagesUris);
+        }
     };
 
     uploadItem() {
@@ -70,6 +70,10 @@ export default class MultimediaInput extends Component {
                     </View>
                 }
                 
+                {this.props.readOnly && this.state.uploadedImagesUris.length == 0 &&
+                    <Text style={{color: 'grey', marginTop: 50}}>No se han cargado imagenes o videos</Text>
+                }
+
                 {this.state.uploadedImagesUris.map((uploadUri) => 
                     <View key={uploadUri} style={multimediaStyles.itemContainer}>
                         <TouchableOpacity onPress={() => this.handleImageAlredyUploadPress(uploadUri)}>

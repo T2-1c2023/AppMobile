@@ -196,7 +196,7 @@ export default class TrainingData extends Component {
                             source={this.getLevelIcon()}
                             style={dataStyles.severityIcon}
                         />
-                        <Text>{this.getLevelName()}</Text>
+                        <Text style={{color: "black"}}>{this.getLevelName()}</Text>
                     </View>
                     <Text
                         style={dataStyles.typeText}
@@ -241,6 +241,7 @@ const dataStyles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16,
         fontWeight: 'bold',
+        color: 'black',
     },
 
     locationText: {
