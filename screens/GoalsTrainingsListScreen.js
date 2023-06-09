@@ -155,8 +155,7 @@ export default class GoalsTrainingsListScreen extends Component {
 
     componentDidMount() {
         this.fetchData();
-        this.setTitle()
-        titleManager.setTitle(this.props.mavigation, "Metas del entrenamiento", 18)
+        titleManager.setTitle(this.props.navigation, "Metas del entrenamiento", 18)
     }
 
     handleSearch (queryText) {

@@ -49,7 +49,7 @@ export default class NewTrainingScreen extends Component {
     }
 
     async componentDidMount() {
-        this.setTitle(this.props.navigation, "Crear entrenamiento", 22)
+        titleManager.setTitle(this.props.navigation, "Crear entrenamiento", 22)
         if (!this.isNew) {
             //this.getTrainingData();
             this.loadTrainingInfo();
