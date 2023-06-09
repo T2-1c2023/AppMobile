@@ -31,10 +31,12 @@ export default class GoalScreen extends Component {
     
     loadExistingGoalInfo() {
         this.goalId = this.props.route.params.goalData.id
-        
+        console.log(this.goalId)
         let url
 
         console.log('this.personalGoal:', this.personalGoal);
+
+        console.log('this.userData.id:', this.userData.id);
 
         if (this.personalGoal)
             url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
@@ -89,7 +91,8 @@ export default class GoalScreen extends Component {
 
         this.props = props
 
-        this.userData = props.route.params.userData
+        this.userData = tokenManager.getPayload()
+        
         this.goalData = props.route.params.goalData
         this.goalCompleted = props.route.params.goalCompleted
         this.personalGoal = props.route.params.personalGoal
@@ -128,7 +131,8 @@ export default class GoalScreen extends Component {
     }
 
     componentDidMount() {
-        
+        console.log('this.userData:', this.userData);
+
         if (this.mode === Mode.Edit || this.mode === Mode.ReadOnly)
             this.loadExistingGoalInfo()
         
