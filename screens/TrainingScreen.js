@@ -222,62 +222,70 @@ export default class TrainingScreen extends Component {
         }
     }
 
-    componentDidMount() {
-        this.loadTrainingInfo();
+    async componentDidMount() {
+        await this.loadTrainingInfo();
         this.checkFavoriteStatus();
         this.checkSubscriptionStatus();
     }
 
-    loadTrainingInfo() {
-        axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-            .then(response => {
-                const training = response.data;
-                console.log(training);//debug
-                console.log(this.props.route.params.userData);
-                this.setState({ training });
-                this.loadTrainerInfo(training.trainer_id);
-                titleManager.setTitle(this.props.navigation, this.state.training.title, 22)
-            })
-            .catch(function (error) {
-                console.log('loadTrainingInfo ' + error);
-            });
-
-
+    async loadAthleteRatingInfo() {
+        console.log("[loadAthleteRatingInfo] called")
+        // GET trainings/id/ratings
         const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
-        console.log(url);
-        const params = { athlete_id: this.props.route.params.userData.id }
-        console.log(params);
-        let result = false;
-        axios.get(url, {
+        
+        const params = { athlete_id: this.context.userId }
+        const config = {
             headers: {
                 Authorization: tokenManager.getAccessToken()
             },
             params: params
-        })
-            .then(response => {
-                const data = response.data;
-                console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
-                if (data.length > 0) {
-                    console.log("alreadyRated ok")
-                    this.myScore = data[0].score
-                    this.setState({ myScore: data[0].score, isAlreadyRated: true })
-                    this.isAlreadyRated = true;
-                } else {
-                    this.isAlreadyRated = false;
-                }
+        }
+        
+        console.log(params);
+        
+        try { 
+            let response = await axios.get(url, config)
 
-            })
-            .catch((error) => {
-                if (error.response && error.response.status === 404) {
-                    console.error("ERROR")
-                    this.setState({ isAlreadyRated: false })
-                } 
-                console.error("alreadyRatedd" + error);
-            })
+            const data = response.data;
+            console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
+            if (data.length > 0) {
+                console.log("alreadyRated ok")
+                this.myScore = data[0].score
+                this.setState({ myScore: data[0].score, isAlreadyRated: true })
+                this.isAlreadyRated = true;
+            } else {
+                this.isAlreadyRated = false;
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                console.error("ERROR")
+                this.setState({ isAlreadyRated: false })
+            } 
+            console.error("alreadyRatedd" + error);
+        }
+    }
+
+    async loadTrainingInfo() {
+        console.log("[loadTrainingInfo] called")
+
+        const config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        const urlGetTraining = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId
+
+        try {
+            let response = await axios.get(urlGetTraining, config)
+            const training = response.data;
+            console.log(training);//debug
+            console.log(this.props.route.params.userData);
+            this.setState({ training });
+            this.loadTrainerInfo(training.trainer_id);
+            titleManager.setTitle(this.props.navigation, this.state.training.title, 22)
+        } catch (error) {
+            console.log('loadTrainingInfo ' + error);
+        }
+
+        if (this.context.isAthlete)
+            this.loadAthleteRatingInfo();
+        
     }
 
     loadTrainerInfo(trainer_id) {
@@ -421,7 +429,7 @@ export default class TrainingScreen extends Component {
     }
 
     canRate() {
-        return this.props.route.params.userData.is_athlete && (this.state.training.trainer_id != this.props.route.params.userData.id)
+        return this.context.isAthlete && !this.isOwner()
     }
 
     renderDivider() {
@@ -429,6 +437,8 @@ export default class TrainingScreen extends Component {
             <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
         )
     }
+
+
 
     render() {
         return (
@@ -459,10 +469,12 @@ export default class TrainingScreen extends Component {
                     <TrainingData
                         training={this.state.training}
                         userId={this.props.route.params.userData.id}
-                        canRate={this.canRate()}
                         navigation={this.props.navigation}
                         myScore={this.myScore}
+                        canRate={this.canRate()}
                         isAlreadyRated={this.state.isAlreadyRated}
+                        onPressViewAllReviews={() => {console.log("onPressViewAllReviews pressed")}}
+                        onPressRate={() => {console.log("onPressRate pressed")}}
                         style={{
                             marginTop: 20,
                         }}

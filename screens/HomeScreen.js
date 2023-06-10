@@ -202,7 +202,7 @@ class HomeScreen extends Component {
         return (
             <Drawer.Navigator 
                 drawerContent={this.CustomDrawerContent} 
-                initialRouteName="Mi Perfil"
+                initialRouteName="Entrenamientos creados"
                 screenOptions={{
                     drawerActiveTintColor: '#5925b0',
                     drawerStyle: {
