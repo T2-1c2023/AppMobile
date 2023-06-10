@@ -16,8 +16,8 @@ export default class TrainingData extends Component {
         this.onPressRate = this.onPressRate.bind(this);
         this.onPressViewAllReviews = this.onPressViewAllReviews.bind(this);
         this.state = {
+            myScore: 0,
         }
-        this.isAlreadyRated = false
         this.myScore = this.props.myScore
         }
 
@@ -92,17 +92,17 @@ export default class TrainingData extends Component {
             <View style={{ flexDirection: 'row', flex: flex}}>
                 <View style={{ backgroundColor: 'transparent', flex: 0.5}}>
                     <StarsScore 
-                        score={rate? this.myScore : this.props.training.score}
+                        score={rate? this.props.myScore : this.props.training.score}
                         style={{
                         }}
                     />
                 </View>
                 <View style={{ flex: 0.5, backgroundColor: 'transparent', paddingTop: 2 }}>
                     <TextLinked
-                        // onPress={() => rate
+                        onPress={rate? this.onPressRate : this.onPressViewAllReviews }
                         //     ? this.props.navigation.navigate('TrainingReviewScreen', {alreadyRated: this.props.isAlreadyRated, trainingTitle:this.props.training.title, trainingDescription:this.props.training.description, trainingId:this.props.training.id, userId:this.props.userId})
                         //     : this.props.navigation.navigate('TrainingsReviewsListScreen', {trainingId:this.props.training.id })}
-                        onPress={this.onPressViewAllReviews}
+                        
                         linkedText={text}
                     />
                 </View>
@@ -115,7 +115,6 @@ export default class TrainingData extends Component {
     }
 
     onPressRate() {
-
         this.props.onPressRate()
     }
 
@@ -143,11 +142,14 @@ export default class TrainingData extends Component {
         );
     
         if (canRate) {
-            const calificationText = alreadyRated ? 'Editar' : 'Deja tu opinión';
-            let alreadyRated = this.alreadyRated().then((value) => {
-                //console.log("value " + value);
-                this.isAlreadyRated = value;
-            });
+            const calificationText = this.props.isAlreadyRated ? 'Editar' : 'Deja tu opinión';
+            // let alreadyRated = this.alreadyRated().then((value) => {
+            //     //console.log("value " + value);
+            //     this.isAlreadyRated = value;
+            // });
+
+            
+
             
             //console.log(alreadyRated);
             alreadyRated = true;
@@ -169,7 +171,7 @@ export default class TrainingData extends Component {
     
                         {this.renderStarsWithText(0.35, "Ver todas", false)}
     
-                        {!this.isAlreadyRated && (
+                        {!this.props.isAlreadyRated && (
                             <View style={{ flex: 0.50, backgroundColor: 'transparent', paddingTop: 4 }}>
                                 <TextWithLink
                                     text={calificationText}
@@ -181,7 +183,7 @@ export default class TrainingData extends Component {
                             </View>
                         )}
     
-                        {this.isAlreadyRated && (
+                        {this.props.isAlreadyRated && (
                             <React.Fragment>
                                 <View style={{  flex: 0.1}} />
                                 {this.renderStarsWithText(0.35, "Editar", true)}

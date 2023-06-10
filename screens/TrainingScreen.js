@@ -45,6 +45,8 @@ export default class TrainingScreen extends Component {
         this.handleBackToTrainings = this.handleBackToTrainings.bind(this)
         this.handleSubscribeButtonPress = this.handleSubscribeButtonPress.bind(this)
         this.onPressTrainingGoals = this.onPressTrainingGoals.bind(this)
+        this.onPressRate = this.onPressRate.bind(this)
+        this.onPressViewAllReviews = this.onPressViewAllReviews.bind(this)
 
         this.state = {
             isInFavorites: false,
@@ -54,6 +56,8 @@ export default class TrainingScreen extends Component {
                 description: '',
                 location: '',
                 activities: [],
+                id: '',
+                score: 5,
             },
             trainer: {},
             trainerProfilePic: require('../assets/images/user_predet_image.png'),
@@ -250,7 +254,9 @@ export default class TrainingScreen extends Component {
             console.log("reviewstrainingscreen  " + JSON.stringify(data) + " length " + data.length)
             if (data.length > 0) {
                 console.log("alreadyRated ok")
-                this.myScore = data[0].score
+                // this.state.myScore = data[0].score
+                console.log("[loadAthleteRatingInfo] data", data)
+                console.log("[loadAthleteRatingInfo] myScore " + data[0].score)
                 this.setState({ myScore: data[0].score, isAlreadyRated: true })
                 this.isAlreadyRated = true;
             } else {
@@ -376,8 +382,6 @@ export default class TrainingScreen extends Component {
     }
 
     isOwner() {
-        console.log("[isOwner] userId: ", this.context.userId)
-        console.log("[isOwner] trainerId: ", this.state.training.trainer_id)
         return this.state.training.trainer_id === this.context.userId
     }
 
@@ -437,8 +441,27 @@ export default class TrainingScreen extends Component {
             <View style={{ marginTop: 20, width: '100%', height: 1, backgroundColor: 'grey' }} />
         )
     }
+    
+    onPressViewAllReviews() {
+        console.log("[onPressViewAllReviews] called")
+        console.log("[onPressViewAllReviews] this.state.training ", this.state.training.id)
+        const params = { trainingId: this.state.training.id }
+        this.props.navigation.navigate('TrainingsReviewsListScreen', params)
+    }
 
-
+    onPressRate() {
+        console.log("[onPressRate] called")
+        const params = {
+            alreadyRated: this.state.isAlreadyRated,
+            training:this.state.training,
+            trainingTitle : this.state.training.title,
+            trainingDescription : this.state.training.description,
+            trainingId: this.state.training.id,
+            userId: this.context.userId,
+            isAlreadyRated: this.state.isAlreadyRated,
+        }
+        this.props.navigation.navigate('TrainingReviewScreen', params)
+    }
 
     render() {
         return (
@@ -468,13 +491,14 @@ export default class TrainingScreen extends Component {
 
                     <TrainingData
                         training={this.state.training}
-                        userId={this.props.route.params.userData.id}
-                        navigation={this.props.navigation}
-                        myScore={this.myScore}
+                        // userId={this.props.route.params.userData.id}
+                        userId={this.context.userId}
+                        // navigation={this.props.navigation}
+                        myScore={this.state.myScore}
                         canRate={this.canRate()}
                         isAlreadyRated={this.state.isAlreadyRated}
-                        onPressViewAllReviews={() => {console.log("onPressViewAllReviews pressed")}}
-                        onPressRate={() => {console.log("onPressRate pressed")}}
+                        onPressViewAllReviews={this.onPressViewAllReviews}
+                        onPressRate={this.onPressRate}
                         style={{
                             marginTop: 20,
                         }}

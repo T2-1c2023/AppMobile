@@ -17,9 +17,12 @@ const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 export default class TrainingReviewScreen extends Component {
     constructor(props) {
         super(props)
+        console.log("this.props: ", this.props)
         this.loadReviewInfo = this.loadReviewInfo.bind(this);
         this.handleSendReview = this.handleSendReview.bind(this);
         this.sendTextReview = this.sendTextReview.bind(this);
+
+        this.trainingId = this.props.route.params.trainingId;
         this.state = {
             starRating: 5,
             training: {
@@ -107,8 +110,14 @@ export default class TrainingReviewScreen extends Component {
     }
 
     handleSendReview = async () => {
-        const url = API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId + '/ratings';
+        
+
+        const url = API_GATEWAY_URL + 'trainings/' + this.trainingId + '/ratings';
         const body = {athlete_id: this.props.route.params.userId, score: this.state.starRating}
+        console.log("[handleSendReview] url: ", url)
+        console.log("[handleSendReview] body: ", body)
+        
+
         await this.axiosRatingMethod(url, body, {
             headers: {
                 Authorization: tokenManager.getAccessToken()
@@ -180,9 +189,9 @@ export default class TrainingReviewScreen extends Component {
                 <View style={styles.container}>
                     <View style={styles.stars}>
                         {this.starRatingOptions.map((option) => (
-                            <TouchableOpacity onPress={() => { /*console.log("USERID " + this.props.route.params.userId); console.log(this.state.review);*/ this.setState({ starRating: option }); }}>
+                            <TouchableOpacity key={option} onPress={() => { /*console.log("USERID " + this.props.route.params.userId); console.log(this.state.review);*/ this.setState({ starRating: option }); }}>
                                 <MaterialIcons
-                                    key={option}
+                                    // key={option}
                                     name={this.state.starRating >= option ? 'star' : 'star-border'}
                                     size={50}
                                     style={this.state.starRating >= option ? styles.starSelected : styles.starUnselected}
