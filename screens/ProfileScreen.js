@@ -136,6 +136,7 @@ export default class ProfileScreen extends Component {
 
     onPressFollowers() {
         console.log('Followers pressed');
+        this.props.navigation.navigate('UsersListScreen')
     }
 
     onPressFollowing() {

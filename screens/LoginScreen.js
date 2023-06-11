@@ -30,7 +30,8 @@ export default class LoginScreen extends Component {
     }
 
     async updateContextAndRedirect() {
-        // await this.context.setFullName(tokenManager.getFullName())
+        console.log("[LoginScreen] Token: " + tokenManager.getAccessToken())
+        console.log("[LoginScreen] Payload: " + JSON.stringify(tokenManager.getPayload()))
         await this.context.setUserId(tokenManager.getUserId())
 
         if (tokenManager.isMixedUser())
@@ -85,15 +86,12 @@ export default class LoginScreen extends Component {
 
     async componentDidMount() {
         await tokenManager._loadTokens()
-        // .then(() => {
-            if (this.alreadyLogged()) {
-                await this.updateContextAndRedirect()
-            } else {
-                this.setState({ loading: false })
-            }
-            
-            
-        // })
+        if (this.alreadyLogged()) {
+            await this.updateContextAndRedirect()
+        } else {
+            this.setState({ loading: false })
+        }
+
         titleManager.setTitle(this.props.navigation, "FiuFit", 22)
     }
 
