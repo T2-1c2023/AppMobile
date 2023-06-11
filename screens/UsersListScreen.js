@@ -25,6 +25,9 @@ export default class UsersListScreen extends Component {
     constructor(props) {
         super(props)
         // this.athleteId = this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId
+        this.onPressFollow = this.onPressFollow.bind(this)
+        this.onPressUser = this.onPressUser.bind(this)
+
 
         // TODO: verificar si se termina usando
         console.log("[UsersListScreen] props: " + JSON.stringify(this.props))
@@ -32,77 +35,28 @@ export default class UsersListScreen extends Component {
         console.log("[UsersListScreen] Params: " + JSON.stringify(this.params))
 
         this.state = {
-            users: [
-                {
-                    "id": 82,
-                    "fullname": "juan pérezsadf safas fsda 5",
-                    "mail": "probando5sfsdafsdafsdaf@mail.com",
-                    "phone_number": "0123456789",
-                    "blocked": false,
-                    "is_trainer": false,
-                    "is_athlete": true,
-                    "photo_id": "",
-                    "is_verified": true,
-                    "expo_push_token": "",
-                    "latitude": null,
-                    "longitude": null,
-                    "weight": 0,
-                    "followed": false
-                },
-                {
-                    "id": 26,
-                    "fullname": "nom ape",
-                    "mail": "mimail@mail.com",
-                    "phone_number": "08001234",
-                    "blocked": false,
-                    "is_trainer": false,
-                    "is_athlete": false,
-                    "photo_id": "",
-                    "is_verified": true,
-                    "expo_push_token": "",
-                    "latitude": "0",
-                    "longitude": "0",
-                    "weight": 0,
-                    "followed": false
-                },
-                {
-                    "id": 93,
-                    "fullname": "Juan Pérez 17",
-                    "mail": "probando17@mail.com",
-                    "phone_number": "33333333",
-                    "blocked": false,
-                    "is_trainer": false,
-                    "is_athlete": true,
-                    "photo_id": "",
-                    "is_verified": true,
-                    "expo_push_token": "4356",
-                    "latitude": null,
-                    "longitude": null,
-                    "weight": 0,
-                    "followed": false
-                },
-                {
-                    "id": 71,
-                    "fullname": "Mr. Atletah",
-                    "mail": "atleta@atleta.com",
-                    "phone_number": "0123456789",
-                    "blocked": false,
-                    "is_trainer": false,
-                    "is_athlete": true,
-                    "photo_id": "1685408897172",
-                    "is_verified": true,
-                    "expo_push_token": "",
-                    "latitude": "0",
-                    "longitude": "0",
-                    "weight": 0,
-                    "followed": false
-                },
-            ]
+            users: []
         }
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
             //refresh
         })
+    }
+
+    async loadUsers() {
+        const url = API_GATEWAY_URL + 'users'
+        const config = { headers: { Authorization: tokenManager.getAccessToken() }}
+        try {
+            let response = await axios.get(url, config)
+            this.setState({ users: response.data })
+        } catch (error) {
+            console.log("[UsersListScreen] Error: " + JSON.stringify(error))
+        }
+    }
+
+    async componentDidMount() {
+        await this.loadUsers()
+        
     }
 
     onPressSearch(searchText) {
@@ -118,8 +72,64 @@ export default class UsersListScreen extends Component {
         console.log("[UserListScreen - onPressUser] UserId: " + userId)
     }
 
-    onPressFollow(userId) {
-        console.log("[UserListScreen - onPressFollow] UserId: " + userId)
+    updateUsersState(userIdToUpdate, followed) {
+        this.setState(prevState => ({
+            users: prevState.users.map(user => {
+              if (user.id === userIdToUpdate) {
+                return { ...user, followed: followed };
+              }
+              return user;
+            })
+        }))
+    }
+
+    sendFollowRequest(userIdToFollow) {
+        // https://api-gateway-g6-1c-2023.onrender.com/users/71/followed
+        const url = API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
+        const config = { headers: { Authorization: tokenManager.getAccessToken() }}
+        const data = {
+            followed_id: userIdToFollow
+        }
+
+        console.log("Sending follow request...")
+        axios.post(url, data, config)
+            .then((response) => {
+                console.log("follow successfull!")
+                const followed = true
+                this.updateUsersState(userIdToFollow, followed)
+            })
+            .catch((error) => {
+                console.log("[sendFollowRequest] Error: " + JSON.stringify(error))
+            })
+    }
+
+    sendUnfollowRequest(userIdToUnfollow) {
+        // /users/{id}/followed
+        const url = API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
+        const config = { 
+            data: { followed_id: userIdToUnfollow },    
+            headers: { Authorization: tokenManager.getAccessToken() }
+        }
+
+        console.log("Sending unfollow request...")
+        axios.delete(url, config)
+            .then((response) => {
+                console.log("unfollow successfull!")
+                const followed = false
+                this.updateUsersState(userIdToUnfollow, followed)
+            })
+            .catch((error) => {
+                console.log("[sendUnfollowRequest] Error: " + JSON.stringify(error))
+            })
+    }
+
+    onPressFollow(user) {
+        user.followed? 
+            this.sendUnfollowRequest(user.id) 
+            : 
+            this.sendFollowRequest(user.id)
+
+        
     }
 
     filterPopUp() {

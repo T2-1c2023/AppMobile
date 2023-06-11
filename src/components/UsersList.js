@@ -14,7 +14,6 @@ class User extends Component {
     }
 
     componentDidMount() {
-        console.log("[User] componentDidMount this.state.userPic: " + this.state.userPic)
         this.loadUserPicUriById()
     }
 
@@ -23,7 +22,7 @@ class User extends Component {
     }
 
     onPressFollow() {
-        this.props.onPressFollow(this.props.user.id)
+        this.props.onPressFollow(this.props.user)
     }
 
     loadUserPicUriById() {
@@ -62,11 +61,12 @@ class User extends Component {
     renderFollowButton() {
         const followed = this.props.user.followed
         const title = followed? 'Siguiendo' : 'Seguir'
-            
+
         return (
             <ButtonStandard
                 title={title}
                 onPress={this.onPressFollow}
+                greyMode={followed}
             />
         )
     }
@@ -98,9 +98,9 @@ class User extends Component {
 export default class UsersList extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-        }
-        console.log("[UsersList] props.users: " + JSON.stringify(this.props.users))
+        // this.state = {
+        // }
+        // console.log("[UsersList] props.users: " + JSON.stringify(this.props.users))
     }
 
     render = () => {
@@ -147,5 +147,6 @@ const userStyles = StyleSheet.create({
     followButtonContainer: {
         justifyContent: "center",
         alignItems: "center",
+        paddingRight: 15,
     },
 })
