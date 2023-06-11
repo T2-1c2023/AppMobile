@@ -5,7 +5,7 @@ import styles from '../src/styles/styles';
 import { ConfirmationButtons, ButtonStandard } from '../src/styles/BaseComponents';
 import ActivityList from '../src/components/ActivityList.js'
 import SearchInputWithIcon from '../src/components/SearchInputWithIcon';
-import TrainingsList from '../src/components/TrainingsList';
+import UsersList from '../src/components/UsersList';
 import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText } from '../src/styles/BaseComponents';
@@ -35,8 +35,8 @@ export default class UsersListScreen extends Component {
             users: [
                 {
                     "id": 82,
-                    "fullname": "juan pérez 5",
-                    "mail": "probando5@mail.com",
+                    "fullname": "juan pérezsadf safas fsda 5",
+                    "mail": "probando5sfsdafsdafsdaf@mail.com",
                     "phone_number": "0123456789",
                     "blocked": false,
                     "is_trainer": false,
@@ -81,6 +81,22 @@ export default class UsersListScreen extends Component {
                     "weight": 0,
                     "followed": false
                 },
+                {
+                    "id": 71,
+                    "fullname": "Mr. Atletah",
+                    "mail": "atleta@atleta.com",
+                    "phone_number": "0123456789",
+                    "blocked": false,
+                    "is_trainer": false,
+                    "is_athlete": true,
+                    "photo_id": "1685408897172",
+                    "is_verified": true,
+                    "expo_push_token": "",
+                    "latitude": "0",
+                    "longitude": "0",
+                    "weight": 0,
+                    "followed": false
+                },
             ]
         }
 
@@ -99,11 +115,11 @@ export default class UsersListScreen extends Component {
     }
 
     onPressUser(userId) {
-        console.log("[onPressUser] UserId: " + userId)
+        console.log("[UserListScreen - onPressUser] UserId: " + userId)
     }
 
     onPressFollow(userId) {
-        console.log("[onPressFollow] UserId: " + userId)
+        console.log("[UserListScreen - onPressFollow] UserId: " + userId)
     }
 
     filterPopUp() {
@@ -209,13 +225,14 @@ export default class UsersListScreen extends Component {
                         }}
                     />
 
-                    {/* <UsersList
+                    <UsersList
+                        users={this.state.users}
                         onPressUser={this.onPressUser}
                         onPressFollow={this.onPressFollow}
                         style={{
                             marginTop: 15,
                         }}
-                    /> */}
+                    />
 
                     {false && this.filterPopUp()}
 
