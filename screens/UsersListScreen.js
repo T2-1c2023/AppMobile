@@ -53,11 +53,9 @@ export default class UsersListScreen extends Component {
     getUrl() {
         switch (this.mode) {
             case UsersListMode.Followed:
-                // return API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
-                return API_GATEWAY_URL + 'users'
+                return API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
             case UsersListMode.Followers:
-                // return API_GATEWAY_URL + 'users/' + this.context.userId + '/followers'
-                return API_GATEWAY_URL + 'users'
+                return API_GATEWAY_URL + 'users/' + this.context.userId + '/followers'
             case UsersListMode.Search:
                 return API_GATEWAY_URL + 'users'
             default:
