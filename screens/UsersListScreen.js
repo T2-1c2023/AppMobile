@@ -13,11 +13,16 @@ import { IconButton } from 'react-native-paper'
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
-import jwt_decode from 'jwt-decode';
 import { titleManager } from '../src/TitleManager';
 import { UserContext } from '../src/contexts/UserContext';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+
+export const UsersListMode = {
+    Followed: 'followed',
+    Followers: 'followers',
+    Search: 'search',
+}
 
 export default class UsersListScreen extends Component {
     static contextType = UserContext;
@@ -38,13 +43,30 @@ export default class UsersListScreen extends Component {
             users: []
         }
 
+        this.mode = this.params.mode
+
         this.focusListener = this.props.navigation.addListener('focus', () => {
             //refresh
         })
     }
 
+    getUrl() {
+        switch (this.mode) {
+            case UsersListMode.Followed:
+                // return API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
+                return API_GATEWAY_URL + 'users'
+            case UsersListMode.Followers:
+                // return API_GATEWAY_URL + 'users/' + this.context.userId + '/followers'
+                return API_GATEWAY_URL + 'users'
+            case UsersListMode.Search:
+                return API_GATEWAY_URL + 'users'
+            default:
+                throw new Error("[UsersListScreen] Invalid mode: " + this.mode)
+        }
+    }
+
     async loadUsers() {
-        const url = API_GATEWAY_URL + 'users'
+        const url = this.getUrl()
         const config = { headers: { Authorization: tokenManager.getAccessToken() }}
         try {
             let response = await axios.get(url, config)
@@ -83,8 +105,7 @@ export default class UsersListScreen extends Component {
         }))
     }
 
-    sendFollowRequest(userIdToFollow) {
-        // https://api-gateway-g6-1c-2023.onrender.com/users/71/followed
+    sendFollowRequest(userIdToFollow, newStateLoadedSignal) {
         const url = API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
         const config = { headers: { Authorization: tokenManager.getAccessToken() }}
         const data = {
@@ -97,13 +118,14 @@ export default class UsersListScreen extends Component {
                 console.log("follow successfull!")
                 const followed = true
                 this.updateUsersState(userIdToFollow, followed)
+                newStateLoadedSignal.call()
             })
             .catch((error) => {
                 console.log("[sendFollowRequest] Error: " + JSON.stringify(error))
             })
     }
 
-    sendUnfollowRequest(userIdToUnfollow) {
+    sendUnfollowRequest(userIdToUnfollow, newStateLoadedSignal) {
         // /users/{id}/followed
         const url = API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
         const config = { 
@@ -117,17 +139,18 @@ export default class UsersListScreen extends Component {
                 console.log("unfollow successfull!")
                 const followed = false
                 this.updateUsersState(userIdToUnfollow, followed)
+                newStateLoadedSignal.call()
             })
             .catch((error) => {
                 console.log("[sendUnfollowRequest] Error: " + JSON.stringify(error))
             })
     }
 
-    onPressFollow(user) {
+    onPressFollow(user, newStateLoadedSignal) {
         user.followed? 
-            this.sendUnfollowRequest(user.id) 
+            this.sendUnfollowRequest(user.id, newStateLoadedSignal)
             : 
-            this.sendFollowRequest(user.id)
+            this.sendFollowRequest(user.id, newStateLoadedSignal)
 
         
     }
@@ -237,6 +260,7 @@ export default class UsersListScreen extends Component {
 
                     <UsersList
                         users={this.state.users}
+                        excludedUser={this.context.userId}
                         onPressUser={this.onPressUser}
                         onPressFollow={this.onPressFollow}
                         style={{

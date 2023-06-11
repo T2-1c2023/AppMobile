@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text, Pressable } from 'react-native';
 import { ButtonStandard } from '../styles/BaseComponents';
 import { downloadImage } from '../../services/Media';
+import { ActivityIndicator } from 'react-native-paper'
 
 class User extends Component {
     constructor(props) {
@@ -9,7 +10,8 @@ class User extends Component {
         this.onPressUser = this.onPressUser.bind(this)
         this.onPressFollow = this.onPressFollow.bind(this)
         this.state = {
-            userPic: require('../../assets/images/user_predet_image.png')
+            userPic: require('../../assets/images/user_predet_image.png'),
+            loadingFollowState: false,
         }
     }
 
@@ -21,15 +23,24 @@ class User extends Component {
         this.props.onPressUser(this.props.user.id)
     }
 
-    onPressFollow() {
-        this.props.onPressFollow(this.props.user)
+    followStateLoaded() {
+        this.setState({ loadingFollowState: false })
     }
+
+    onPressFollow() {
+        this.setState({ loadingFollowState: true })
+        const newStateLoadedSignal = () => {
+            this.followStateLoaded() 
+        }
+
+        this.props.onPressFollow(this.props.user, newStateLoadedSignal)
+    }
+
 
     loadUserPicUriById() {
         const image_id = this.props.user.photo_id
         if (image_id != undefined && image_id != '') {
             downloadImage(image_id).then((imageUri) => {
-                console.log("[User] imageUri: " + imageUri)
                 if (imageUri != null)
                     this.setState({ userPic: { uri: imageUri } })
             })
@@ -62,12 +73,17 @@ class User extends Component {
         const followed = this.props.user.followed
         const title = followed? 'Siguiendo' : 'Seguir'
 
-        return (
-            <ButtonStandard
-                title={title}
-                onPress={this.onPressFollow}
-                greyMode={followed}
-            />
+        if (this.state.loadingFollowState)
+            return (
+                <ActivityIndicator size="small" color="#21005D" />
+            )
+        else
+            return (
+                <ButtonStandard
+                    title={title}
+                    onPress={this.onPressFollow}
+                    greyMode={followed}
+                />
         )
     }
 
@@ -98,23 +114,23 @@ class User extends Component {
 export default class UsersList extends Component {
     constructor(props) {
         super(props)
-        // this.state = {
-        // }
-        // console.log("[UsersList] props.users: " + JSON.stringify(this.props.users))
     }
 
     render = () => {
         return (
             <View style={[this.props.style,{ width: '100%'}]}>
                 {this.props.users.map((user) => {
-                    return (
-                        <User
-                            key={user.id}
-                            user={user}
-                            onPressUser={this.props.onPressUser}
-                            onPressFollow={this.props.onPressFollow}
-                        />
-                    )
+                    if (user.id == this.props.excludedUser)
+                        return null
+                    else
+                        return (
+                            <User
+                                key={user.id}
+                                user={user}
+                                onPressUser={this.props.onPressUser}
+                                onPressFollow={this.props.onPressFollow}
+                            />
+                        )
                 })}
                 <View style={{ height: 1, backgroundColor: 'grey'}} />
             </View>
@@ -150,3 +166,42 @@ const userStyles = StyleSheet.create({
         paddingRight: 15,
     },
 })
+
+// [
+//     {
+//       "id": 0,
+//       "fullname": "string",
+//       "mail": "user@example.com",
+//       "phone_number": "string",
+//       "blocked": true,
+//       "is_trainer": true,
+//       "is_athlete": true,
+//       "photo_id": "string",
+//       "latitude": "string",
+//       "longitude": "string",
+//       "weight": 0,
+//       "followed": true
+//     }
+//   ]
+
+//   [
+//     {
+//       "id": 0,
+//       "fullname": "string",
+//       "mail": "user@example.com",
+//       "is_trainer": true,
+//       "is_athlete": true,
+//       "photo_id": "string"
+//     }
+//   ]
+
+//   [
+//     {
+//       "id": 0,
+//       "fullname": "string",
+//       "mail": "user@example.com",
+//       "is_trainer": true,
+//       "is_athlete": true,
+//       "photo_id": "string"
+//     }
+//   ]

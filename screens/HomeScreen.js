@@ -15,6 +15,9 @@ import ProfileScreen from './ProfileScreen';
 import ProfileEditionScreen from './ProfileEditionScreen';
 import TrainingsListScreen from './TrainingsListScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
+
+import UsersListScreen from './UsersListScreen';
+
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
@@ -196,7 +199,21 @@ class HomeScreen extends Component {
         )
     }
 
-    render
+    renderSearchUsers() {
+        return (
+            <Drawer.Screen name="Buscar usuarios"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="search" size={24} color="black" />
+                        </View>
+                    ),
+                }}
+            >
+                {() => <UsersListScreen mode={"search"} navigation={this.props.navigation}/>}
+            </Drawer.Screen>
+        )
+    }
 
     render() {
         return (
@@ -234,8 +251,8 @@ class HomeScreen extends Component {
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
+                {this.renderSearchUsers()}
                 {this.data.is_trainer && this.renderTrainerCreatedGoalsButton()}
-
                 {this.data.is_athlete && this.renderPersonalGoalsLeftButton()}
                 {this.data.is_athlete && this.renderPersonalGoalsCompletedButton()}
                 {this.data.is_athlete && this.renderAthleteTrainingGoalsButton(completed=false)}

@@ -16,6 +16,7 @@ import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails, But
 import InterestsList from '../src/components/InterestsList';
 
 import { UserContext } from '../src/contexts/UserContext';
+import { UsersListMode } from './UsersListScreen';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -136,11 +137,18 @@ export default class ProfileScreen extends Component {
 
     onPressFollowers() {
         console.log('Followers pressed');
-        this.props.navigation.navigate('UsersListScreen')
+        const params = {
+            mode: UsersListMode.Followers,
+        }
+        this.props.navigation.navigate('UsersListScreen', params)
     }
 
     onPressFollowing() {
-        console.log('Following pressed');
+        console.log('Following pressed')
+        const params = {
+            mode: UsersListMode.Followed,
+        }
+        this.props.navigation.navigate('UsersListScreen', params)
     }
 
     onPressFollow() {
