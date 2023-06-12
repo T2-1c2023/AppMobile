@@ -9,12 +9,13 @@ import UsersList from '../src/components/UsersList';
 import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText } from '../src/styles/BaseComponents';
-import { IconButton, ActivityIndicator } from 'react-native-paper'
+import { IconButton, ActivityIndicator, Checkbox} from 'react-native-paper'
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import { titleManager } from '../src/TitleManager';
 import { UserContext } from '../src/contexts/UserContext';
+import RadiusInput from '../src/components/RadiusInput';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -33,6 +34,7 @@ export default class UsersListScreen extends Component {
         this.onPressFollow = this.onPressFollow.bind(this)
         this.onPressUser = this.onPressUser.bind(this)
         this.onPressFilter = this.onPressFilter.bind(this)
+        this.onChangeRadius = this.onChangeRadius.bind(this)
 
 
         // TODO: verificar si se termina usando
@@ -41,10 +43,13 @@ export default class UsersListScreen extends Component {
         console.log("[UsersListScreen] Params: " + JSON.stringify(this.params))
 
         this.state = {
-            initialUsers: [],
             users: [],
             loading: true,
             visibleFilter: false,
+            radiusFilterEnabled: false,
+            radiusFilter: 0,
+            showAthletesFilter: true,
+            showTrainersFilter: true,
         }
 
         this.mode = this.params.mode
@@ -72,7 +77,7 @@ export default class UsersListScreen extends Component {
         const config = { headers: { Authorization: tokenManager.getAccessToken() } }
         try {
             let response = await axios.get(url, config)
-            this.setState({ users: response.data, initialUsers: response.data }, 
+            this.setState({ users: response.data }, 
                 () => {
                     this.setState({ loading: false })
                 })
@@ -160,6 +165,59 @@ export default class UsersListScreen extends Component {
 
     }
 
+    renderAthletesFilter() {
+        return(
+            <View style={{flexDirection: 'row', width: 200, alignItems:'center', justifyContent:'flex-start'}}>
+                <Checkbox
+                    status={this.state.showAthletesFilter ? 'checked' : 'unchecked'}
+                    onPress={() => {
+                        this.setState( { showAthletesFilter: !this.state.showAthletesFilter} );
+                    }}
+                    theme={{ colors: { primary: '#21005D', onSurfaceVariant: '#21005D', onSurface: '#21005D', } }}
+                />
+
+                <Text style={{color:'grey'}}>
+                    Mostrar atletas
+                </Text>
+            </View>
+        )
+    }
+
+    renderTrainersFilter() {
+        return(
+            <View style={{flexDirection: 'row', width: 200, alignItems:'center', justifyContent:'flex-start'}}>
+                <Checkbox
+                    status={this.state.showTrainersFilter ? 'checked' : 'unchecked'}
+                    onPress={() => {
+                        this.setState( { showTrainersFilter: !this.state.showTrainersFilter} );
+                    }}
+                    theme={{ colors: { primary: '#21005D', onSurfaceVariant: '#21005D', onSurface: '#21005D', } }}
+                />
+
+                <Text style={{color:'grey'}}>
+                    Mostrar entrenadores
+                </Text>
+            </View>
+        )
+    }
+
+    onChangeRadius(radius) {
+        console.log("Radius changed: " + radius)
+        this.setState({ radiusFilter: radius })
+    }
+
+    renderRadiusFilter() {
+        return (
+            <RadiusInput
+                radiusFilterEnabled={this.state.radiusFilterEnabled}
+                radiusFilterChange={() => this.setState({ radiusFilterEnabled: !this.state.radiusFilterEnabled })}
+                onChange={this.onChangeRadius}
+                value={this.state.radiusFilter}
+                disabled={!this.state.showTrainersFilter}
+            />
+        )
+    }
+
     filterPopUp() {
         return (
 
@@ -187,41 +245,20 @@ export default class UsersListScreen extends Component {
                             body="Filtros de búsqueda"
                         />
 
-                        <TextDetails
-                            body="Tipo de entrenamiento"
+                        {this.renderAthletesFilter()}
+
+                        {this.renderTrainersFilter()}
+
+                        {this.renderRadiusFilter()}
+
+                        
+                        <ButtonStandard
+                            onPress={() => this.setState({ visibleFilter: false })}
+                            title="Volver"
                             style={{
-                                marginTop: 20,
+                                marginTop: 50,
                             }}
                         />
-
-                        {/* <SelectList
-                            setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
-                            data={this.state.trainingTypes}
-                            save="key"
-                            defaultOption={this.getTrainingTypeKeyValue()}
-                            placeholder="Tipo de entrenamiento"
-                            notFoundText="No se encontraron resultados"
-                            searchPlaceholder="Buscar"
-                            boxStyles={{ borderRadius: 5, width: 200, marginTop: 10 }}
-                            inputStyles={{ color: 'black' }}
-                        /> */}
-
-
-                        <View
-                            style={{
-                                alignItems: 'center',
-                            }}
-                        >
-                            <ConfirmationButtons
-                                onConfirmPress={() => console.log("confirm pressed")}
-                                onCancelPress={() => this.setState({ visibleFilter: false })}
-                                confirmationText="Aplicar"
-                                cancelText="Cancelar"
-                                style={{
-                                    marginTop: 20,
-                                }}
-                            />
-                        </View>
                     </View>
                 </ScrollView>
             </Modal>

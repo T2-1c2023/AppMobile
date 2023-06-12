@@ -346,13 +346,6 @@ export default class ProfileScreen extends Component {
                 handler: this.onPressSubscribedTrainings
             })
         }
-
-        if (this.is_athlete) {
-            linkedTexts.push({
-                title: 'Ver entrenamientos favoritos', 
-                handler: this.onPressFavoriteTrainings
-            })
-        }
         
         return (
             <React.Fragment>
