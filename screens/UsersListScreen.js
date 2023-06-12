@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text } from 'react-native';
+import { View, ScrollView, Text, Image } from 'react-native';
 import { DividerWithLeftText, TextBox } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { ConfirmationButtons, ButtonStandard } from '../src/styles/BaseComponents';
@@ -9,7 +9,7 @@ import UsersList from '../src/components/UsersList';
 import Modal from "react-native-modal";
 import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText } from '../src/styles/BaseComponents';
-import { IconButton } from 'react-native-paper'
+import { IconButton, ActivityIndicator } from 'react-native-paper'
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
@@ -32,15 +32,19 @@ export default class UsersListScreen extends Component {
         // this.athleteId = this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId
         this.onPressFollow = this.onPressFollow.bind(this)
         this.onPressUser = this.onPressUser.bind(this)
+        this.onPressFilter = this.onPressFilter.bind(this)
 
 
         // TODO: verificar si se termina usando
         console.log("[UsersListScreen] props: " + JSON.stringify(this.props))
-        this.params = this.props.route?.params?? this.props
+        this.params = this.props.route?.params ?? this.props
         console.log("[UsersListScreen] Params: " + JSON.stringify(this.params))
 
         this.state = {
-            users: []
+            initialUsers: [],
+            users: [],
+            loading: true,
+            visibleFilter: false,
         }
 
         this.mode = this.params.mode
@@ -65,18 +69,22 @@ export default class UsersListScreen extends Component {
 
     async loadUsers() {
         const url = this.getUrl()
-        const config = { headers: { Authorization: tokenManager.getAccessToken() }}
+        const config = { headers: { Authorization: tokenManager.getAccessToken() } }
         try {
             let response = await axios.get(url, config)
-            this.setState({ users: response.data })
+            this.setState({ users: response.data, initialUsers: response.data }, 
+                () => {
+                    this.setState({ loading: false })
+                })
         } catch (error) {
             console.log("[UsersListScreen] Error: " + JSON.stringify(error))
         }
     }
 
     async componentDidMount() {
+
         await this.loadUsers()
-        
+
     }
 
     onPressSearch(searchText) {
@@ -84,8 +92,7 @@ export default class UsersListScreen extends Component {
     }
 
     onPressFilter() {
-        console.log("[onPressFilter]")
-        // this.setState({ visibleFilter: true })
+        this.setState({ visibleFilter: true })
     }
 
     onPressUser(userId) {
@@ -95,17 +102,17 @@ export default class UsersListScreen extends Component {
     updateUsersState(userIdToUpdate, followed) {
         this.setState(prevState => ({
             users: prevState.users.map(user => {
-              if (user.id === userIdToUpdate) {
-                return { ...user, followed: followed };
-              }
-              return user;
+                if (user.id === userIdToUpdate) {
+                    return { ...user, followed: followed };
+                }
+                return user;
             })
         }))
     }
 
     sendFollowRequest(userIdToFollow, newStateLoadedSignal) {
         const url = API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
-        const config = { headers: { Authorization: tokenManager.getAccessToken() }}
+        const config = { headers: { Authorization: tokenManager.getAccessToken() } }
         const data = {
             followed_id: userIdToFollow
         }
@@ -126,8 +133,8 @@ export default class UsersListScreen extends Component {
     sendUnfollowRequest(userIdToUnfollow, newStateLoadedSignal) {
         // /users/{id}/followed
         const url = API_GATEWAY_URL + 'users/' + this.context.userId + '/followed'
-        const config = { 
-            data: { followed_id: userIdToUnfollow },    
+        const config = {
+            data: { followed_id: userIdToUnfollow },
             headers: { Authorization: tokenManager.getAccessToken() }
         }
 
@@ -145,100 +152,123 @@ export default class UsersListScreen extends Component {
     }
 
     onPressFollow(user, newStateLoadedSignal) {
-        user.followed? 
+        user.followed ?
             this.sendUnfollowRequest(user.id, newStateLoadedSignal)
-            : 
+            :
             this.sendFollowRequest(user.id, newStateLoadedSignal)
 
-        
+
     }
 
     filterPopUp() {
-        return
-        <Modal
-            isVisible={this.state.visibleFilter}
-            animationIn="slideInDown"
-            animationOut="slideOutUp"
-            animationInTiming={100}
-        >
-            <ScrollView
+        return (
+
+            <Modal
+                isVisible={this.state.visibleFilter}
+                animationIn="slideInDown"
+                animationOut="slideOutUp"
+                animationInTiming={100}
             >
-                <View
-                    style={{
-                        alignSelf: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                        marginTop: 50,
-                        backgroundColor: '#CCC2DC',
-                        borderRadius: 10,
-                        width: 300,
-                        height: 600,
-                    }}
+                <ScrollView
                 >
-                    <TextSubheader
-                        body="Filtros de búsqueda"
-                    />
-
-                    <TextDetails
-                        body="Tipo de entrenamiento"
-                        style={{
-                            marginTop: 20,
-                        }}
-                    />
-
-                    <SelectList
-                        setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
-                        data={this.state.trainingTypes}
-                        save="key"
-                        defaultOption={this.getTrainingTypeKeyValue()}
-                        placeholder="Tipo de entrenamiento"
-                        notFoundText="No se encontraron resultados"
-                        searchPlaceholder="Buscar"
-                        boxStyles={{ borderRadius: 5, width: 200, marginTop: 10 }}
-                        inputStyles={{ color: 'black' }}
-                    />
-
-                    <TextDetails
-                        body="Nivel de entrenamiento"
-                        style={{
-                            marginTop: 20,
-                        }}
-                    />
-
-                    <SelectList
-                        setSelected={(filteredLevelKeySelected) => this.setState({ filteredLevelKeySelected })}
-                        data={this.levels}
-                        defaultOption={this.getTrainingLevelKeyValue()}
-                        save="key"
-                        placeholder="Nivel de entrenamiento"
-                        notFoundText="No se encontraron resultados"
-                        searchPlaceholder="Buscar"
-                        boxStyles={{ borderRadius: 5, width: 200, marginTop: 10 }}
-                        inputStyles={{ color: 'black' }}
-                        maxHeight={170}
-                    />
-
                     <View
                         style={{
+                            alignSelf: 'center',
                             alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            marginTop: 50,
+                            backgroundColor: '#CCC2DC',
+                            borderRadius: 10,
+                            width: 300,
+                            height: 600,
                         }}
                     >
-                        <ConfirmationButtons
-                            onConfirmPress={this.handleSetFilters}
-                            onCancelPress={() => this.setState({ visibleFilter: false })}
-                            confirmationText="Aplicar"
-                            cancelText="Cancelar"
+                        <TextSubheader
+                            body="Filtros de búsqueda"
+                        />
+
+                        <TextDetails
+                            body="Tipo de entrenamiento"
                             style={{
                                 marginTop: 20,
                             }}
                         />
+
+                        {/* <SelectList
+                            setSelected={(filteredTypeKeySelected) => this.setState({ filteredTypeKeySelected })}
+                            data={this.state.trainingTypes}
+                            save="key"
+                            defaultOption={this.getTrainingTypeKeyValue()}
+                            placeholder="Tipo de entrenamiento"
+                            notFoundText="No se encontraron resultados"
+                            searchPlaceholder="Buscar"
+                            boxStyles={{ borderRadius: 5, width: 200, marginTop: 10 }}
+                            inputStyles={{ color: 'black' }}
+                        /> */}
+
+
+                        <View
+                            style={{
+                                alignItems: 'center',
+                            }}
+                        >
+                            <ConfirmationButtons
+                                onConfirmPress={() => console.log("confirm pressed")}
+                                onCancelPress={() => this.setState({ visibleFilter: false })}
+                                confirmationText="Aplicar"
+                                cancelText="Cancelar"
+                                style={{
+                                    marginTop: 20,
+                                }}
+                            />
+                        </View>
                     </View>
-                </View>
-            </ScrollView>
-        </Modal>
+                </ScrollView>
+            </Modal>
+        )
     }
 
-    render() {
+    renderLoadingMessage() {
+        return (
+            <View style={{alignItems: "center"}}>
+                <ActivityIndicator size="large" color="#21005D" style={{marginTop: 100}} />
+                <Text style={{marginTop: 30}}>Buscando usuarios...</Text>
+            </View>
+        )
+    }
+
+    renderUsersList() {
+        return (
+            <UsersList
+                users={this.state.users}
+                excludedUser={this.context.userId}
+                onPressUser={this.onPressUser}
+                onPressFollow={this.onPressFollow}
+                style={{
+                    marginTop: 15,
+                }}
+            />
+        )
+    }
+
+    renderNoUsersFoundMessage() {
+        return (
+            <View style={{alignItems: "center", marginTop: 80}}>
+                <Image
+                    source={require('../assets/images/empty_icon.png')}
+                    style={{
+                        aspectRatio: 311/269, 
+                        height: 100,
+                    }}
+                />
+                <Text style={{textAlign: 'center', marginTop: 20}}>
+                    No se encontraron usuarios
+                </Text>
+            </View>
+        )
+    }
+
+    renderNameInputAndUsersList() {
         return (
             <ScrollView
                 automaticallyAdjustKeyboardInsets={true}
@@ -256,21 +286,24 @@ export default class UsersListScreen extends Component {
                         }}
                     />
 
-                    <UsersList
-                        users={this.state.users}
-                        excludedUser={this.context.userId}
-                        onPressUser={this.onPressUser}
-                        onPressFollow={this.onPressFollow}
-                        style={{
-                            marginTop: 15,
-                        }}
-                    />
+                    {this.state.users.length == 0 ?
+                        this.renderNoUsersFoundMessage()
+                        :
+                        this.renderUsersList()
+                    }
 
-                    {false && this.filterPopUp()}
+                    {this.filterPopUp()}
 
                 </View>
-
             </ScrollView>
-        );
+        )
+    }
+
+    render() {
+        if (this.state.loading) {
+            return this.renderLoadingMessage()
+        } else {
+            return this.renderNameInputAndUsersList()
+        }
     }
 }

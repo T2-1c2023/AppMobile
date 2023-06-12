@@ -58,13 +58,38 @@ class User extends Component {
         )
     }
 
+    renderRoleIcon() {
+        return (
+            <Image
+                style={{
+                    aspectRatio: 544 / 668,
+                    height: 30,
+                }}
+                source={require('../../assets/images/trainer.png')}
+            />
+        )
+    }
+
+    renderRoles() {
+        const isTrainer = this.props.user.is_trainer
+        const isAthlete = this.props.user.is_athlete
+
+        const rolesText = isAthlete? isTrainer? 'Entrenador y Atleta' : 'Atleta' : 'Entrenador'
+
+        return (
+            <Text style={{fontSize: 11, color: "grey"}}>{rolesText}</Text>
+        )
+    }
+
     renderUserNameAndEmail() {
         const fullname = this.props.user.fullname
         const mail = this.props.user.mail
         return (
             <React.Fragment>
+                {this.renderRoles()}        
                 <Text style={{fontSize: 20}}>{fullname}</Text>
                 <Text style={{fontSize: 15}}>{mail}</Text>
+                
             </React.Fragment>
         )
     }
@@ -166,42 +191,3 @@ const userStyles = StyleSheet.create({
         paddingRight: 15,
     },
 })
-
-// [
-//     {
-//       "id": 0,
-//       "fullname": "string",
-//       "mail": "user@example.com",
-//       "phone_number": "string",
-//       "blocked": true,
-//       "is_trainer": true,
-//       "is_athlete": true,
-//       "photo_id": "string",
-//       "latitude": "string",
-//       "longitude": "string",
-//       "weight": 0,
-//       "followed": true
-//     }
-//   ]
-
-//   [
-//     {
-//       "id": 0,
-//       "fullname": "string",
-//       "mail": "user@example.com",
-//       "is_trainer": true,
-//       "is_athlete": true,
-//       "photo_id": "string"
-//     }
-//   ]
-
-//   [
-//     {
-//       "id": 0,
-//       "fullname": "string",
-//       "mail": "user@example.com",
-//       "is_trainer": true,
-//       "is_athlete": true,
-//       "photo_id": "string"
-//     }
-//   ]

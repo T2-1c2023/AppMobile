@@ -44,7 +44,6 @@ export default class ProfileInput extends Component {
                             style={{
                                 aspectRatio: 544 / 668,
                                 maxHeight: 140,
-
                             }}
                         />
                     </TouchableOpacity>
