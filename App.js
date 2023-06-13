@@ -282,7 +282,9 @@ export default class App extends Component {
             <Stack.Screen 
               name='ChatList'
               component={ChatList}
-
+            />
+            
+            <Stack.Screen
               name="TrainingReviewScreen"
               component={TrainingReviewScreen}
             />

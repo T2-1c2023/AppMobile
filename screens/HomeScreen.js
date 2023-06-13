@@ -224,7 +224,7 @@ class HomeScreen extends Component {
         return (
             <Drawer.Navigator 
                 drawerContent={this.CustomDrawerContent} 
-                initialRouteName="Buscar usuarios"
+                initialRouteName="Mi Perfil"
                 screenOptions={{
                     drawerActiveTintColor: '#5925b0',
                     drawerStyle: {
