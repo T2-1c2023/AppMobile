@@ -35,6 +35,8 @@ export default class UsersListScreen extends Component {
         this.onPressUser = this.onPressUser.bind(this)
         this.onPressFilter = this.onPressFilter.bind(this)
         this.onChangeRadius = this.onChangeRadius.bind(this)
+        this.onPressFilterSearch = this.onPressFilterSearch.bind(this)
+        this.onPressSearch = this.onPressSearch.bind(this)
 
 
         // TODO: verificar si se termina usando
@@ -48,14 +50,14 @@ export default class UsersListScreen extends Component {
             visibleFilter: false,
             radiusFilterEnabled: false,
             radiusFilter: 0,
-            showAthletesFilter: true,
-            showTrainersFilter: true,
+            showAthletesFilter: false,
+            showTrainersFilter: false,
         }
 
         this.mode = this.params.mode
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
-            //refresh
+            // this.loadUsers()
         })
     }
 
@@ -72,9 +74,51 @@ export default class UsersListScreen extends Component {
         }
     }
 
+    getParams() {
+
+        let radius = this.state.radiusFilterEnabled ? this.state.radiusFilter : 0
+
+        let params = {
+            fullname: this.state.fullname,
+            radius: radius,
+        }
+
+        // quiero ver todos
+        if (!this.state.showAthletesFilter && !this.state.showTrainersFilter)
+            return params
+
+        //Debe ser entrenador
+        if (!this.state.showAthletesFilter && this.state.showTrainersFilter) {
+            params['is_trainer'] = true
+            return params
+        }
+
+        //Debe ser atleta
+        if (this.state.showAthletesFilter && !this.state.showTrainersFilter) {
+            params['is_athlete'] = true
+            return params
+        }
+
+        //Debe ser mixto
+        if (this.state.showAthletesFilter && this.state.showTrainersFilter) {
+            params['is_athlete'] = true
+            params['is_trainer'] = true
+            return params
+        }
+
+        
+    }
+
     async loadUsers() {
+        this.setState({ loading: true })
+
         const url = this.getUrl()
-        const config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        const params = this.getParams()
+
+        const config = { 
+            params: params,
+            headers: { Authorization: tokenManager.getAccessToken() } 
+        }
         try {
             let response = await axios.get(url, config)
             this.setState({ users: response.data }, 
@@ -93,7 +137,11 @@ export default class UsersListScreen extends Component {
     }
 
     onPressSearch(searchText) {
-        console.log("[onPressSearch] Search text: " + searchText)
+        this.setState({ fullname: searchText }, 
+            () => {
+                this.loadUsers()
+            }
+        )
     }
 
     onPressFilter() {
@@ -177,7 +225,7 @@ export default class UsersListScreen extends Component {
                 />
 
                 <Text style={{color:'grey'}}>
-                    Mostrar atletas
+                    Deben ser atletas
                 </Text>
             </View>
         )
@@ -195,7 +243,7 @@ export default class UsersListScreen extends Component {
                 />
 
                 <Text style={{color:'grey'}}>
-                    Mostrar entrenadores
+                    Deben ser entrenadores
                 </Text>
             </View>
         )
@@ -216,6 +264,11 @@ export default class UsersListScreen extends Component {
                 disabled={!this.state.showTrainersFilter}
             />
         )
+    }
+
+    onPressFilterSearch() {
+        this.setState({ visibleFilter: false })
+        this.loadUsers()
     }
 
     filterPopUp() {
@@ -253,8 +306,8 @@ export default class UsersListScreen extends Component {
 
                         
                         <ButtonStandard
-                            onPress={() => this.setState({ visibleFilter: false })}
-                            title="Volver"
+                            onPress={this.onPressFilterSearch}
+                            title="Buscar"
                             style={{
                                 marginTop: 50,
                             }}
@@ -317,7 +370,7 @@ export default class UsersListScreen extends Component {
                         filter
                         onSubmit={this.onPressSearch}
                         onIconPress={this.onPressFilter}
-                        placeholder="Buscar por nombre"
+                        placeholder={this.state.fullname?? "Buscar por nombre"}
                         style={{
                             marginTop: 20,
                         }}
