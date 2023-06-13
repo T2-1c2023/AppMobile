@@ -7,13 +7,15 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
 
 import GoalsListScreen from './GoalsListScreen';
+
 import { ListMode } from './GoalsListScreen';
 
 import { Mode } from './GoalScreen';
 
 import ProfileScreen from './ProfileScreen';
-import ProfileEditionScreen from './ProfileEditionScreen';
 import TrainingsListScreen from './TrainingsListScreen';
+import ChatList from './ChatList';
+
 import ChangePasswordScreen from './ChangePasswordScreen';
 
 import UsersListScreen from './UsersListScreen';
@@ -21,6 +23,9 @@ import UsersListScreen from './UsersListScreen';
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
+import NotificationsTest from './test_screens/NotificationsTest';
+import ChatTest from './test_screens/ChatTest';
+import VerificationTest from './test_screens/VerificationTest';
 
 
 
@@ -332,6 +337,50 @@ class HomeScreen extends Component {
 
                     </Drawer.Screen>
                 : null}
+
+                <Drawer.Screen name="Mensajes"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="comment" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                >
+                    {() => 
+                      <ChatList 
+                        data={this.data} 
+                        navigation={this.props.navigation}
+                      />
+                    }
+                </Drawer.Screen>
+
+                <Drawer.Screen name="Notificaciones Test"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="bell" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                >
+                    {() => <NotificationsTest />}
+                </Drawer.Screen>
+
+                {this.data.is_trainer ?
+                    <Drawer.Screen name="Verification Test"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="check" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                    >
+                        {() => <VerificationTest data={this.data} />}
+                    </Drawer.Screen>
+                : null }
+
             </Drawer.Navigator>
         );
     }

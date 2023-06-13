@@ -1,27 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import database from '@react-native-firebase/database';
 
 class ChatTest extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // TODO: esta hardcodeado, esto lo debería recibir del back o, si no existe, dejarlo en ''
-            // así se crea un nuevo chat.
-            chatId: '-NWOThYawEkOK34oN4sy', 
+            chatId: props.route.params.chatId, 
             messages: [],
             inputText: '',
-            uid1: 20,
-            uid2: 30
+            uid1: props.route.params.data.id,
+            uid2: 0 // TODO: probar con otro usuario
         }
     };
 
-    // TODO: ver de agregar otra tabla con chats por user id y todos los chats que tenga (chatId's). Habría info repetida por usuario.
-    //       users/ + userId 
-    // TODO: separar en izquierda / derecha dependiendo de quien sea el usuario. 
-    // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje y que los mensajes estén en rectángulos de colores
-    // TODO: Agregar un date.now a los mensajes
-    // TODO: mostrar todas las conversaciones actuales en formato lista en 
+    // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje 
 
     componentDidMount() {
         const { chatId } = this.state;
@@ -35,37 +28,13 @@ class ChatTest extends Component {
                 const data = snapshot.val();
                 if (data.messages !== undefined) {
                     const messages = Object.values(data.messages);
+                    messages.sort((a, b) => b.timestamp - a.timestamp)
                     this.setState({ messages: messages });
                 }
-            } else { // No snapshot found, create chat room
-                this.createChatRoom();
+            } else {
+                Alert.alert('Error: No se encontró el chat room, volver a intentar');
             }
         });
-    }
-
-    createChatRoom = () => {
-        const { uid1, uid2 } = this.state;
-        const reference = database().ref('chats');
-        // Create new node where the new chat will be stored
-        const newChatRef = reference.push();
-        // TODO: store this in back end.
-        const chatId = newChatRef.key;
-
-        this.setState({ chatId: chatId });
-
-        const chatData = {
-            messages: [],
-            uid1: uid1,
-            uid2: uid2
-        };
-
-        reference.child(chatId).set(chatData)
-            .then(() => {
-                console.log('Node created succesfully');
-            })
-            .catch((error) => {
-                console.log('Error creating node:', error);
-            })
     }
 
     componentWillUnmount() {
@@ -80,10 +49,11 @@ class ChatTest extends Component {
         // Check if its not only white space
         if (inputText.trim() !== '') {
             const newMessageRef = database().ref('chats/' + chatId + '/messages').push();
-            // TODO: el uid tiene que ser el id del usuario que está escribiendo el mensaje.
+            const timestamp = Date.now();
             const newMessageData = {
                 message: inputText,
-                uid: uid1
+                uid: uid1,
+                timestamp: timestamp
             };
 
             newMessageRef
@@ -101,11 +71,16 @@ class ChatTest extends Component {
             <FlatList 
               data={messages}
               renderItem={({ item }) => (
-                <View style={{paddingVertical: 5}}>
-                  <Text>{item.message}</Text>
+                <View style={{ paddingVertical: 5, 
+                               alignSelf: item.uid === this.state.uid1 ? 'flex-end' : 'flex-start' 
+                }}>
+                    <Text style={{ backgroundColor: item.uid === this.state.uid1 ? '#5da64e' : '#494f48', 
+                                   padding: 10, borderRadius: 10, color: 'white' 
+                    }}>
+                        {item.message}
+                    </Text>
                 </View>
               )}
-              // TODO: esta ordenando alphabeticamente acá. Usa el date.
               keyExtractor={(item, index) => index.toString()}
               inverted
             />

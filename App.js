@@ -24,10 +24,14 @@ import TrainingScreen from './screens/TrainingScreen';
 import TrainingGoalsEditionScreen from './screens/TrainingGoalsEditionScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
+
+import ChatList from './screens/ChatList';
+
 import TrainingReviewScreen from './screens/TrainingReviewScreen';
 import TrainingsReviewsListScreen from './screens/TrainingsReviewsListScreen';
 import ValidatePasswordScreen from './screens/ValidatePasswordScreen';
 import InterestsScreen from './screens/InterestsScreen';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -38,6 +42,8 @@ import * as Notifications from 'expo-notifications';
 
 // Chat Test (borrar)
 import ChatTest from './screens/test_screens/ChatTest';
+import NotificationsTest from './screens/test_screens/NotificationsTest';
+import VerificationTest from './screens/test_screens/VerificationTest';
 
 import { AppProvider } from './src/contexts/UserContext';
 
@@ -115,10 +121,20 @@ export default class App extends Component {
               // headerShown: false
             }}
           >
+            {/* <  TESTS ---------------------------------------------------------- */}
             <Stack.Screen 
               name='ChatTest'
               component={ChatTest}
             />
+            <Stack.Screen 
+              name='NotificationsTest'
+              component={NotificationsTest}
+            />
+            <Stack.Screen 
+              name='VerificationTest'
+              component={VerificationTest}
+            />
+            {/* /> TESTS ---------------------------------------------------------- */}
 
             <Stack.Screen
               name="LoginScreen"
@@ -264,6 +280,9 @@ export default class App extends Component {
             />
 
             <Stack.Screen 
+              name='ChatList'
+              component={ChatList}
+
               name="TrainingReviewScreen"
               component={TrainingReviewScreen}
             />
