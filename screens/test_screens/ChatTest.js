@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import database from '@react-native-firebase/database';
 
 class ChatTest extends Component {
@@ -14,8 +14,6 @@ class ChatTest extends Component {
         }
     };
 
-    // TODO: ver de agregar otra tabla con chats por user id y todos los chats que tenga (chatId's). Habría info repetida por usuario.
-    //       users/ + userId 
     // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje 
 
     componentDidMount() {
@@ -33,35 +31,10 @@ class ChatTest extends Component {
                     messages.sort((a, b) => b.timestamp - a.timestamp)
                     this.setState({ messages: messages });
                 }
-            } else { // No snapshot found, create chat room
-                this.createChatRoom();
+            } else {
+                Alert.alert('Error: No se encontró el chat room, volver a intentar');
             }
         });
-    }
-
-    createChatRoom = () => {
-        const { uid1, uid2 } = this.state;
-        const reference = database().ref('chats');
-        // Create new node where the new chat will be stored
-        const newChatRef = reference.push();
-        // TODO: store this in back end.
-        const chatId = newChatRef.key;
-
-        this.setState({ chatId: chatId });
-
-        const chatData = {
-            messages: [],
-            uid1: uid1,
-            uid2: uid2
-        };
-
-        reference.child(chatId).set(chatData)
-            .then(() => {
-                console.log('Node created succesfully');
-            })
-            .catch((error) => {
-                console.log('Error creating node:', error);
-            })
     }
 
     componentWillUnmount() {
@@ -76,7 +49,6 @@ class ChatTest extends Component {
         // Check if its not only white space
         if (inputText.trim() !== '') {
             const newMessageRef = database().ref('chats/' + chatId + '/messages').push();
-            // TODO: el uid tiene que ser el id del usuario que está escribiendo el mensaje.
             const timestamp = Date.now();
             const newMessageData = {
                 message: inputText,
