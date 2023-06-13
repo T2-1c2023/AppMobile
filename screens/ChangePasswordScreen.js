@@ -6,6 +6,7 @@ import { TextHeader, TextDetails, DividerWithMiddleText, ButtonStandard, InputDa
 import styles from '../src/styles/styles';
 import { ActivityIndicator } from 'react-native-paper';
 import { updateUserData } from '../src/User';
+import { titleManager } from '../src/TitleManager';
 
 export default class ChangePasswordScreen extends Component {
     constructor(props) {
@@ -23,6 +24,10 @@ export default class ChangePasswordScreen extends Component {
             confirmPass: '',
             confirmPassHidden: true,
         }
+    }
+
+    componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Cambiar contraseña", 22)
     }
 
     handleChangePasswordPress() {

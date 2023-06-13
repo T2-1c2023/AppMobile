@@ -22,7 +22,7 @@ export default {
       "bundleIdentifier": "com.fiufit.appmobile"
     },
     "android": {
-      "permissions": ["USE_FINGERPRINT"],
+      "permissions": ["USE_FINGERPRINT", "USE_BIOMETRIC"],
       "package": "com.fiufit.appmobile",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {

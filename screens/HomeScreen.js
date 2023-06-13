@@ -5,10 +5,20 @@ import jwt_decode from 'jwt-decode';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // Screens 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
+
 import GoalsListScreen from './GoalsListScreen';
+
+import { ListMode } from './GoalsListScreen';
+
+import { Mode } from './GoalScreen';
+
 import ProfileScreen from './ProfileScreen';
 import TrainingsListScreen from './TrainingsListScreen';
 import ChatList from './ChatList';
+
+import ChangePasswordScreen from './ChangePasswordScreen';
+
+import UsersListScreen from './UsersListScreen';
 
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
@@ -25,7 +35,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 import { CommonActions } from '@react-navigation/native';
 
+import { UserContext } from '../src/contexts/UserContext';
+
+import Constants from 'expo-constants'
 const Drawer = createDrawerNavigator();
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 function Test() {
     return (
@@ -36,9 +50,15 @@ function Test() {
 }
 
 class HomeScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
-        this.data = jwt_decode(tokenManager.getAccessToken())
+        this.createGoalButtonForAthlete = this.createGoalButtonForAthlete.bind(this)
+        this.createGoalButtonForTrainer = this.createGoalButtonForTrainer.bind(this)
+
+        // this.data = jwt_decode(tokenManager.getAccessToken())
+        this.data = tokenManager.getPayload()
     }
 
     handleLogout = async () => {
@@ -74,11 +94,137 @@ class HomeScreen extends Component {
         )
     }
 
+    createGoalButton(mode) {
+        return (
+            <IconButton
+                icon="plus"
+                iconColor="black"
+                size={30}
+                onPress={() => this.props.navigation.navigate('GoalScreen', 
+                    {
+                        userData: this.data,
+                        mode: mode,
+                    }
+                )}
+            />
+        )
+    }
+
+    createGoalButtonForTrainer() {
+        return this.createGoalButton(Mode.TrainerCreate)
+    }
+
+    // botón solo para entrenadores
+    renderTrainerCreatedGoalsButton() {
+        return (
+            <Drawer.Screen name="Metas creadas"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                    headerRight: this.createGoalButtonForTrainer
+                }}
+            >
+                {() => <GoalsListScreen
+                        navigation={this.props.navigation}
+                        listMode={ListMode.TrainerGoalsCreated} 
+                />}
+            </Drawer.Screen>
+        )
+    }
+
+
+    createGoalButtonForAthlete() {
+        return this.createGoalButton(Mode.AthleteCreate)
+    }
+
+    // botón solo para atletas
+    renderPersonalGoalsLeftButton() {
+        return (
+            <Drawer.Screen name="Metas personales en proceso"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                    headerRight: this.createGoalButtonForAthlete
+                }}
+            >
+                {() => <GoalsListScreen
+                        navigation={this.props.navigation}
+                        listMode={ListMode.AthletePersonalGoalsLeft} 
+                />}
+            </Drawer.Screen>
+        )
+    }
+
+    // botón solo para atletas
+    renderPersonalGoalsCompletedButton() {
+        return (
+            <Drawer.Screen name={"Metas personales cumplidas"}
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black" />
+                        </View>
+                    ),
+                }}
+            >
+                {() => <GoalsListScreen
+                        navigation={this.props.navigation}
+                        listMode={ListMode.AthletePersonalGoalsCompleted} 
+                />}
+            </Drawer.Screen>
+        )
+    }
+
+    renderAthleteTrainingGoalsButton(completed) {
+        return (
+            <Drawer.Screen name={completed? "Metas de entrenamientos completadas" : "Metas de entrenamientos en proceso"}
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="bullseye" size={24} color="black"/>
+                        </View>
+                    ),
+                }}
+            >
+                {() => <GoalsListScreen
+                        navigation={this.props.navigation}
+                        listMode={completed? 
+                            ListMode.AthletesAllTrainingsGoalsCompleted 
+                            : 
+                            ListMode.AthleteAllTrainingsGoalsLeft
+                        }
+                />}
+            </Drawer.Screen>
+        )
+    }
+
+    renderSearchUsers() {
+        return (
+            <Drawer.Screen name="Buscar usuarios"
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name="search" size={24} color="black" />
+                        </View>
+                    ),
+                }}
+            >
+                {() => <UsersListScreen mode={"search"} navigation={this.props.navigation}/>}
+            </Drawer.Screen>
+        )
+    }
+
     render() {
         return (
             <Drawer.Navigator 
                 drawerContent={this.CustomDrawerContent} 
-                initialRouteName="Mi Perfil"
+                initialRouteName="Buscar usuarios"
                 screenOptions={{
                     drawerActiveTintColor: '#5925b0',
                     drawerStyle: {
@@ -110,18 +256,12 @@ class HomeScreen extends Component {
                     {() => <ProfileScreen data={this.data} navigation={this.props.navigation} owner/>}
                 </Drawer.Screen>
 
-                <Drawer.Screen name="Metas"
-                    options={{
-                        drawerIcon: () => (
-                            <View style={styles.drawerIconContainer}>
-                                <FontAwesome name="bullseye" size={24} color="black" />
-                            </View>
-                        )
-                        
-                    }}
-                >
-                    {() => <GoalsListScreen data={this.data} navigation={this.props.navigation} completed={false}/>}
-                </Drawer.Screen>
+                {this.renderSearchUsers()}
+                {this.data.is_trainer && this.renderTrainerCreatedGoalsButton()}
+                {this.data.is_athlete && this.renderPersonalGoalsLeftButton()}
+                {this.data.is_athlete && this.renderPersonalGoalsCompletedButton()}
+                {this.data.is_athlete && this.renderAthleteTrainingGoalsButton(completed=false)}
+                {this.data.is_athlete && this.renderAthleteTrainingGoalsButton(completed=true)}
 
                 {this.data.is_athlete ? 
                     <Drawer.Screen 
@@ -134,8 +274,8 @@ class HomeScreen extends Component {
                             ),
                             headerRight: () =>
                                 <IconButton
-                                    icon="plus"
-                                    color="black"
+                                    icon="magnify"
+                                    iconColor="black"
                                     size={30}
                                     onPress={() => 
                                         this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})
@@ -143,7 +283,7 @@ class HomeScreen extends Component {
                                 />
                         }}
                     >
-                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' />}
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type='favorites' athleteId={this.data.id}/>}
 
                     </Drawer.Screen>
                 : null}
@@ -159,8 +299,8 @@ class HomeScreen extends Component {
                             ),
                             headerRight: () =>
                                 <IconButton
-                                    icon="plus"
-                                    color="black"
+                                    icon="magnify"
+                                    iconColor="black"
                                     size={30}
                                     onPress={() => 
                                         this.props.navigation.navigate('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'})
@@ -168,7 +308,7 @@ class HomeScreen extends Component {
                                 />
                         }}
                     >
-                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} />}
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'enrolled'} athleteId={this.data.id} />}
 
                     </Drawer.Screen>
                 : null }
@@ -193,7 +333,7 @@ class HomeScreen extends Component {
                                 />
                         }}
                     >
-                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'created'} />}
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'created'} trainerId={this.data.id} />}
 
                     </Drawer.Screen>
                 : null}

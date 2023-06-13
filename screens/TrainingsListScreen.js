@@ -11,9 +11,10 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { TextDetails, TextSubheader, DividerWithMiddleText}  from '../src/styles/BaseComponents';
 import { IconButton } from 'react-native-paper'
 import axios from 'axios';
-import Constants from 'expo-constants'
+import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -26,15 +27,17 @@ export default class TrainingsListScreen extends Component {
         this.handleFilterPress = this.handleFilterPress.bind(this)
         this.handleSetFilters = this.handleSetFilters.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
-        this.getType = this.getType.bind(this)
+        //this.getType = this.getType.bind(this)
         this.state = {
             trainings: [],
             filteredTypeKeySelected: 0,
             filteredLevelKeySelected: 0,
             filteredTypeKeyApplied: 0,
             filteredLevelKeyApplied: 0,
+            filteredTitle: '',
             trainingTypes: [],
             visibleFilter: false,
+            type: 5
         }
         this.levels=[
             {"key": 0, "value": "Todos"}, 
@@ -45,12 +48,17 @@ export default class TrainingsListScreen extends Component {
         this.token = tokenManager.getAccessToken()
         this.type = ''
         this.data = ''
+        this.url = ''
+        this.trainerId = this.props.route !== undefined ? this.props.route.params.trainerId : this.props.trainerId
+        this.athleteId = this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId
         this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.getType();
             this.refreshActivities();
         });
     }
 
     getType() {
+        console.log("gettype")
         let type;
         let data;
         if (this.props.route !== undefined) {
@@ -64,6 +72,7 @@ export default class TrainingsListScreen extends Component {
         this.data = data;
         switch(type) {
             case 'all':
+                console.log('all')
                 this.type = Type.All
                 break;
             case 'created':
@@ -110,6 +119,7 @@ export default class TrainingsListScreen extends Component {
         this.refreshTrainingsTypes();
         
         trainingCreationAvailable = jwt_decode(this.token).is_trainer;
+        if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, "Entrenamientos", 22)}
     }
 
     handleSetFilters() {
@@ -119,24 +129,13 @@ export default class TrainingsListScreen extends Component {
             visibleFilter: false,
         }, () => {
             const decodedToken = jwt_decode(this.token);
-            const params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
+            let params = decodedToken.is_trainer ? {trainer_id: decodedToken.id} : {blocked: false}
             if (this.state.filteredTypeKeyApplied !== 0) { params.type_id = this.state.filteredTypeKeyApplied }
-            if (this.state.filteredLevelKeyApplied !== 0) { params.severity = this.state.filteredLevelKeyApplied }  
-            axios.get(API_GATEWAY_URL + 'trainings/', {
-                    headers: {
-                        Authorization: tokenManager.getAccessToken()
-                    },
-                    params: params
-                })
-                .then(response => {
-                    console.log("recibí response"); //debug
-                    console.log("response.data: " + response.data);//debug
-                    const trainings = response.data;
-                    this.setState({ trainings });
-                })
-                .catch(function (error) {
-                    console.log("handlesetfilters " + error);
-                });
+            if (this.state.filteredLevelKeyApplied !== 0) { params.severity = this.state.filteredLevelKeyApplied }
+            if (this.state.filteredTitle !== '') {params.title = this.state.filteredTitle}
+            console.log(params)
+            console.log(this.url)
+                this.refreshActivities(params)
             }
         )
 
@@ -151,33 +150,39 @@ export default class TrainingsListScreen extends Component {
         console.log("filter press");
         // agregar logica de pedido de filtrado a usuario
         this.setState({ visibleFilter: true })
-
-        
     }
 
 
-    refreshActivities() {
+    refreshActivities(params) {
+        this.getType();
+        if (params === undefined) {
+            params = {}
+        }
         console.log("refresh activities");
         const decodedToken = jwt_decode(this.token);
         let url = API_GATEWAY_URL
+        console.log('TYPE state' + this.state.type + ' no state ' +this.type)
         switch(this.type) {
             case Type.All:
                 url += 'trainings';
-                params = {blocked: false}
+                params.blocked = false
                 break;
             case Type.Created:
-                url += 'trainings'
-                params = {trainer_id: decodedToken.id}
+                url += 'trainers/' + (this.props.route !== undefined ? this.props.route.params.trainerId : this.props.trainerId) + '/trainings' //TODO ver por qué no puedo usar this.trainerId
+                params.trainer_id= this.trainerId
                 break;
             case Type.Enrolled:
-                url += 'athletes/' + this.data.id + '/subscriptions'
-                params = {blocked: false}
+                url += 'athletes/' + (this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId) + '/subscriptions' //TODO ver por qué no puedo usar this.athleteId
+                params.blocked = false
                 break;
             case Type.Favourites:
-                url += 'athletes/' + this.data.id + '/favorites'
-                params = {blocked: false}
+                url += 'athletes/' + (this.props.route !== undefined ? this.props.route.params.athleteId : this.props.athleteId) + '/favorites' //TODO ver por qué no puedo usar this.athleteId
+                params.blocked = false
                 break;
         }
+        console.log(this.type)
+        console.log(url)
+        console.log(params)
         axios.get(url, {
             headers: {
                 Authorization: tokenManager.getAccessToken()
@@ -187,6 +192,7 @@ export default class TrainingsListScreen extends Component {
             .then(response => {
                 console.log("recibí response activities"); //debug
                 const trainings = response.data;
+                //console.log(trainings)
                 this.setState({ trainings });
             })
             .catch(function (error) {
@@ -214,7 +220,7 @@ export default class TrainingsListScreen extends Component {
 
     handleSearch(searchText) {
 
-        console.log("searching for: ")
+        /*console.log("searching for: ")
         console.log(searchText)
 
         console.log("for training type: ") 
@@ -223,7 +229,8 @@ export default class TrainingsListScreen extends Component {
         
         console.log("for training level: ")
         console.log(this.state.filteredLevelKeySelected)
-        console.log(this.state.filteredLevelKeyApplied)
+        console.log(this.state.filteredLevelKeyApplied)*/
+        this.setState({filteredTitle: searchText}, this.handleSetFilters())
         
     }
 

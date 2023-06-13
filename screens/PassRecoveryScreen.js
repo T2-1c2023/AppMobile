@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import { TextHeader, TextDetails, ButtonStandard, InputData, LoginImage } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import axios from 'axios';
 import Constants from 'expo-constants'
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -15,6 +16,10 @@ export default class PassRecoveryScreen extends Component {
         this.state = {
             email: '',
         }
+    }
+
+    componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Recuperar contraseña", 22)
     }
 
     validateEmail(email) {

@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity } from 'rea
 import ProfileInput from '../src/components/ProfileInput';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage, TextDetails } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
+import { titleManager } from '../src/TitleManager';
 
 export default class ProfileSelectionScreen extends Component {
     constructor(props) {
@@ -12,6 +13,10 @@ export default class ProfileSelectionScreen extends Component {
             athlete: false,
             showError: false,
         }
+    }
+
+    componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Elegir perfil", 22)
     }
 
     handleProceed = () => {

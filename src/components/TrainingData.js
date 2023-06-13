@@ -3,13 +3,27 @@ import { Avatar, Button, Card, Text, IconButton, Divider } from 'react-native-pa
 import { View, Image, StyleSheet } from 'react-native';
 import { DividerWithMultipleTexts, TextLinked, TextWithLinkFlexible, TextWithLink } from '../styles/BaseComponents';
 import StarsScore from './StarsScore';
+import Constants from 'expo-constants'
+import axios from 'axios';
+import { tokenManager } from '../TokenManager';
 
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingData extends Component {
     constructor(props) {
         super(props)
+        // this.alreadyRated = this.alreadyRated.bind(this);
+        this.onPressRate = this.onPressRate.bind(this);
+        this.onPressViewAllReviews = this.onPressViewAllReviews.bind(this);
         this.state = {
-        }   
+            myScore: 0,
+        }
+        this.myScore = this.props.myScore
+        }
+
+    componentDidMount() {
+        // this.alreadyRated();
+        
     }
 
     getLevelIcon() {
@@ -38,30 +52,70 @@ export default class TrainingData extends Component {
         }
     }
 
-    alredyRated() {
+    // async alreadyRated() {
 
-        //cambiar por logica de verificacion sobre si el usuario ya calificó 
-        return false
-    }
+    //     // GET /trainings/{training_id}/ratings?athlete_id={athlete_id}
+    //     const url = API_GATEWAY_URL + 'trainings/' + this.props.training.id + '/ratings';
+    //     const params = { athlete_id: this.props.userId }
+    //     let result = false;
+    //     await axios.get(url, {
+    //         headers: {
+    //             Authorization: tokenManager.getAccessToken()
+    //         },
+    //         params: params
+    //     })
+    //         .then(response => {
+    //             const data = response.data;
+    //             if (data.length > 0) {
+    //                 this.myScore = data[0].score
+    //                 //this.setState({myScore: data[0].score})
+    //                 this.isAlreadyRated = true;
+    //                 result = true;
+    //             } else {
+    //                 this.isAlreadyRated = false;
+    //                 result = false;
+    //             }
+                    
+    //         })
+    //         .catch((error) => {
+    //             if (error.response && error.response.status === 404) {
+    //                 this.isAlreadyRated = false
+    //                 result = false;
+    //             }
+    //             console.error("[TrainingData] alreadyRated " + error);
+    //         })
+    //     return result;
+    // }
 
-    renderStarsWithText(flex, text) {
+    renderStarsWithText(flex, text, rate) {
         return (
             <View style={{ flexDirection: 'row', flex: flex}}>
                 <View style={{ backgroundColor: 'transparent', flex: 0.5}}>
                     <StarsScore 
-                        score={2}
+                        score={rate? this.props.myScore : this.props.training.score}
                         style={{
                         }}
                     />
                 </View>
                 <View style={{ flex: 0.5, backgroundColor: 'transparent', paddingTop: 2 }}>
                     <TextLinked
-                        onPress={() => console.log('pressed')}
+                        onPress={rate? this.onPressRate : this.onPressViewAllReviews }
+                        //     ? this.props.navigation.navigate('TrainingReviewScreen', {alreadyRated: this.props.isAlreadyRated, trainingTitle:this.props.training.title, trainingDescription:this.props.training.description, trainingId:this.props.training.id, userId:this.props.userId})
+                        //     : this.props.navigation.navigate('TrainingsReviewsListScreen', {trainingId:this.props.training.id })}
+                        
                         linkedText={text}
                     />
                 </View>
             </View>
         )
+    }
+
+    onPressViewAllReviews() {
+        this.props.onPressViewAllReviews()
+    }
+
+    onPressRate() {
+        this.props.onPressRate()
     }
 
     renderCalificationsData() {
@@ -81,16 +135,25 @@ export default class TrainingData extends Component {
                     }}
                 >
                     <View style={{  flex: 0.15}} />
-                    {this.renderStarsWithText(0.35, "ver todas")}
+                    {this.renderStarsWithText(0.35, "ver todas", false)}
                     <View style={{  flex: 0.1}} />
                 </View>
             </View>
         );
     
         if (canRate) {
-            const alreadyRated = this.alredyRated();
-            const calificationText = alreadyRated ? 'Deja tu opinión' : 'editar';
-    
+            const calificationText = this.props.isAlreadyRated ? 'Editar' : 'Deja tu opinión';
+            // let alreadyRated = this.alreadyRated().then((value) => {
+            //     //console.log("value " + value);
+            //     this.isAlreadyRated = value;
+            // });
+
+            
+
+            
+            //console.log(alreadyRated);
+            alreadyRated = true;
+            
             calificationsData = (
                 <View style={{marginTop: 15}}>
                     <DividerWithMultipleTexts
@@ -106,29 +169,31 @@ export default class TrainingData extends Component {
                     >
                         <View style={{  flex: 0.15}} />
     
-                        {this.renderStarsWithText(0.35, "ver todas")}
+                        {this.renderStarsWithText(0.35, "Ver todas", false)}
     
-                        {alreadyRated && (
+                        {!this.props.isAlreadyRated && (
                             <View style={{ flex: 0.50, backgroundColor: 'transparent', paddingTop: 4 }}>
                                 <TextWithLink
                                     text={calificationText}
                                     linkedText={'aqui'}
-                                    onPress={() => console.log('pressed')}
+                                    // onPress={() => this.props.navigation.navigate('TrainingReviewScreen', {alreadyRated: this.isAlreadyRated, training:this.props.training, userId:this.props.userId})}
+                                    onPress={this.onPressRate}
                                     notFixedWidth
                                 />
                             </View>
                         )}
     
-                        {!alreadyRated && (
+                        {this.props.isAlreadyRated && (
                             <React.Fragment>
                                 <View style={{  flex: 0.1}} />
-                                {this.renderStarsWithText(0.35, calificationText)}
+                                {this.renderStarsWithText(0.35, "Editar", true)}
                                 <View style={{  flex: 0.05}} />
                             </React.Fragment>
                         )}
                     </View>
                 </View>
             );
+        
         }
     
         return calificationsData;
@@ -148,7 +213,7 @@ export default class TrainingData extends Component {
                             source={this.getLevelIcon()}
                             style={dataStyles.severityIcon}
                         />
-                        <Text>{this.getLevelName()}</Text>
+                        <Text style={{color: "black"}}>{this.getLevelName()}</Text>
                     </View>
                     <Text
                         style={dataStyles.typeText}
@@ -193,6 +258,7 @@ const dataStyles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16,
         fontWeight: 'bold',
+        color: 'black',
     },
 
     locationText: {

@@ -8,6 +8,7 @@ import { selectImage, uploadImageFirebase, downloadImage } from '../services/Med
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
+import { titleManager } from '../src/TitleManager';
 import jwt_decode from 'jwt-decode';
 // User changes
 import { updateUserData } from '../src/User';
@@ -52,6 +53,7 @@ export default class ProfileEditionScreen extends Component {
         } catch (error) {
             console.log(error)
         }
+        titleManager.setTitle(this.props.navigation, "Editar perfil", 22)
     }
 
     async loadUserInfo() {
@@ -261,8 +263,8 @@ export default class ProfileEditionScreen extends Component {
         this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
 
-    onPressEnrollFingerprint() {
-        console.log('TODO: enroll fingerprint');
+    onPressEnrollFingerprint = () => {
+        this.props.navigation.navigate('ValidatePasswordScreen', {data: this.props.route.params.data});
     }
 
     renderLinks() {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import { DividerWithLeftText } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { ButtonStandard } from '../src/styles/BaseComponents';
@@ -11,6 +11,8 @@ import jwt_decode from 'jwt-decode';
 import Constants from 'expo-constants';
 import axios from 'axios';
 
+import { titleManager } from '../src/TitleManager';
+
 const MAX_ACTIVITIES = 20;
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
@@ -20,6 +22,8 @@ export default class TrainingActivitiesScreen extends Component {
         super(props)
         this.handleContinuePress = this.handleContinuePress.bind(this)
         this.refreshActivities = this.refreshActivities.bind(this)
+        
+        this.newTraining = this.props.route.params.newTraining
         this.state = {
             activities: [],
             trainerData: {},
@@ -34,14 +38,18 @@ export default class TrainingActivitiesScreen extends Component {
         this.setState({ trainerData });
 
         this.refreshActivities();
+        titleManager.setTitle(this.props.navigation, "Actividades", 22)
     }
 
     handleContinuePress() {
         console.log("this.state.trainingData " + JSON.stringify(this.state.trainingData));
-        this.props.route.params.from === 'TrainingScreen'
-        ? this.props.navigation.navigate('TrainingScreen', { userData: jwt_decode(tokenManager.getAccessToken()), token:tokenManager.getAccessToken(), trainingId: this.state.trainingData.id })
-        : this.props.navigation.navigate('GoalsTrainingsListScreen', { trainingData: this.state.trainingData, id:this.state.trainerData.id });
-        
+        this.newTraining? 
+            this.props.navigation.replace('TrainingGoalsEditionScreen', { 
+                trainingData: this.state.trainingData,
+                trainingId:this.state.trainingData.id 
+            })
+        :
+        this.props.navigation.goBack()
     }
 
     refreshActivities() {

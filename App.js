@@ -17,13 +17,21 @@ import GoalsListScreen from './screens/GoalsListScreen';
 import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
+import UsersListScreen from './screens/UsersListScreen';
 
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import TrainingScreen from './screens/TrainingScreen'; 
-import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
+import TrainingGoalsEditionScreen from './screens/TrainingGoalsEditionScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
+
 import ChatList from './screens/ChatList';
+
+import TrainingReviewScreen from './screens/TrainingReviewScreen';
+import TrainingsReviewsListScreen from './screens/TrainingsReviewsListScreen';
+import ValidatePasswordScreen from './screens/ValidatePasswordScreen';
+import InterestsScreen from './screens/InterestsScreen';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -36,6 +44,8 @@ import * as Notifications from 'expo-notifications';
 import ChatTest from './screens/test_screens/ChatTest';
 import NotificationsTest from './screens/test_screens/NotificationsTest';
 import VerificationTest from './screens/test_screens/VerificationTest';
+
+import { AppProvider } from './src/contexts/UserContext';
 
 // Handler that will cause the notification to show the alert
 // (even when user is not currently using the application)
@@ -100,7 +110,7 @@ export default class App extends Component {
       );
     }
     return (
-      <PaperProvider>
+      <PaperProvider><AppProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={"LoginScreen"}
             screenOptions={{
@@ -138,6 +148,10 @@ export default class App extends Component {
             <Stack.Screen
               name="RegisterScreen1"
               component={RegisterScreen1}
+            />
+            <Stack.Screen
+              name="InterestsScreen"
+              component={InterestsScreen}
             />
             <Stack.Screen
               name="ProfileSelectionScreen"
@@ -228,15 +242,26 @@ export default class App extends Component {
               })}
             />
 
+            <Stack.Screen 
+              name="TrainingsReviewsListScreen"
+              component={TrainingsReviewsListScreen}
+            />
+
             <Stack.Screen
               name="ChangePasswordScreen"
               component={ChangePasswordScreen}
               options={{ title: "Cambio de contraseña" }}
             />
 
+            <Stack.Screen
+              name="ValidatePasswordScreen"
+              component={ValidatePasswordScreen}
+              options={{ title: "Validar contraseña" }}
+            />
+
             <Stack.Screen 
-              name="GoalsTrainingsListScreen"
-              component={GoalsTrainingsListScreen}
+              name="TrainingGoalsEditionScreen"
+              component={TrainingGoalsEditionScreen}
             />
 
             <Stack.Screen 
@@ -252,24 +277,25 @@ export default class App extends Component {
             <Stack.Screen
               name='TrainingScreen'
               component={TrainingScreen}
-              options={() => ({
-                headerTitle: () => (
-                  <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center', width: 250 }}>
-                    Aumentar fuerza de brazos
-                  </Text>
-                ),
-              })}
             />
 
             <Stack.Screen 
               name='ChatList'
               component={ChatList}
+
+              name="TrainingReviewScreen"
+              component={TrainingReviewScreen}
+            />
+
+            <Stack.Screen
+              name="UsersListScreen"
+              component={UsersListScreen}
             />
 
           </Stack.Navigator>
         </NavigationContainer>
         <FlashMessage position="bottom" />
-      </PaperProvider>
+        </AppProvider></PaperProvider>
     )
   };
 }

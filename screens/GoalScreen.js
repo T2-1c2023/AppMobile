@@ -8,16 +8,21 @@ import { uploadImageFirebase } from '../services/Media';
 import Constants from 'expo-constants'
 import { tokenManager } from '../src/TokenManager';
 import { IconButton } from 'react-native-paper';
+import { UserContext } from '../src/contexts/UserContext';
+
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export const Mode = {
-    Create: 'create',
+    AthleteCreate: 'athleteCreate',
+    TrainerCreate: 'trainerCreate',
     Edit: 'edit',
     ReadOnly: 'readOnly'
 }
 
 export default class GoalScreen extends Component {
+    static contextType = UserContext;
+    
     setTitle(title, subtitle) {
         this.props.navigation.setOptions({headerTitle: () => (
             <Text numberOfLines={2} style={{ fontSize: 16, textAlign: 'center' }}>
@@ -28,88 +33,115 @@ export default class GoalScreen extends Component {
           )})
     }
     
-    initializeVariables() {
-        let state
-        switch (this.mode) {
-            case Mode.Create:
-                state = {
-                    title: '',
-                    description: '',
-                    metric: '',
-                    mediaLocalUris: [],
-                    loading: true,
-                }
-                this.initialImageIds = []
-                break;
-            case Mode.ReadOnly:
-                let goalInfo = this.data;
-                state = {
-                    loading: true,
-                    goalId: goalInfo.id,
-                    title: goalInfo.title,
-                    description: goalInfo.description,
-                    metric: goalInfo.objective,
-                    mediaLocalUris: [],
-                }
-                this.initialImageIds = goalInfo.multimedia_ids
-                this.setTitle("Meta", goalInfo.title)
-                break;
-            case Mode.Edit:
-                let goalInfo2 = this.data;
-                state = {
-                    loading: true,
-                    goalId: goalInfo2.id,
-                    title: goalInfo2.title,
-                    description: goalInfo2.description,
-                    metric: goalInfo2.objective,
-                    mediaLocalUris: [],
-                }
-                this.initialImageIds = goalInfo2.multimedia_ids
-                this.setTitle("Editar meta", goalInfo2.title)
-                break;
-            default:
-                throw new Error('Invalid mode');
-                break;
-        }
-        this.state = state
+    loadExistingGoalInfo() {
+        this.goalId = this.props.route.params.goalData.id
+        console.log(this.goalId)
+        let url
+
+        console.log('this.personalGoal:', this.personalGoal);
+
+        console.log('this.userData.id:', this.userData.id);
+
+        if (this.personalGoal)
+            url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+        else
+            url = API_GATEWAY_URL + "goals/" + this.goalId
+
+
+        console.log('url:', url);
+
+        axios.get(url, { headers: { Authorization: tokenManager.getAccessToken() } })
+            .then((response) => {
+                console.log('Éxito');
+                console.log(response.data);
+
+                const goalData = response.data
+                this.setExistingGoalState(goalData)
+            })
+            .catch((error) => {
+                console.log(error);
+            }
+        )
+    }
+
+    setExistingGoalState(goalData) {
+        if (this.mode != Mode.ReadOnly && this.mode != Mode.Edit)
+            throw new Error('Should not need to set existing goal state for this mode');
+
+
+        const creatorId = goalData.trainer_id? goalData.trainer_id : goalData.creator_id
+        this.setState({
+            creatorId: creatorId,
+            goalId: goalData.id,
+            title: goalData.title,
+            description: goalData.description,
+            objective: goalData.objective,
+        }, 
+            this.validateAndSetEditHeader(creatorId)
+        )
+
+        if (this.mode === Mode.Edit)
+            this.setTitle("Editar meta", goalData.title)
+        if (this.mode === Mode.ReadOnly)
+            this.setTitle("Meta", goalData.title)
     }
 
     constructor(props) {
         super(props)
-
-        this.props = props
-        this.data = props.route.params.data
-        this.mode = props.route.params.mode
-
-        console.log('GoalScreen mode:', this.mode);
-        console.log('GoalScreen data:', this.data);
-
         this.handleCreatePress = this.handleCreatePress.bind(this)
         this.handleCancelPress = this.handleCancelPress.bind(this)
-        this.initializeVariables()
+        this.onPressSaveChanges = this.onPressSaveChanges.bind(this)
+        this.onPressCompleteGoal = this.onPressCompleteGoal.bind(this)
+        this.onPressDeleteButton = this.onPressDeleteButton.bind(this)
+
+        this.props = props
+
+        this.userData = tokenManager.getPayload()
+        
+        this.goalData = props.route.params.goalData
+        this.goalCompleted = props.route.params.goalCompleted
+        this.personalGoal = props.route.params.personalGoal
+        this.isSubscribed = props.route.params.isSubscribed
+
+        console.log("goalData: " + JSON.stringify(this.goalData))
+        console.log("userData: " + JSON.stringify(this.userData))
+
+        this.mode = props.route.params.mode
+        console.log('GoalScreen mode:', this.mode);
+
+        this.state = {
+            loading: true,
+            creatorId:"",
+            title: "",
+            description: "",
+            objective: "",
+            mediaLocalUris: [],
+        }
+        this.initialImageIds = this.goalData? 
+            (this.goalData.multimedia_ids? this.goalData.multimedia_ids : [])
+            : 
+            []
+
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.componentDidMount()
+        })
     }
 
-    isOwner() {
-        // console.log('trainer_id:', this.data.trainer_id);
-        // console.log('tokenManager.getUserId():', tokenManager.getUserId());
-        // return this.data.trainer_id === tokenManager.getUserId()
-        return true
+    isOwner(creatorId) {
+
+        console.log('this.userData.id:', this.userData.id);
+        console.log('this.state.creatorId:', creatorId);
+
+        return this.userData.id == creatorId
     }
 
     componentDidMount() {
+        console.log('this.userData:', this.userData);
+
+        if (this.mode === Mode.Edit || this.mode === Mode.ReadOnly)
+            this.loadExistingGoalInfo()
+        
         this.setState({ loading: false })
-        if ((this.mode === Mode.ReadOnly) && this.isOwner()) {
-            this.props.navigation.setOptions({
-                headerRight: () => (
-                    <IconButton
-                        icon={'pencil'}
-                        iconColor='#21005D'
-                        size={30}
-                        onPress={() => this.props.navigation.push('GoalScreen', { data: this.data, mode: Mode.Edit })}
-                    />
-                ),
-            })
-        }
     }
 
     updateMediaUris = (uris) => {
@@ -120,49 +152,197 @@ export default class GoalScreen extends Component {
         });
     }
 
-    async handleSaveChangesPress() {
-        alert('to be implemented')
+    validateAndSetEditHeader(creatorId) {
+        if ((this.mode === Mode.ReadOnly) && this.isOwner(creatorId) && !this.goalCompleted) {
+            this.props.navigation.setOptions({
+                headerRight: () => (
+                    <IconButton
+                        icon={'pencil'}
+                        iconColor='#21005D'
+                        size={30}
+                        onPress={() => this.props.navigation.replace('GoalScreen', { userData: this.userData, goalData: this.goalData, mode: Mode.Edit })} />
+                ),
+            });
+        }
     }
 
-    async handleCreatePress() {
-        this.setState({ loading: true })
-        console.log(tokenManager.getAccessToken());//TO_DO quitar
-        const { mediaLocalUris } = this.state;
+    getPatchUrl() {
+        const urlTrainer = API_GATEWAY_URL + "goals/" + this.goalId
+        const urlAthlete = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+        if (this.mode === Mode.Edit) 
+            return this.userData.is_trainer? urlTrainer : urlAthlete
+        else
+            throw new Error('Should not need a put url for this mode')
+    }
 
-        const data = this.data
+    getPostUrl() {
+        switch (this.mode) {
+            case Mode.TrainerCreate:
+                return API_GATEWAY_URL + "trainers/" + this.userData.id + "/goals"
+            
+            case Mode.AthleteCreate:
+                return API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals"
 
-        const uploadPromises = mediaLocalUris.map((localUri) => {
+            default:
+                throw new Error('Should not need a post url for this mode');
+        }
+    }
+
+    async sendPutRequest(newMultimediaIds) {
+        const url = this.getPatchUrl()
+        const body = {
+            "title": this.state.title,
+            "description": this.state.description,
+            "objective": this.state.objective,
+            "multimedia_ids": this.initialImageIds.concat(newMultimediaIds)
+        }
+        console.log('body del put:', body)
+        const header = { headers: { Authorization: tokenManager.getAccessToken() } }
+        console.log('putting in url: ', url);
+
+        await axios.patch(url, body, header)
+    }
+
+    async sendPostRequest(multimediaIds) {
+        const url = this.getPostUrl()
+        const body = {
+            "title": this.state.title,
+            "description": this.state.description,
+            "objective": this.state.objective,
+            "multimedia_ids": multimediaIds
+        }
+        const header = { headers: { Authorization: tokenManager.getAccessToken() } }
+        console.log('posting in url: ', url);
+        const response = await axios.post(url, body, header)
+
+        console.log('Éxito');
+        console.log(response.data);
+    }
+
+    async getMultimediaIds() {
+        const uploadPromises = this.state.mediaLocalUris.map((localUri) => {
             return uploadImageFirebase(localUri);
         });
+        return Promise.all(uploadPromises)
+    }
+
+    async onPressSaveChanges() {
+        this.setState({ loading: true })
 
         try {
-            const ids = await Promise.all(uploadPromises)
-
-            const url = API_GATEWAY_URL + 'trainers/' + data.id + '/goals'
-            const body = {
-                "trainer_id": data.id,
-                "title": this.state.title,
-                "description": this.state.description,
-                "objective": this.state.metric,
-                "multimedia_ids": this.initialImageIds.concat(ids)
-            }
-            const header = { headers: { Authorization: tokenManager.getAccessToken() } }
-
-            const response = await axios.post(url, body, header)
-
-            console.log('Éxito');
-            console.log(response.data);
+            console.log('this.initialImageIds:', this.initialImageIds);
+            console.log('this.state.mediaLocalUris:', this.state.mediaLocalUris);
+            console.log('this.state' + this.state)
+            const multimediaIds = await this.getMultimediaIds()
+            console.log('new multimediaIds:', multimediaIds);
+            await this.sendPutRequest(multimediaIds)
         } catch (error) {
             console.log(error);
         }
 
-        // TODO: mostrar alguna ventana que indique si la creación fue exitosa o no    
+        this.props.navigation.goBack();
+    }
+
+    async handleCreatePress() {
+        this.setState({ loading: true })
+
+        try {
+            const multimediaIds = await this.getMultimediaIds()
+            await this.sendPostRequest(multimediaIds)
+        } catch (error) {
+            console.log(error);
+        }
+   
         this.props.navigation.goBack();
         this.setState({ loading: false })
     }
 
     handleCancelPress() {
         this.props.navigation.goBack();
+    }
+
+    shouldRenderConfirmationButtons() {
+        return this.mode === Mode.AthleteCreate || this.mode === Mode.TrainerCreate || this.mode === Mode.Edit
+    }
+
+    renderConfirmationButtons() {
+        const creationMode = this.mode === Mode.AthleteCreate || this.mode === Mode.TrainerCreate
+
+        return (
+            <ConfirmationButtons
+                confirmationText={creationMode? "Crear" : "Guardar cambios"}
+                cancelText="Cancelar"
+                onConfirmPress={creationMode? this.handleCreatePress : this.onPressSaveChanges}
+                onCancelPress={this.handleCancelPress}
+                style={{
+                    marginTop: 20,
+                }}
+            />
+        )
+    }
+
+    shouldRenderCompleteGoalButton() {
+        const mayBeCompleted = this.mode === Mode.ReadOnly && !this.goalCompleted
+
+        const isMyPersonalGoal = this.isOwner(this.state.creatorId) && this.personalGoal
+
+        const canBeCompleted = mayBeCompleted && ( isMyPersonalGoal || this.isSubscribed)  
+        
+        return canBeCompleted
+    }
+    
+    onPressCompleteGoal() {
+        let body={}
+        let config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        let url
+        if (this.personalGoal)
+            url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
+        else
+            url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/subscriptions/goals/" + this.goalId
+
+        axios.put(url, body, config)
+            .then((response) => {
+                console.log('Éxito');
+                console.log(response.data);
+                this.props.navigation.goBack();
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
+    async onPressDeleteButton() {
+        let url
+        if (this.context.isTrainer)
+            url = API_GATEWAY_URL + "goals/" + this.goalId
+        else
+            url = API_GATEWAY_URL + "athletes/" + this.context.userId + "/personal-goals/" + this.goalId
+        
+        let config = { headers: { Authorization: tokenManager.getAccessToken() } }
+        try {
+            await axios.delete(url, config)
+            this.props.navigation.goBack();
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    shouldRenderDeleteButton() {
+        return (this.mode === Mode.ReadOnly) && this.isOwner(this.state.creatorId) && !this.goalCompleted
+    }
+
+    renderDeleteButton() {
+        return (
+            <ButtonStandard
+                onPress={this.onPressDeleteButton}
+                title="Eliminar meta"
+                style={{
+                    marginTop: 15,
+                }}
+                warningTheme
+                icon={'trash-can'}
+            />
+        )
     }
 
     render() {
@@ -218,8 +398,8 @@ export default class GoalScreen extends Component {
 
                         <TextBox
                             title="Métrica objetivo"
-                            onChangeText={(metric) => this.setState({ metric })}
-                            value={this.state.metric}
+                            onChangeText={(objective) => this.setState({ objective })}
+                            value={this.state.objective}
                             nonEditable={this.mode === Mode.ReadOnly || this.mode === Mode.Edit}
                             maxLength={100}
                             style={{
@@ -227,16 +407,24 @@ export default class GoalScreen extends Component {
                             }}
                         />
 
-                        {(this.mode == Mode.Create || this.mode == Mode.Edit) &&
-                            <ConfirmationButtons
-                                confirmationText={this.mode == Mode.Create? "Crear" : "Guardar cambios"}
-                                cancelText="Cancelar"
-                                onConfirmPress={this.mode == Mode.Create? this.handleCreatePress : this.handleSaveChangesPress}
-                                onCancelPress={this.handleCancelPress}
+                        {this.shouldRenderConfirmationButtons() && 
+                            this.renderConfirmationButtons()
+                        }
+
+                        {this.shouldRenderCompleteGoalButton() &&
+                            <ButtonStandard
+                                onPress={this.onPressCompleteGoal}
+                                title="Completar meta"
                                 style={{
-                                    marginTop: 20,
+                                    marginTop: 15,
                                 }}
+                                icon={'check'}
+                                succeededTheme
                             />
+                        }
+
+                        {this.shouldRenderDeleteButton() &&
+                            this.renderDeleteButton()
                         }
                     </View>
 

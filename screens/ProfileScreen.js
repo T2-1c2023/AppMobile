@@ -7,6 +7,7 @@ import { selectImage, uploadImageFirebase, downloadImage } from '../services/Med
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
+import { titleManager } from '../src/TitleManager';
 // for componentDidMount() (TODO: it shouldn't be needed?)
 import jwt_decode from 'jwt-decode';
 
@@ -14,16 +15,18 @@ import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails, ButtonStandard } from '../src/styles/BaseComponents';
 import InterestsList from '../src/components/InterestsList';
 
+import { UserContext } from '../src/contexts/UserContext';
+import { UsersListMode } from './UsersListScreen';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class ProfileScreen extends Component {
+    static contextType = UserContext;
+    
     constructor(props) {
         super(props);
         this.onPressCreatedTrainings = this.onPressCreatedTrainings.bind(this);
         this.onPressSubscribedTrainings = this.onPressSubscribedTrainings.bind(this);
-        this.onPressCurrentGoals = this.onPressCurrentGoals.bind(this);
-        this.onPressCompletedGoals = this.onPressCompletedGoals.bind(this);
         this.onPressFollowers = this.onPressFollowers.bind(this);
         this.onPressFollowing = this.onPressFollowing.bind(this);
         this.onPressFollow = this.onPressFollow.bind(this);
@@ -64,6 +67,7 @@ export default class ProfileScreen extends Component {
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.loadInterests();
             this.loadUserInfo();
+            this.loadFollowingInfo();
         });
     }
 
@@ -87,51 +91,94 @@ export default class ProfileScreen extends Component {
         const fullname = response.data.fullname
         const phone_number = response.data.phone_number
         this.setState({ fullname, phone_number })
+        if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, response.data.fullname, 22)}
+    }
+
+    loadFollowingInfo() {      
+        const token =  tokenManager.getAccessToken()
+        const decodedToken = jwt_decode(token)
+        const id = decodedToken.id
+        if (id !== this.id) {
+            const url = API_GATEWAY_URL + 'users/' + id + '/followed';
+            axios.get(url, this.emptyBodyWithToken)
+                .then(response => {
+                    const following = (response.data.filter(f => f.id === this.id).length > 0);
+                    this.setState({ following });
+                })
+                .catch(function (error) {
+                    console.log('onPressFollowing ' + error);
+                });
+        }
+        
     }
 
     async componentDidMount() {
         try {
             this.loadInterests()
             this.loadUserInfo()
+            this.loadFollowingInfo()
+            console.log("contexto: ", this.context)
         } catch (error) {
             console.log(error)
         }
     }
 
     onPressCreatedTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created'})
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created', trainerId:this.id})
     }
     
     onPressSubscribedTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled'})
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'enrolled', athleteId:this.id})
     }
 
     onPressFavoriteTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites'})
-    }
-    
-    onPressCurrentGoals() {
-        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), completed:false})
-    }
-    
-    onPressCompletedGoals() {
-        this.props.navigation.navigate('GoalsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), completed:true})
+        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'favorites', athleteId:this.id})
     }
 
     onPressFollowers() {
         console.log('Followers pressed');
+        const params = {
+            mode: UsersListMode.Followers,
+        }
+        this.props.navigation.navigate('UsersListScreen', params)
     }
 
     onPressFollowing() {
-        console.log('Following pressed');
+        console.log('Following pressed')
+        const params = {
+            mode: UsersListMode.Followed,
+        }
+        this.props.navigation.navigate('UsersListScreen', params)
     }
 
     onPressFollow() {
-        console.log('Follow pressed');
+        const url = API_GATEWAY_URL + 'users/' + jwt_decode(tokenManager.getAccessToken()).id + '/followed';
+        const body = {followed_id: this.id}
+        axios.post(url, body, this.emptyBodyWithToken)
+            .then(response => {
+                this.setState({ following: true });
+            })
+            .catch(function (error) {
+                console.log('onPressFollowing ' + error);
+            });
     }
 
     onPressUnfollow() {
-        console.log('Unfollow pressed');
+        const token = tokenManager.getAccessToken()
+        const url = API_GATEWAY_URL + 'users/' + jwt_decode(token).id + '/followed';
+        const body = {followed_id: this.id}
+        axios.delete(url, {
+            data: body,
+            headers: {
+                Authorization: token
+            },
+        })
+            .then(response => {
+                this.setState({ following: false });
+            })
+            .catch(function (error) {
+                console.log('onPressUnfollow ' + error);
+            });
     }
 
     onPressSendMessage() {
@@ -299,32 +346,12 @@ export default class ProfileScreen extends Component {
                 handler: this.onPressSubscribedTrainings
             })
         }
-
-        if (this.is_athlete) {
-            linkedTexts.push({
-                title: 'Ver entrenamientos favoritos', 
-                handler: this.onPressFavoriteTrainings
-            })
-        }
         
         return (
             <React.Fragment>
-                {this.renderSectionTitle('Entrenamiento')}
+                {this.renderSectionTitle('Entrenamientos')}
 
                 {this.renderLinkedTexts(linkedTexts)}
-            </React.Fragment>
-        )
-    }
-
-    renderGoalsInfo() {
-        return (
-            <React.Fragment>
-                {this.renderSectionTitle('Metas')}
-                
-                {this.renderLinkedTexts([
-                    {title: 'Ver metas actuales', handler: this.onPressCurrentGoals},
-                    {title: 'Ver metas cumplidas', handler: this.onPressCompletedGoals}
-                ])}
             </React.Fragment>
         )
     }
@@ -341,7 +368,6 @@ export default class ProfileScreen extends Component {
                     {this.renderContactInfo()}
                     {this.renderInterests()}
                     {this.renderTrainingsInfo()}
-                    {this.renderGoalsInfo()}
                 </View>
             </ScrollView>
         );

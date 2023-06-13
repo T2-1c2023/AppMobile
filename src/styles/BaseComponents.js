@@ -90,7 +90,7 @@ export const DividerWithLeftText = (props) => {
             {props.editButtonPress &&
                 <IconButton
                     icon="pencil"
-                    color="#000000"
+                    iconColor="black"
                     size={20}
                     onPress={() => props.editButtonPress()}
                 />
@@ -114,10 +114,11 @@ export const ButtonStandard = (props) => {
                         borderColor: 'black',
                         borderWidth : 1,
                         backgroundColor:
-                            props.greyMode? 'grey' :
-                                props.whiteMode? 'white' : 
-                                    props.warningTheme? '#8A1919' :
-                                        props.disabled? 'grey' : '#21005D'
+                            props.succeededTheme? 'green' :
+                                props.greyMode? 'grey' :
+                                    props.whiteMode? 'white' : 
+                                        props.warningTheme? '#8A1919' :
+                                            props.disabled? 'grey' : '#21005D'
                     }}
                     disabled={props.disabled}
                     icon={props.icon}
