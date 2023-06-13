@@ -6,11 +6,10 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // Screens 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'; 
 import GoalsListScreen from './GoalsListScreen';
-import GoalScreen from './GoalScreen';
 import ProfileScreen from './ProfileScreen';
-import ProfileEditionScreen from './ProfileEditionScreen';
 import TrainingsListScreen from './TrainingsListScreen';
-import ChangePasswordScreen from './ChangePasswordScreen';
+import ChatList from './ChatList';
+
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
@@ -208,7 +207,12 @@ class HomeScreen extends Component {
                         ),
                     }}
                 >
-                    {() => <ChatTest data={this.data} />}
+                    {() => 
+                      <ChatList 
+                        data={this.data} 
+                        navigation={this.props.navigation}
+                      />
+                    }
                 </Drawer.Screen>
 
                 <Drawer.Screen name="Notificaciones Test"

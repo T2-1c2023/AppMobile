@@ -5,20 +5,20 @@ import database from '@react-native-firebase/database';
 class ChatTest extends Component {
     constructor(props) {
         super(props);
+        console.log(props.route.params);
         this.state = {
             // TODO: esta hardcodeado, esto lo debería recibir del back o, si no existe, dejarlo en ''
             // así se crea un nuevo chat.
-            chatId: '-NXJHcgaFHxvwtY5b8lH', 
+            chatId: props.route.params.chatId, 
             messages: [],
             inputText: '',
-            uid1: props.data.id,
+            uid1: props.route.params.data.id,
             uid2: 0 // TODO: probar con otro usuario
         }
     };
 
     // TODO: ver de agregar otra tabla con chats por user id y todos los chats que tenga (chatId's). Habría info repetida por usuario.
     //       users/ + userId 
-    // TODO: separar en izquierda / derecha dependiendo de quien sea el usuario. 
     // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje y que los mensajes estén en rectángulos de colores
     // TODO: mostrar todas las conversaciones actuales en formato lista en 
 

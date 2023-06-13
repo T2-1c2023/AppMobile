@@ -23,6 +23,7 @@ import TrainingScreen from './screens/TrainingScreen';
 import GoalsTrainingsListScreen from './screens/GoalsTrainingsListScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileEditionScreen from './screens/ProfileEditionScreen';
+import ChatList from './screens/ChatList';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -259,6 +260,12 @@ export default class App extends Component {
                 ),
               })}
             />
+
+            <Stack.Screen 
+              name='ChatList'
+              component={ChatList}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
         <FlashMessage position="bottom" />
