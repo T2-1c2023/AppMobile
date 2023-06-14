@@ -14,7 +14,7 @@ class ChatList extends Component {
         super(props);
         this.state = {
             chats: [],
-            uid2Input: '', // TODO: elegir uid2 buscandolo por nombre
+            uid2Input: '',
             visiblePopUp: false,
             // For user search popup
             users: [],
@@ -22,9 +22,10 @@ class ChatList extends Component {
         };
     }
 
-    componentDidMount() {
-        this.fetchChats();
-        this.loadUsers();
+    async componentDidMount() {
+        await this.fetchChats();
+        await this.loadUsers();
+        this.addUserDataToChats();
     }
 
     componentWillUnmount() {
@@ -93,7 +94,29 @@ class ChatList extends Component {
         }
     }
 
-    createChatRoom = (uid2) => {
+    // Los chats solo contienen el uid, agrego el resto de información
+    addUserDataToChats = () => {
+        const userId = this.props.data.id;
+        const { users, chats } = this.state;
+
+        const updatedChats = chats.map(chat => {
+            const userData = users.find(user => user.id === chat.uid1 || user.id === chat.uid2);
+            if (userData.id === userId) {
+                return {...chat};
+            } else {
+                return {
+                    ...chat,
+                    fullname: userData.fullname,
+                    mail: userData.mail,
+                    photo_id: userData.photo_id
+                }
+            }
+        });
+
+        this.setState({ chats: updatedChats })
+    }
+
+    createChatRoom = async (uid2) => {
         const userId = this.props.data.id;
         const reference = database().ref('chats');
         // Create new node where the new chat will be stored
@@ -107,10 +130,13 @@ class ChatList extends Component {
         };
 
         reference.child(chatId).set(chatData)
-            .then(() => {
+            .then(async () => {
                 console.log('Node created succesfully');
-                this.setState({ chats: []});
-                this.fetchChats();
+                this.setState({ chats: [] });
+                await this.fetchChats();
+                this.setState({ users: [] });
+                await this.loadUsers();
+                this.addUserDataToChats();
             })
             .catch((error) => {
                 console.log('Error creating node:', error);
@@ -204,8 +230,8 @@ class ChatList extends Component {
                   style={styles.userPhoto}
                 />
                 <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{item.uid1}</Text>
-                  <Text style={styles.userEmail}>{item.uid2}</Text>
+                  <Text style={styles.userName}>{item.fullname}</Text>
+                  <Text style={styles.userEmail}>{item.mail}</Text>
                 </View>
               </View>
             </TouchableOpacity>
