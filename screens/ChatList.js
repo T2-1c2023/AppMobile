@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { Searchbar } from 'react-native-paper';
 import database from '@react-native-firebase/database';
@@ -130,6 +130,24 @@ class ChatList extends Component {
               user.fullname.toLowerCase().includes(searchQuery.toLowerCase())   
         );
 
+        const renderItem = ({ item }) => (
+            <TouchableOpacity
+                style={styles.userItem}
+                onPress={() => this.createChatRoom(item.id)}
+            >
+                <View style={styles.userItemContainer}>
+                    <Image
+                        source={require('../assets/images/user_predet_image.png')}
+                        style={styles.userPhoto}
+                    />
+                    <View style={styles.userInfo}>
+                        <Text style={styles.userName}>{item.fullname}</Text>
+                        <Text style={styles.userEmail}>{item.mail}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+
         return (
             <Modal
               isVisible={visiblePopUp}
@@ -146,23 +164,10 @@ class ChatList extends Component {
                 <View style={styles.userListContainer}>
                   <FlatList
                     data={filteredUsers}
-                    renderItem={({item}) => (
-                      <TouchableOpacity
-                        style={styles.userItem}
-                        onPress={() => this.createChatRoom(item.id)}
-                      >
-                        <Text>{item.fullname}</Text>
-                      </TouchableOpacity>
-                    )}
+                    renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
                   />
                 </View>
-
-                {/*this.state.users.length == 0 ?
-                    this.renderNoUsersFoundMessage()
-                    :
-                    this.renderUsersList()
-                */}
 
                 <TouchableOpacity
                   style={styles.closeButton}
@@ -179,30 +184,43 @@ class ChatList extends Component {
         this.setState({ searchQuery: query });
     }
 
+    renderChatItem = ({ item }) => {
+        // get userinfo
+
+        // get user image
+
+        return (
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate(
+                'ChatTest', 
+                { chatId: item.id, 
+                  data: this.props.data }
+              )}
+              style={styles.chatItem}
+            >
+              <View style={styles.userItemContainer}>
+                <Image
+                  source={require('../assets/images/user_predet_image.png')}
+                  style={styles.userPhoto}
+                />
+                <View style={styles.userInfo}>
+                  <Text style={styles.userName}>{item.uid1}</Text>
+                  <Text style={styles.userEmail}>{item.uid2}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+        )
+    }
+
     render() {
-        const { chats, uid2Input } = this.state;
+        const { chats } = this.state;
 
         return (
             <View style={{ flex: 1, padding: 20 }}>
                 {chats.length > 0 ? (
                     <FlatList
                       data={chats}
-                      renderItem={({item}) => (
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate(
-                                            'ChatTest', 
-                                            { chatId: item.id, 
-                                              data: this.props.data }
-                                    )}
-                            style={styles.chatItem}
-                        >
-                            <Text>
-                              Chat ID: {item.id}{'\n'}
-                              Uid1: {item.uid1}{'\n'}
-                              Uid2: {item.uid2}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
+                      renderItem={this.renderChatItem}
                     keyExtractor={(item) => item.id}
                 />
                 ) : (
@@ -273,6 +291,32 @@ const styles = StyleSheet.create({
     userListContainer: {
         height: '70%',
         marginTop: 30
+    },
+    userItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10
+    }, 
+    userItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    userPhoto: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 10
+    },
+    userInfo: {
+        justifyContent: 'center'
+    },
+    userName: {
+        fontSize: 16,
+        fontWeight: 'bold'
+    },
+    userEmail: {
+        fontSize: 14,
+        color: 'gray'
     }
 });
 
