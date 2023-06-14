@@ -91,7 +91,7 @@ class ChatTest extends Component {
                     value={inputText}
                     onChangeText={(text) => this.setState({ inputText: text })}
                 />
-                <TouchableOpacity onPress={this.sendMessage} style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5}}>
+                <TouchableOpacity onPress={this.sendMessage} style={{ padding: 10, backgroundColor: '#21005D', borderRadius: 5}}>
                     <Text style={{ color: 'white' }}>Send</Text>
                 </TouchableOpacity>
             </View>

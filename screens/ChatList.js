@@ -1,18 +1,30 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput, Alert } from 'react-native';
+import Modal from 'react-native-modal';
+import { Searchbar } from 'react-native-paper';
 import database from '@react-native-firebase/database';
+import Constants from 'expo-constants';
+import axios from 'axios';
+import { tokenManager } from '../src/TokenManager';
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 class ChatList extends Component {
     constructor(props) {
         super(props);
         this.state = {
             chats: [],
-            uid2Input: '' // TODO: elegir uid2 buscandolo por nombre
+            uid2Input: '', // TODO: elegir uid2 buscandolo por nombre
+            visiblePopUp: false,
+            // For user search popup
+            users: [],
+            searchQuery: ''
         };
     }
 
     componentDidMount() {
         this.fetchChats();
+        this.loadUsers();
     }
 
     componentWillUnmount() {
@@ -67,6 +79,20 @@ class ChatList extends Component {
         });
     }
 
+    // Cargo usuarios para cuando se quiere crear un nuevo chat
+    loadUsers = async () => {
+        const url = API_GATEWAY_URL + 'users';
+        const config = {
+            headers: { Authorization: tokenManager.getAccessToken() }
+        }
+        try {
+            let response = await axios.get(url, config)
+            this.setState({ users: response.data });
+        } catch (error) {
+            console.error("Error: " + JSON.stringify(error))
+        }
+    }
+
     createChatRoom = (uid2) => {
         const userId = this.props.data.id;
         const reference = database().ref('chats');
@@ -91,23 +117,66 @@ class ChatList extends Component {
             })
     }
 
-    handleNewChatPress = () => {
-        const { uid2Input } = this.state;
+    renderUserSearchBarPopUp = () => {
+        const { visiblePopUp, users, chats, searchQuery } = this.state;
+        const userId = this.props.data.id;
 
-        if (uid2Input.trim().length === 0) {
-            Alert.alert('Error', 'Por favor, ingresa un valor para uid2');
-            return;
-        }
+        // TODO: (no urgente). Esto no hay chance que escale bien
+        // Filtro chats ya existentes
+        const filteredUsers = users.filter(
+            (user) =>
+              user.id !== userId &&
+              !chats.find((chat) => chat.uid1 === user.id || chat.uid2 === user.id) &&
+              user.fullname.toLowerCase().includes(searchQuery.toLowerCase())   
+        );
 
-        const uid2 = parseInt(uid2Input, 10);
+        return (
+            <Modal
+              isVisible={visiblePopUp}
+              animationIn="slideInDown"
+              animationOut="slideOutUp"
+              animationInTiming={100}
+            >
+              <View style={styles.popupContainer}>
+                <Searchbar 
+                    placeholder={'Buscar usuario'}
+                    value={searchQuery}
+                    onChangeText={this.handleSearch}
+                />
+                <View style={styles.userListContainer}>
+                  <FlatList
+                    data={filteredUsers}
+                    renderItem={({item}) => (
+                      <TouchableOpacity
+                        style={styles.userItem}
+                        onPress={() => this.createChatRoom(item.id)}
+                      >
+                        <Text>{item.fullname}</Text>
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={(item) => item.id.toString()}
+                  />
+                </View>
 
-        if (isNaN(uid2)) {
-            Alert.alert('Error', 'Por favor, ingresa un valor numérico válido para uid2');
-            return;
-        }
+                {/*this.state.users.length == 0 ?
+                    this.renderNoUsersFoundMessage()
+                    :
+                    this.renderUsersList()
+                */}
 
-        this.createChatRoom(uid2);
-        this.setState({ uid2Input: '' });
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => this.setState({ visiblePopUp: false })}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+        );
+    };
+
+    handleSearch = (query) => {
+        this.setState({ searchQuery: query });
     }
 
     render() {
@@ -139,21 +208,15 @@ class ChatList extends Component {
                 ) : (
                     <Text style={styles.noChatsText}>No hay chats disponibles.</Text>
                 )}
-                <View style={styles.newChatContainer}>
-                    <TextInput
-                      style={styles.uid2Input}
-                      placeholder="Ingresa uid2"
-                      value={uid2Input}
-                      onChangeText={(text) => this.setState({ uid2Input: text})}  
-                      keyboardType="numeric"
-                    />
-                    <TouchableOpacity
-                      style={styles.newChatButton}
-                      onPress={this.handleNewChatPress}
-                    >
-                        <Text style={styles.newChatButtonText}>Nuevo Chat (para test)</Text>
-                    </TouchableOpacity>
-                </View>
+                
+                <TouchableOpacity
+                  style={styles.newChatButton}
+                  onPress={() => this.setState({ visiblePopUp: true })}
+                >
+                  <Text style={styles.newChatButtonText}>Nuevo Chat</Text>
+                </TouchableOpacity>
+                
+                {this.renderUserSearchBarPopUp()}
             </View>
         );
     }
@@ -187,18 +250,29 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold'
     },
-    newChatContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 10
-    },
     uid2Input: {
-        flex: 1,
         borderWidth: 1,
-        borderColor: 'grey',
-        marginRight: 10,
-        paddingHorizontal: 10,
-        borderRadius: 5        
+        borderColor: 'gray',
+        borderRadius: 5,
+        marginBottom: 10,
+        paddingHorizontal: 10,       
+    },
+    popupContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10
+    },
+    closeButton: {
+        marginTop: 30,
+        alignSelf: 'center'
+    },
+    closeButtonText: {
+        color: '#21005D',
+        fontSize: 16 
+    },
+    userListContainer: {
+        height: '70%',
+        marginTop: 30
     }
 });
 
