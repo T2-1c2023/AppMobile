@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Alert } from 'react-native';
 import Modal from 'react-native-modal';
-import { Searchbar } from 'react-native-paper';
+import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import database from '@react-native-firebase/database';
 import Constants from 'expo-constants';
 import axios from 'axios';
@@ -14,6 +14,7 @@ class ChatList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             chats: [],
             uid2Input: '',
             visiblePopUp: false,
@@ -24,9 +25,11 @@ class ChatList extends Component {
     }
 
     async componentDidMount() {
-        await this.fetchChats();
-        await this.loadUsers();
-        this.addUserDataToChats();
+      this.setState({ loading: true });
+      await this.fetchChats();
+      await this.loadUsers();
+      await this.addUserDataToChats();
+      this.setState({ loading: false });
     }
 
     componentWillUnmount() {
@@ -110,7 +113,6 @@ class ChatList extends Component {
             } else {
               let photo_url = null;
               if (userData.photo_id !== '') {
-                console.log(userData.photo_id);
                 photo_url = await downloadImage(userData.photo_id);
               }
       
@@ -143,11 +145,13 @@ class ChatList extends Component {
         reference.child(chatId).set(chatData)
             .then(async () => {
                 console.log('Node created succesfully');
+                this.setState({ loading: true });
                 this.setState({ chats: [] });
                 await this.fetchChats();
                 this.setState({ users: [] });
                 await this.loadUsers();
-                this.addUserDataToChats();
+                await this.addUserDataToChats();
+                this.setState({ loading: false });
             })
             .catch((error) => {
                 console.log('Error creating node:', error);
@@ -254,30 +258,39 @@ class ChatList extends Component {
     }
 
     render() {
-        const { chats } = this.state;
+        const { chats, loading } = this.state;
 
-        return (
-            <View style={{ flex: 1, padding: 20 }}>
-                {chats.length > 0 ? (
-                    <FlatList
-                      data={chats}
-                      renderItem={this.renderChatItem}
-                    keyExtractor={(item) => item.id}
-                />
-                ) : (
-                    <Text style={styles.noChatsText}>No hay chats disponibles.</Text>
-                )}
-                
-                <TouchableOpacity
-                  style={styles.newChatButton}
-                  onPress={() => this.setState({ visiblePopUp: true })}
-                >
-                  <Text style={styles.newChatButtonText}>Nuevo Chat</Text>
-                </TouchableOpacity>
-                
-                {this.renderUserSearchBarPopUp()}
+        if (loading) {
+          return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#21005D" />
+              <Text style={{marginTop: 30}}>Cargando mensajes</Text>
             </View>
-        );
+          )
+        }
+
+          return (
+              <View style={{ flex: 1, padding: 20 }}>
+                  {chats.length > 0 ? (
+                      <FlatList
+                        data={chats}
+                        renderItem={this.renderChatItem}
+                      keyExtractor={(item) => item.id}
+                  />
+                  ) : (
+                      <Text style={styles.noChatsText}>No hay chats disponibles.</Text>
+                  )}
+                  
+                  <TouchableOpacity
+                    style={styles.newChatButton}
+                    onPress={() => this.setState({ visiblePopUp: true })}
+                  >
+                    <Text style={styles.newChatButtonText}>Nuevo Chat</Text>
+                  </TouchableOpacity>
+                  
+                  {this.renderUserSearchBarPopUp()}
+              </View>
+          );
     }
 }
 
