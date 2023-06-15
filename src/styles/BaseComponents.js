@@ -138,7 +138,10 @@ export const ConfirmationButtons = (props) => {
                 mode="contained"
                 onPress={props.onConfirmPress}
                 disabled={props.disabled}
-                style={[{marginLeft: 10}, styles.confirmationButton]}
+                style={[
+                    {marginLeft: 10}, 
+                    props.disabled? styles.disabledButton : styles.confirmationButton
+                ]}
                 textColor='white'
             >
                 {props.confirmationText}
@@ -146,7 +149,6 @@ export const ConfirmationButtons = (props) => {
             <Button
                 mode="contained"
                 onPress={props.onCancelPress}
-                disabled={props.disabled}
                 style={[{ marginLeft: 10 }, styles.cancelButton]}
                 textColor='white'
             >

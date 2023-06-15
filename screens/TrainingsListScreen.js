@@ -15,12 +15,15 @@ import Constants from 'expo-constants';
 import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 import { titleManager } from '../src/TitleManager';
+import { UserContext } from '../src/contexts/UserContext';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 const Type = { Favourites: 0, Enrolled: 1, All: 2, Created: 3};
 
 export default class TrainingsListScreen extends Component {
+    static contextType = UserContext;
+
     constructor(props) {
         super(props)
         this.handleTrainingPress = this.handleTrainingPress.bind(this)
@@ -78,16 +81,7 @@ export default class TrainingsListScreen extends Component {
             case 'created':
                 console.log('created')
                 this.type = Type.Created;
-                this.props.navigation.setOptions({
-                    headerRight: () => (
-                        <IconButton
-                            icon={'plus'}
-                            iconColor='black'
-                            size={30}
-                            onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: true })}
-                        />
-                    ),
-                })
+                this.setupCreationButton();
                 break;
             case 'enrolled':
                 console.log('enrolled')
@@ -110,6 +104,23 @@ export default class TrainingsListScreen extends Component {
             default:
                 console.log('Tipo incorrecto');
                 break;
+        }
+    }
+
+    setupCreationButton() {
+        console.log("[TrainingsListScreen] setupCreationButton - props.trainerId:", this.props.route.params.trainerId, "userId" ,this.context.userId)
+        console.log("[equals?] ", this.props.route.params.trainerId === this.context.userId)
+        if (this.props.route.params.trainerId === this.context.userId) {
+            
+            this.props.navigation.setOptions({
+                headerRight: () => (
+                    <IconButton
+                        icon={'plus'}
+                        iconColor='black'
+                        size={30}
+                        onPress={() => this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: true })} />
+                ),
+            });
         }
     }
 

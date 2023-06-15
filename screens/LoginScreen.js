@@ -29,6 +29,9 @@ export default class LoginScreen extends Component {
         this.passwordInput = React.createRef()
     }
 
+    // Funcion a llamar luego de verificar que el usuario ya tiene el token cargado
+    // Guarda el id de usuario en el contexto y verifica si puede ingresar directamente o si se le debe preguntar
+    // con que rol quiere ingresar (solo si es un usuario mixto)
     async updateContextAndRedirect() {
         console.log("[LoginScreen] Token: " + tokenManager.getAccessToken())
         console.log("[LoginScreen] Payload: " + JSON.stringify(tokenManager.getPayload()))
