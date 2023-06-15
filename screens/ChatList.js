@@ -6,6 +6,7 @@ import database from '@react-native-firebase/database';
 import Constants from 'expo-constants';
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
+import { downloadImage } from '../services/Media';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -95,26 +96,36 @@ class ChatList extends Component {
     }
 
     // Los chats solo contienen el uid, agrego el resto de información
-    addUserDataToChats = () => {
+    addUserDataToChats = async () => {
         const userId = this.props.data.id;
         const { users, chats } = this.state;
-
-        const updatedChats = chats.map(chat => {
-            const userData = users.find(user => user.id === chat.uid1 || user.id === chat.uid2);
+      
+        const updatedChats = await Promise.all(
+          chats.map(async (chat) => {
+            const userData = users.find(
+              (user) => user.id === chat.uid1 || user.id === chat.uid2
+            );
             if (userData.id === userId) {
-                return {...chat};
+              return { ...chat };
             } else {
-                return {
-                    ...chat,
-                    fullname: userData.fullname,
-                    mail: userData.mail,
-                    photo_id: userData.photo_id
-                }
+              let photo_url = null;
+              if (userData.photo_id !== '') {
+                console.log(userData.photo_id);
+                photo_url = await downloadImage(userData.photo_id);
+              }
+      
+              return {
+                ...chat,
+                fullname: userData.fullname,
+                mail: userData.mail,
+                photo_url: photo_url,
+              };
             }
-        });
-
-        this.setState({ chats: updatedChats })
-    }
+          })
+        );
+      
+        this.setState({ chats: updatedChats });
+    };
 
     createChatRoom = async (uid2) => {
         const userId = this.props.data.id;
@@ -156,23 +167,27 @@ class ChatList extends Component {
               user.fullname.toLowerCase().includes(searchQuery.toLowerCase())   
         );
 
-        const renderItem = ({ item }) => (
-            <TouchableOpacity
-                style={styles.userItem}
-                onPress={() => this.createChatRoom(item.id)}
-            >
-                <View style={styles.userItemContainer}>
-                    <Image
-                        source={require('../assets/images/user_predet_image.png')}
-                        style={styles.userPhoto}
-                    />
-                    <View style={styles.userInfo}>
-                        <Text style={styles.userName}>{item.fullname}</Text>
-                        <Text style={styles.userEmail}>{item.mail}</Text>
+        const renderItem = ({ item }) => {
+            let photo = require('../assets/images/user_predet_image.png');
+            
+            return (  
+                <TouchableOpacity
+                    style={styles.userItem}
+                    onPress={() => this.createChatRoom(item.id)}
+                >
+                    <View style={styles.userItemContainer}>
+                        <Image
+                            source={require('../assets/images/user_predet_image.png')}
+                            style={styles.userPhoto}
+                        />
+                        <View style={styles.userInfo}>
+                            <Text style={styles.userName}>{item.fullname}</Text>
+                            <Text style={styles.userEmail}>{item.mail}</Text>
+                        </View>
                     </View>
-                </View>
-            </TouchableOpacity>
-        );
+                </TouchableOpacity>
+            );
+        };
 
         return (
             <Modal
@@ -211,9 +226,9 @@ class ChatList extends Component {
     }
 
     renderChatItem = ({ item }) => {
-        // get userinfo
-
-        // get user image
+        const photo = item.photo_url
+          ? { uri: item.photo_url }
+          : require('../assets/images/user_predet_image.png');
 
         return (
             <TouchableOpacity
@@ -226,7 +241,7 @@ class ChatList extends Component {
             >
               <View style={styles.userItemContainer}>
                 <Image
-                  source={require('../assets/images/user_predet_image.png')}
+                  source={photo}
                   style={styles.userPhoto}
                 />
                 <View style={styles.userInfo}>

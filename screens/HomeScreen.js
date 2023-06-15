@@ -338,7 +338,7 @@ class HomeScreen extends Component {
                     </Drawer.Screen>
                 : null}
 
-                <Drawer.Screen name="Mensajes"
+                <Drawer.Screen name="Chats"
                     options={{
                         drawerIcon: () => (
                             <View style={styles.drawerIconContainer}>
