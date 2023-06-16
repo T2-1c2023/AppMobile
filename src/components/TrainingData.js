@@ -7,6 +7,8 @@ import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../TokenManager';
 
+import Icon from 'react-native-paper/src/components/Icon'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingData extends Component {
@@ -199,6 +201,44 @@ export default class TrainingData extends Component {
         return calificationsData;
     }
 
+    renderSuscriptorsAmmount() {
+        return (
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Icon source="bookmark" size={25} color='#21005D'/>
+                <Text style={dataStyles.suscriptorsAmmount}>
+                    {this.props.training.subscriptions}
+                </Text>
+            </View>
+        )
+    }
+
+    renderFavouritesAmmount() {
+        return (
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Icon source="heart" size={25} color='#21005D'/>
+                <Text style={dataStyles.favouritesAmmount}>
+                    {this.props.training.favorites}
+                </Text>
+            </View>
+        )
+    }
+    
+    renderSuscriptorsAndFavourites() {
+        return (
+            <View style={{marginTop: 20}}>
+                <DividerWithMultipleTexts
+                    texts={['#Suscriptores', '#Favoritos']}
+                />
+                <View
+                        style={dataStyles.suscriptorsAndFavouritesContainer}
+                    >
+                    {this.renderSuscriptorsAmmount()}
+                    {this.renderFavouritesAmmount()}
+                </View>
+            </View>
+        )
+    }
+
     render() {
         return (
             <View style={[this.props.style,{ width: '100%' }]}>
@@ -230,6 +270,7 @@ export default class TrainingData extends Component {
 
                 {this.renderCalificationsData()}
 
+                {this.renderSuscriptorsAndFavourites()}
             </View>
         )               
     }
@@ -266,5 +307,28 @@ const dataStyles = StyleSheet.create({
         textAlign: 'center',
         color: 'grey',
         marginRight: 40,
+    },
+
+    suscriptorsAndFavouritesContainer: {
+        flexDirection: 'row',
+        justifyContent: "space-evenly",
+        alignItems: 'center',
+        marginTop: 10,
+    },
+
+    suscriptorsAmmount: {
+        color: 'black', 
+        fontSize: 30, 
+        fontFamily: 'serif', 
+        fontWeight: 'bold', 
+        marginRight: 10
+    },
+
+    favouritesAmmount: {
+        color: 'black',
+        fontSize: 30,
+        fontFamily: 'serif',
+        fontWeight: 'bold',
+        marginLeft: 10
     },
 })
