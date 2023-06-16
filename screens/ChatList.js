@@ -16,7 +16,6 @@ class ChatList extends Component {
         this.state = {
             loading: false,
             chats: [],
-            uid2Input: '',
             visiblePopUp: false,
             // For user search popup
             users: [],
@@ -102,13 +101,17 @@ class ChatList extends Component {
     addUserDataToChats = async () => {
         const userId = this.props.data.id;
         const { users, chats } = this.state;
-      
+        console.log(userId);
         const updatedChats = await Promise.all(
           chats.map(async (chat) => {
             const userData = users.find(
-              (user) => user.id === chat.uid1 || user.id === chat.uid2
+              // (user) => user.id === chat.uid1 || user.id === chat.uid2
+              // (user) => user.id === chat.uid1
+              (user) => ((user.id === chat.uid1 || user.id === chat.uid2) && user.id != userId)
             );
-            if (userData.id === userId) {
+            console.log(userData);
+
+            if (userData === undefined) {
               return { ...chat };
             } else {
               let photo_url = null;
@@ -172,8 +175,6 @@ class ChatList extends Component {
         );
 
         const renderItem = ({ item }) => {
-            let photo = require('../assets/images/user_predet_image.png');
-            
             return (  
                 <TouchableOpacity
                     style={styles.userItem}
@@ -321,13 +322,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold'
-    },
-    uid2Input: {
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 5,
-        marginBottom: 10,
-        paddingHorizontal: 10,       
     },
     popupContainer: {
         backgroundColor: 'white',
