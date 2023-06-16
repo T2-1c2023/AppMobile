@@ -11,16 +11,20 @@ export class PinInput extends Component {
         this.p2Ref = React.createRef()
         this.p3Ref = React.createRef()
         this.p4Ref = React.createRef()
+        this.p5Ref = React.createRef()
+        this.p6Ref = React.createRef()
         this.state = {
             pin1: '',
             pin2: '',
             pin3: '',
             pin4: '',
+            pin5: '',
+            pin6: '',
         }
     }
 
     handleChange() {
-        let input = this.state.pin1 + this.state.pin2 + this.state.pin3 + this.state.pin4
+        let input = this.state.pin1 + this.state.pin2 + this.state.pin3 + this.state.pin4 + this.state.pin5 + this.state.pin6
         this.props.onChange(input)
     }
 
@@ -138,13 +142,80 @@ export class PinInput extends Component {
                                 if (input !== '') {
                                     this.setState({ pin4: input }, () => {
                                         this.handleChange()
-                                        Keyboard.dismiss()
+                                        this.p5Ref.current.clear()
+                                        this.p5Ref.current.focus()
                                     })
                                 }
                             }}
                             onFocus={() => {
                                 this.p4Ref.current.clear()
                                 this.setState({ pin4: '' }, () => {
+                                    this.handleChange()
+                                })
+                            }}
+                        />
+                    </View>
+                    <View style={pinStyles.digitContainer}>
+                        <TextInput
+                            underlineColor="transparent"
+                            placeholder='-'
+                            caretHidden={true}
+                            style={[pinStyles.digitInput, styles.pinInput]}
+                            ref={this.p5Ref}
+                            keyboardType='numeric'
+                            maxLength={1}
+                            onKeyPress={(e) => {
+                                if (e.nativeEvent.key === 'Backspace') {
+                                    this.handleChange()
+                                    this.p4Ref.current.clear()
+                                    this.p4Ref.current.focus()
+                                }
+                            }}
+                            onChangeText={(input) => {
+                                if (input !== '') {
+                                    this.setState({ pin5: input }, () => {
+                                        this.handleChange()
+                                        this.p6Ref.current.clear()
+                                        this.p6Ref.current.focus()
+                                    })
+                                }
+                            }}
+                            onFocus={() => {
+                                this.p5Ref.current.clear()
+                                this.setState({ pin5: '' }, () => {
+                                    this.handleChange()
+                                })
+                            }}
+                        />
+                    </View>
+
+                    <View style={pinStyles.digitContainer}>
+                        <TextInput
+                            underlineColor="transparent"
+                            placeholder='-'
+                            caretHidden={true}
+                            style={[pinStyles.digitInput, styles.pinInput]}
+                            ref={this.p6Ref}
+                            keyboardType='numeric'
+                            maxLength={1}
+                            onKeyPress={(e) => {
+                                if (e.nativeEvent.key === 'Backspace') {
+                                    this.handleChange()
+                                    this.p6Ref.current.clear()
+                                    this.p6Ref.current.focus()
+                                }
+                            }}
+                            onChangeText={(input) => {
+                                if (input !== '') {
+                                    this.setState({ pin6: input }, () => {
+                                        this.handleChange()
+                                        Keyboard.dismiss()
+                                    })
+                                }
+                            }}
+                            onFocus={() => {
+                                this.p6Ref.current.clear()
+                                this.setState({ pin6: '' }, () => {
                                     this.handleChange()
                                 })
                             }}
