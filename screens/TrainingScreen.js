@@ -12,6 +12,8 @@ import { TextDetails, TextSubheader, DividerWithMiddleText } from '../src/styles
 import Constants from 'expo-constants'
 import { titleManager } from '../src/TitleManager';
 
+import { ActivityIndicator } from 'react-native-paper'
+
 import { IconButton } from 'react-native-paper'
 
 import TrainingData from '../src/components/TrainingData'
@@ -57,12 +59,13 @@ export default class TrainingScreen extends Component {
                 location: '',
                 activities: [],
                 id: '',
-                score: 5,
+                score: 0,
             },
             trainer: {},
             trainerProfilePic: require('../assets/images/user_predet_image.png'),
             myScore: 2,
-            isAlreadyRated: false
+            isAlreadyRated: false,
+            goalsLeft: 999,
         }
         this.emptyBodyWithToken = {
             headers: {
@@ -155,7 +158,8 @@ export default class TrainingScreen extends Component {
 
     async handleSubscribeButtonPress() {
         if (!this.state.isSubscribed) {
-            this.subscribe();
+            await this.subscribe();
+            this.componentDidMount();
         } else {
             this.unsubscribe();
         }
@@ -202,12 +206,12 @@ export default class TrainingScreen extends Component {
 
     async checkSubscriptionStatus() {
         if (!this.props.route.params.userData.is_athlete) {
-            // console.log("no es atleta");
+            
             const isSubscribed = false;
             this.setState({ isSubscribed });
-            //console.log("seteo");
+            
         } else {
-            //axios.get(API_GATEWAY_URL + 'athletes/' + this.props.route.params.userData.id + '/subscriptions', {
+            
             axios.get('https://trainings-g6-1c-2023.onrender.com/athletes/' + this.props.route.params.userData.id + '/subscriptions', {
                 headers: {
                     Authorization: tokenManager.getAccessToken()
@@ -215,10 +219,10 @@ export default class TrainingScreen extends Component {
             })
                 .then(response => {
                     const subscribedTrainings = response.data;
-                    //console.log(subscribedTrainings);//debug
                     const isSubscribed = (subscribedTrainings.filter(t => t.id === this.props.route.params.trainingId).length > 0);
-                    //console.log("isSubscribed " + isSubscribed);
+                    
                     this.setState({ isSubscribed });
+                    isSubscribed && this.loadSubscribedAthleteGoalsLeft()
                 })
                 .catch(function (error) {
                     console.log('isSubscribed' + error);
@@ -230,6 +234,7 @@ export default class TrainingScreen extends Component {
         await this.loadTrainingInfo();
         this.context.isAthlete && this.checkFavoriteStatus();
         this.checkSubscriptionStatus();
+
     }
 
     async loadAthleteRatingInfo() {
@@ -386,20 +391,71 @@ export default class TrainingScreen extends Component {
     }
 
     renderGoalsButton() {
-        const buttonName = this.isOwner()?
-            "Ver metas del entrenamiento" 
-            : 
-            "Ver metas restantes para completar el entrenamiento"
-        
-        return (
-            <TextLinked
-                linkedText={buttonName} 
-                onPress={this.onPressTrainingGoals}
-                style={{
-                    marginRight: 20,
-                }}
-            />
-        )
+        if (this.isOwner()) {
+            const buttonName = "Ver metas del entrenamiento"
+            return (
+                <TextLinked
+                    linkedText={buttonName} 
+                    onPress={this.onPressTrainingGoals}
+                    style={{
+                        marginRight: 20,
+                    }}
+                />
+            )
+        } else {
+            if (this.context.isAthlete) {
+                return this.renderAthleteGoalsStatus();
+            } else {
+                return <Text></Text>
+            }
+        }
+    }
+
+    loadSubscribedAthleteGoalsLeft() {
+        // /athletes/{id}/subscriptions/goals
+        const url = API_GATEWAY_URL + 'athletes/' + this.context.userId + '/subscriptions/goals'
+
+        const config = {
+            headers: { Authorization: tokenManager.getAccessToken() },
+            params: { training_id: this.props.route.params.trainingId, completed: false }
+        }
+
+        axios.get(url, config)
+            .then(response => {
+                const goalsLeft = response.data.length;
+                this.setState({ goalsLeft });
+            })
+            .catch(function (error) {
+                console.log('loadSubscribedAthleteGoalsLeft ' + error);
+            });
+    }
+
+    renderAthleteGoalsStatus() {
+        if (this.state.goalsLeft === 999) {
+            return (
+                <ActivityIndicator size="small" color="#21005D" style={{marginRight: 60}}/>
+            )
+        }
+
+        if (this.state.goalsLeft === 0) {
+            return (
+            <React.Fragment>
+                <Text style={{fontSize: 14, fontWeight: 'bold', color: 'green', marginRight: 5}}>
+                    Haz completado el entrenamiento ¡Felicitaciones!
+                </Text>
+            </React.Fragment>
+            )
+        } else {
+            const buttonName = "Restan " + this.state.goalsLeft + " metas para completar el entrenamiento";
+            return (
+                <TextLinked
+                    linkedText={buttonName}
+                    onPress={this.onPressTrainingGoals}
+                    style={{
+                        marginRight: 20,
+                    }} />
+            );
+        }
     }
 
     renderCreatorAndGoalsArea() {

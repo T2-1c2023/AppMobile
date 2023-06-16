@@ -153,6 +153,13 @@ export default class GoalScreen extends Component {
     }
 
     validateAndSetEditHeader(creatorId) {
+        const params = {
+            userData: this.userData,
+            goalData: this.goalData,
+            mode: Mode.Edit,
+            personalGoal: this.personalGoal,
+        }
+
         if ((this.mode === Mode.ReadOnly) && this.isOwner(creatorId) && !this.goalCompleted) {
             this.props.navigation.setOptions({
                 headerRight: () => (
@@ -160,7 +167,7 @@ export default class GoalScreen extends Component {
                         icon={'pencil'}
                         iconColor='#21005D'
                         size={30}
-                        onPress={() => this.props.navigation.replace('GoalScreen', { userData: this.userData, goalData: this.goalData, mode: Mode.Edit })} />
+                        onPress={() => this.props.navigation.replace('GoalScreen', params)} />
                 ),
             });
         }
@@ -295,6 +302,7 @@ export default class GoalScreen extends Component {
         let body={}
         let config = { headers: { Authorization: tokenManager.getAccessToken() } }
         let url
+        console.log('this.personalGoal:', this.personalGoal);
         if (this.personalGoal)
             url = API_GATEWAY_URL + "athletes/" + this.userData.id + "/personal-goals/" + this.goalId
         else
