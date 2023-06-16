@@ -39,7 +39,7 @@ export default class ValidatePasswordScreen extends Component {
             );
         }*/
 
-        this.props.navigation.replace('EnrollmentScreen');
+        this.props.navigation.replace('EnrollmentScreen', {from: 'ValidatePasswordScreen'});
     }
 
     fieldsNotEmpty() {

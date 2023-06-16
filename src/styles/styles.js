@@ -159,7 +159,7 @@ export default StyleSheet.create({
         borderColor: 'black',
         borderWidth: 2,
         backgroundColor: '#CCC2DC',
-        fontSize: 50,
+        fontSize: 20,
     },
 
     phoneInput: {

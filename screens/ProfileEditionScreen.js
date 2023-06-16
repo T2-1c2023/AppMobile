@@ -299,7 +299,7 @@ export default class ProfileEditionScreen extends Component {
                     style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 50}}
                 />
                 <TextLinked
-                    linkedText={'Enrollar huella'}
+                    linkedText={'Registrar huella'}
                     onPress={this.onPressEnrollFingerprint}
                     style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 30}}
                 />

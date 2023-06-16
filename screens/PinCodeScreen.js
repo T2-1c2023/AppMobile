@@ -8,6 +8,7 @@ import { tokenManager } from '../src/TokenManager';
 import axios from 'axios';
 import Constants from 'expo-constants'
 import { titleManager } from '../src/TitleManager';
+import jwt_decode from "jwt-decode";
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -21,37 +22,26 @@ export default class PinCodeScreen extends Component {
     }
 
     async handleVerifyPin() {
+        const url = API_GATEWAY_URL + "register/verify"
         const body = { mail: this.props.route.params.decodedToken.mail, code: this.state.pin }
-        /*await axios.post(API_GATEWAY_URL + "register/verify", body, {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            },
-        })
+        await axios.post(url, body)
             .then((response) => {
-                console.log(response.data);
                 tokenManager.updateTokens(response.data.token)
-                if (data.is_athlete)
+                if (jwt_decode(response.data.token).is_athlete)
                     this.props.navigation.replace('InterestsScreen', { userId: this.props.route.params.decodedToken.id });
                 else
                     this.props.navigation.replace('HomeScreen');
             })
-            .catch((error) => {
-                if (error.response && error.response.status === 404) {
+            .catch((error) => {              
+                if (error.response && error.response.status === 401) {
                     Alert.alert('', "El PIN ingresado no es correcto")
                 } else {
-                    console.error("handleVerifyPin " + error);
+                    console.log("handleVerifyPin " + error);
                 }
-            })*/
-        if (this.state.pin === '4356') {
-            if (this.props.route.params.decodedToken.is_athlete)
-                this.props.navigation.replace('InterestsScreen', { userId: this.props.route.params.decodedToken.id });
-            else
-                this.props.navigation.replace('HomeScreen');
-        }
+            })
     }
 
     componentDidMount() {
-        Alert.alert('', 'Ingresá código 4356, hardcodeado por el momento')
         titleManager.setTitle(this.props.navigation, "Validar PIN", 22)
     }
 
