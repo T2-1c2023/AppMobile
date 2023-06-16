@@ -85,6 +85,9 @@ class HomeScreen extends Component {
     CustomDrawerContent = (props) => {
         return (
             <DrawerContentScrollView {...props}>
+                <DrawerItem 
+                    label={ this.context.name + " - Rol: " + (this.context.isTrainer? "Entrenador" : "Atleta")}
+                />
                 <DrawerItemList {...props} />
                 <DrawerItem 
                     label="Cerrar Sesión"
@@ -143,13 +146,8 @@ class HomeScreen extends Component {
     // botón solo para atletas
     renderPersonalGoalsLeftButton() {
         return (
-            <Drawer.Screen name="Metas personales en proceso"
+            <Drawer.Screen name="              En proceso"
                 options={{
-                    drawerIcon: () => (
-                        <View style={styles.drawerIconContainer}>
-                            <FontAwesome name="bullseye" size={24} color="black" />
-                        </View>
-                    ),
                     headerRight: this.createGoalButtonForAthlete
                 }}
             >
@@ -164,14 +162,8 @@ class HomeScreen extends Component {
     // botón solo para atletas
     renderPersonalGoalsCompletedButton() {
         return (
-            <Drawer.Screen name={"Metas personales cumplidas"}
-                options={{
-                    drawerIcon: () => (
-                        <View style={styles.drawerIconContainer}>
-                            <FontAwesome name="bullseye" size={24} color="black" />
-                        </View>
-                    ),
-                }}
+            <Drawer.Screen name={"              Completadas"}
+
             >
                 {() => <GoalsListScreen
                         navigation={this.props.navigation}
@@ -183,15 +175,11 @@ class HomeScreen extends Component {
 
     renderAthleteTrainingGoalsButton(completed) {
         return (
-            <Drawer.Screen name={completed? "Metas de entrenamientos completadas" : "Metas de entrenamientos en proceso"}
-                options={{
-                    drawerIcon: () => (
-                        <View style={styles.drawerIconContainer}>
-                            <FontAwesome name="bullseye" size={24} color="black"/>
-                        </View>
-                    ),
-                }}
-            >
+            <Drawer.Screen name={completed? 
+                "             Completadas" 
+                : 
+                "             En proceso"
+            }>
                 {() => <GoalsListScreen
                         navigation={this.props.navigation}
                         listMode={completed? 
@@ -216,6 +204,40 @@ class HomeScreen extends Component {
                 }}
             >
                 {() => <UsersListScreen mode={"search"} navigation={this.props.navigation}/>}
+            </Drawer.Screen>
+        )
+    }
+
+    renderTitle(title, icon) {
+        return (
+            <Drawer.Screen 
+                name={title}
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome name={icon} size={24} color="black" />
+                        </View>
+                    ),
+                }}
+            >
+                {() => <></>}
+            </Drawer.Screen>
+        )
+    }
+
+    renderTitle5(title, icon) {
+        return (
+            <Drawer.Screen 
+                name={title}
+                options={{
+                    drawerIcon: () => (
+                        <View style={styles.drawerIconContainer}>
+                            <FontAwesome5 name={icon} size={16} color="black" />
+                        </View>
+                    ),
+                    }}
+            >
+                {() => <></>}
             </Drawer.Screen>
         )
     }
@@ -257,21 +279,24 @@ class HomeScreen extends Component {
                 </Drawer.Screen>
 
                 {this.renderSearchUsers()}
+
                 {this.context.isTrainer && this.renderTrainerCreatedGoalsButton()}
+
+                {this.context.isAthlete && this.renderTitle("Metas personales", "bullseye")}
                 {this.context.isAthlete && this.renderPersonalGoalsLeftButton()}
                 {this.context.isAthlete && this.renderPersonalGoalsCompletedButton()}
+
+                {this.context.isAthlete && this.renderTitle("Metas de entrenamientos", "bullseye")}
                 {this.context.isAthlete && this.renderAthleteTrainingGoalsButton(completed=false)}
                 {this.context.isAthlete && this.renderAthleteTrainingGoalsButton(completed=true)}
 
+
+                {this.context.isAthlete && this.renderTitle5("Entrenamientos", "dumbbell")}
+
                 {this.context.isAthlete ? 
                     <Drawer.Screen
-                        name="Entrenamientos favoritos"
+                        name="             Favoritos"
                         options={{
-                            drawerIcon: () => (
-                                <View style={styles.drawerIconContainer}>
-                                    <FontAwesome5 name="dumbbell" size={16} color="black" />
-                                </View>
-                            ),
                             headerRight: () =>
                                 <IconButton
                                     icon="magnify"
@@ -290,13 +315,8 @@ class HomeScreen extends Component {
 
                 {this.context.isAthlete ? 
                     <Drawer.Screen 
-                        name="Entrenamientos suscriptos"
+                        name="             Suscriptos"
                         options={{
-                            drawerIcon: () => (
-                                <View style={styles.drawerIconContainer}>
-                                    <FontAwesome5 name="dumbbell" size={16} color="black" />
-                                </View>
-                            ),
                             headerRight: () =>
                                 <IconButton
                                     icon="magnify"

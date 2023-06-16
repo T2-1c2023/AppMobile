@@ -4,15 +4,15 @@ export const UserContext = React.createContext();
 
 export class AppProvider extends React.Component {
     state = {
-        // fullName: '',
+        name: '',
         userId: '',
         isAthlete: false,
         isTrainer: false,
     };
 
-    // setFullName = (fullName) => {
-    //     this.setState({ fullName });
-    // };
+    setName = (name) => {
+        this.setState({ name });
+    };
 
     setUserId = (userId) => {
         this.setState({ userId });
@@ -30,8 +30,8 @@ export class AppProvider extends React.Component {
 
     render() {
         const values = {
-            // fullName: this.state.fullName,
-            // setFullName: this.setFullName,
+            name: this.state.name,
+            setName: this.setName,
 
             userId: this.state.userId,
             setUserId: this.setUserId,

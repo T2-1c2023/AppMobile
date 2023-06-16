@@ -12,7 +12,7 @@ class TokenManager {
         }
     }
 
-    getFullName() {
+    getName() {
         return this.payload.fullname
     }
 

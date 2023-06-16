@@ -228,7 +228,7 @@ export default class TrainingScreen extends Component {
 
     async componentDidMount() {
         await this.loadTrainingInfo();
-        this.checkFavoriteStatus();
+        this.context.isAthlete && this.checkFavoriteStatus();
         this.checkSubscriptionStatus();
     }
 
@@ -421,11 +421,14 @@ export default class TrainingScreen extends Component {
     }
 
     canEdit() {
-        return this.state.training.trainer_id === this.props.route.params.userData.id
+        const cond_1 = this.state.training.trainer_id === this.context.userId
+        const cond_2 = this.context.isTrainer
+        return cond_1 && cond_2
     }
 
     canSubscribe() {
-        return this.props.route.params.userData.is_athlete && (this.state.training.trainer_id !== this.props.route.params.userData.id)
+        return this.context.isAthlete && (this.state.training.trainer_id !== this.props.route.params.userData.id)
+        
     }
 
     canDelete() {

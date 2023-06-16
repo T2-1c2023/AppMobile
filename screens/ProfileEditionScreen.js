@@ -20,9 +20,13 @@ import InterestsList from '../src/components/InterestsList';
 import { CommonActions } from '@react-navigation/native';
 import { TextInput, HelperText } from 'react-native-paper';
 
+import { UserContext } from '../src/contexts/UserContext';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class ProfileEditionScreen extends Component {
+    static contextType = UserContext;
+    
     constructor(props) {
         super(props);
         this.nameEmpty = this.nameEmpty.bind(this);
@@ -167,6 +171,7 @@ export default class ProfileEditionScreen extends Component {
             }
             await updateUserData(newData, userId);
             this.setState({ fullname: newFullName });
+            await this.context.setName(newFullName)
         } catch (error) {   
             console.log(error);
             this.setState({ newFullName: this.state.fullname });

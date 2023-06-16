@@ -36,6 +36,7 @@ export default class LoginScreen extends Component {
         console.log("[LoginScreen] Token: " + tokenManager.getAccessToken())
         console.log("[LoginScreen] Payload: " + JSON.stringify(tokenManager.getPayload()))
         await this.context.setUserId(tokenManager.getUserId())
+        await this.context.setName(tokenManager.getName())
 
         console.log("[LoginScreen] isMixedUser: " + tokenManager.isMixedUser())
         if (tokenManager.isMixedUser())
