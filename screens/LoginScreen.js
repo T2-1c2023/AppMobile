@@ -37,17 +37,19 @@ export default class LoginScreen extends Component {
         console.log("[LoginScreen] Payload: " + JSON.stringify(tokenManager.getPayload()))
         await this.context.setUserId(tokenManager.getUserId())
 
+        console.log("[LoginScreen] isMixedUser: " + tokenManager.isMixedUser())
         if (tokenManager.isMixedUser())
-            // TODO: handle mixed user
-            alert('Usuario mixto en desarrollo')
-        else
+            this.props.navigation.replace('RoleSelectionScreen')
+        else {
             tokenManager.isAthlete()? await this.context.setAsAthlete()
             :
             tokenManager.isTrainer()? await this.context.setAsTrainer()
             :
-            alert('No se encontró un rol asignado. Usuario invalido')
-            
-        this.props.navigation.replace('HomeScreen')
+            alert('El usuario no cuenta con un rol asignado')
+    
+            this.props.navigation.replace('HomeScreen')
+
+        }
     }
 
     async handleLogin() {

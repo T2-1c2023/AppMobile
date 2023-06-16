@@ -89,7 +89,7 @@ export default class TrainingsListScreen extends Component {
                 this.props.navigation.setOptions({
                     headerRight: () => (
                         <IconButton
-                            icon={'plus'}
+                            icon={'magnify'}
                             iconColor='#21005D'
                             size={30}
                             onPress={() => {this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type:'all'});this.forceUpdate();}}
@@ -108,9 +108,9 @@ export default class TrainingsListScreen extends Component {
     }
 
     setupCreationButton() {
-        console.log("[TrainingsListScreen] setupCreationButton - props.trainerId:", this.props.route.params.trainerId, "userId" ,this.context.userId)
-        console.log("[equals?] ", this.props.route.params.trainerId === this.context.userId)
-        if (this.props.route.params.trainerId === this.context.userId) {
+        console.log("[TrainingsListScreen] setupCreationButton - props.trainerId:", this.trainerId, "userId" ,this.context.userId)
+        console.log("[equals?] ", this.trainerId === this.context.userId)
+        if (this.trainerId === this.context.userId) {
             
             this.props.navigation.setOptions({
                 headerRight: () => (

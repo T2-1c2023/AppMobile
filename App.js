@@ -31,7 +31,7 @@ import TrainingReviewScreen from './screens/TrainingReviewScreen';
 import TrainingsReviewsListScreen from './screens/TrainingsReviewsListScreen';
 import ValidatePasswordScreen from './screens/ValidatePasswordScreen';
 import InterestsScreen from './screens/InterestsScreen';
-
+import RoleSelectionScreen from './screens/RoleSelectionScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -292,6 +292,11 @@ export default class App extends Component {
             <Stack.Screen
               name="UsersListScreen"
               component={UsersListScreen}
+            />
+
+            <Stack.Screen
+              name="RoleSelectionScreen"
+              component={RoleSelectionScreen}
             />
 
           </Stack.Navigator>
