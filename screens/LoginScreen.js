@@ -96,7 +96,7 @@ export default class LoginScreen extends Component {
     }
 
     navigateToEnrollmentScreen = () => {
-        this.props.navigation.navigate('ValidatePasswordScreen');
+        this.props.navigation.navigate('EnrollmentScreen', {from: 'LoginScreen'});
     }
 
     alreadyLogged() {
