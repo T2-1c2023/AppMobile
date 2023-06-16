@@ -177,6 +177,10 @@ export default StyleSheet.create({
         backgroundColor: '#21005D',
     },
 
+    disabledButton: {
+        backgroundColor: 'grey',
+    },
+
     cancelButton: {
         backgroundColor: 'grey',
     },

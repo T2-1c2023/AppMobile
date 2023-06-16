@@ -257,14 +257,14 @@ class HomeScreen extends Component {
                 </Drawer.Screen>
 
                 {this.renderSearchUsers()}
-                {this.data.is_trainer && this.renderTrainerCreatedGoalsButton()}
-                {this.data.is_athlete && this.renderPersonalGoalsLeftButton()}
-                {this.data.is_athlete && this.renderPersonalGoalsCompletedButton()}
-                {this.data.is_athlete && this.renderAthleteTrainingGoalsButton(completed=false)}
-                {this.data.is_athlete && this.renderAthleteTrainingGoalsButton(completed=true)}
+                {this.context.isTrainer && this.renderTrainerCreatedGoalsButton()}
+                {this.context.isAthlete && this.renderPersonalGoalsLeftButton()}
+                {this.context.isAthlete && this.renderPersonalGoalsCompletedButton()}
+                {this.context.isAthlete && this.renderAthleteTrainingGoalsButton(completed=false)}
+                {this.context.isAthlete && this.renderAthleteTrainingGoalsButton(completed=true)}
 
-                {this.data.is_athlete ? 
-                    <Drawer.Screen 
+                {this.context.isAthlete ? 
+                    <Drawer.Screen
                         name="Entrenamientos favoritos"
                         options={{
                             drawerIcon: () => (
@@ -288,7 +288,7 @@ class HomeScreen extends Component {
                     </Drawer.Screen>
                 : null}
 
-                {this.data.is_athlete ? 
+                {this.context.isAthlete ? 
                     <Drawer.Screen 
                         name="Entrenamientos suscriptos"
                         options={{
@@ -313,7 +313,7 @@ class HomeScreen extends Component {
                     </Drawer.Screen>
                 : null }
 
-                {this.data.is_trainer ? 
+                {this.context.isTrainer ? 
                     <Drawer.Screen 
                         name="Entrenamientos creados"
                         options={{
@@ -338,7 +338,7 @@ class HomeScreen extends Component {
                     </Drawer.Screen>
                 : null}
 
-                <Drawer.Screen name="Mensajes"
+                <Drawer.Screen name="Chats"
                     options={{
                         drawerIcon: () => (
                             <View style={styles.drawerIconContainer}>

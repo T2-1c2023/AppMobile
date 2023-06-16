@@ -11,6 +11,7 @@ export default class ProfileInput extends Component {
             trainer: false,
             athlete: false,
         }
+        this.multiSelect = this.props.multiSelect
     }
 
     onChange = () => {
@@ -18,13 +19,19 @@ export default class ProfileInput extends Component {
     }
 
     handleTrainerPress = () => {
+        let athlete = this.state.athlete
+        if (this.multiSelect)
+            athlete = false
         let trainer = !this.state.trainer
-        this.setState({ 'trainer': trainer }, this.onChange)
+        this.setState({ 'trainer': trainer, 'athlete': athlete }, this.onChange)
     }
 
     handleAthletePress = () => {
+        let trainer = this.state.trainer
+        if (this.multiSelect)
+            trainer = false
         let athlete = !this.state.athlete
-        this.setState({ 'athlete': athlete }, this.onChange)
+        this.setState({ 'athlete': athlete, 'trainer': trainer }, this.onChange)
     }
 
     render() {

@@ -17,6 +17,7 @@ import ProfileHeader from '../src/components/ProfileHeader';
 import { TextLinked, DividerWithMultipleTexts, TextProfileName, TextDetails, ButtonStandard } from '../src/styles/BaseComponents';
 import InterestsList from '../src/components/InterestsList';
 
+import { CommonActions } from '@react-navigation/native';
 import { TextInput, HelperText } from 'react-native-paper';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
@@ -28,6 +29,7 @@ export default class ProfileEditionScreen extends Component {
         this.invalidPhone = this.invalidPhone.bind(this);
         this.handleProfilePicturePress = this.handleProfilePicturePress.bind(this);
         this.loadUserInfo = this.loadUserInfo.bind(this);
+        this.onPressChangeRole = this.onPressChangeRole.bind(this);
 
         this.emptyBodyWithToken = { headers: {
             Authorization: tokenManager.getAccessToken()
@@ -267,6 +269,22 @@ export default class ProfileEditionScreen extends Component {
         this.props.navigation.navigate('ValidatePasswordScreen', {data: this.props.route.params.data});
     }
 
+    onPressChangeRole() {
+        // this.props.navigation.replace('RoleSelectionScreen', {data: this.props.route.params.data});
+        this.props.navigation.dispatch(
+            // Reset del navigation stack para que no se muestre 
+            // el botón de 'go back' a profile selection screen.
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'RoleSelectionScreen' }]
+            })
+        )
+    }
+
+    MixedUser() {
+        return tokenManager.isMixedUser()
+    }
+
     renderLinks() {
         return (
             <React.Fragment>
@@ -280,6 +298,13 @@ export default class ProfileEditionScreen extends Component {
                     onPress={this.onPressEnrollFingerprint}
                     style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 30}}
                 />
+                {this.MixedUser() && 
+                    <TextLinked
+                        linkedText={'Cambiar rol'}
+                        onPress={this.onPressChangeRole}
+                        style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 30}}
+                    />
+                }
             </React.Fragment>
         )
     }

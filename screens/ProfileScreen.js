@@ -124,7 +124,13 @@ export default class ProfileScreen extends Component {
     }
 
     onPressCreatedTrainings() {
-        this.props.navigation.navigate('TrainingsListScreen', {data: jwt_decode(tokenManager.getAccessToken()), type:'created', trainerId:this.id})
+        const params = {
+            data: jwt_decode(tokenManager.getAccessToken()),
+            type:'created',
+            trainerId:this.id
+        }
+        this.props.navigation.navigate('TrainingsListScreen', params)
+
     }
     
     onPressSubscribedTrainings() {

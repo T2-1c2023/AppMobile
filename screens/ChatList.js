@@ -1,18 +1,35 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Alert } from 'react-native';
+import Modal from 'react-native-modal';
+import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import database from '@react-native-firebase/database';
+import Constants from 'expo-constants';
+import axios from 'axios';
+import { tokenManager } from '../src/TokenManager';
+import { downloadImage } from '../services/Media';
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 class ChatList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             chats: [],
-            uid2Input: '' // TODO: elegir uid2 buscandolo por nombre
+            uid2Input: '',
+            visiblePopUp: false,
+            // For user search popup
+            users: [],
+            searchQuery: ''
         };
     }
 
-    componentDidMount() {
-        this.fetchChats();
+    async componentDidMount() {
+      this.setState({ loading: true });
+      await this.fetchChats();
+      await this.loadUsers();
+      await this.addUserDataToChats();
+      this.setState({ loading: false });
     }
 
     componentWillUnmount() {
@@ -67,7 +84,52 @@ class ChatList extends Component {
         });
     }
 
-    createChatRoom = (uid2) => {
+    // Cargo usuarios para cuando se quiere crear un nuevo chat
+    loadUsers = async () => {
+        const url = API_GATEWAY_URL + 'users';
+        const config = {
+            headers: { Authorization: tokenManager.getAccessToken() }
+        }
+        try {
+            let response = await axios.get(url, config)
+            this.setState({ users: response.data });
+        } catch (error) {
+            console.error("Error: " + JSON.stringify(error))
+        }
+    }
+
+    // Los chats solo contienen el uid, agrego el resto de información
+    addUserDataToChats = async () => {
+        const userId = this.props.data.id;
+        const { users, chats } = this.state;
+      
+        const updatedChats = await Promise.all(
+          chats.map(async (chat) => {
+            const userData = users.find(
+              (user) => user.id === chat.uid1 || user.id === chat.uid2
+            );
+            if (userData.id === userId) {
+              return { ...chat };
+            } else {
+              let photo_url = null;
+              if (userData.photo_id !== '') {
+                photo_url = await downloadImage(userData.photo_id);
+              }
+      
+              return {
+                ...chat,
+                fullname: userData.fullname,
+                mail: userData.mail,
+                photo_url: photo_url,
+              };
+            }
+          })
+        );
+      
+        this.setState({ chats: updatedChats });
+    };
+
+    createChatRoom = async (uid2) => {
         const userId = this.props.data.id;
         const reference = database().ref('chats');
         // Create new node where the new chat will be stored
@@ -81,81 +143,154 @@ class ChatList extends Component {
         };
 
         reference.child(chatId).set(chatData)
-            .then(() => {
+            .then(async () => {
                 console.log('Node created succesfully');
-                this.setState({ chats: []});
-                this.fetchChats();
+                this.setState({ loading: true });
+                this.setState({ chats: [] });
+                await this.fetchChats();
+                this.setState({ users: [] });
+                await this.loadUsers();
+                await this.addUserDataToChats();
+                this.setState({ loading: false });
             })
             .catch((error) => {
                 console.log('Error creating node:', error);
             })
     }
 
-    handleNewChatPress = () => {
-        const { uid2Input } = this.state;
+    renderUserSearchBarPopUp = () => {
+        const { visiblePopUp, users, chats, searchQuery } = this.state;
+        const userId = this.props.data.id;
 
-        if (uid2Input.trim().length === 0) {
-            Alert.alert('Error', 'Por favor, ingresa un valor para uid2');
-            return;
-        }
+        // TODO: (no urgente). Esto no hay chance que escale bien
+        // Filtro chats ya existentes
+        const filteredUsers = users.filter(
+            (user) =>
+              user.id !== userId &&
+              !chats.find((chat) => chat.uid1 === user.id || chat.uid2 === user.id) &&
+              user.fullname.toLowerCase().includes(searchQuery.toLowerCase())   
+        );
 
-        const uid2 = parseInt(uid2Input, 10);
+        const renderItem = ({ item }) => {
+            let photo = require('../assets/images/user_predet_image.png');
+            
+            return (  
+                <TouchableOpacity
+                    style={styles.userItem}
+                    onPress={() => this.createChatRoom(item.id)}
+                >
+                    <View style={styles.userItemContainer}>
+                        <Image
+                            source={require('../assets/images/user_predet_image.png')}
+                            style={styles.userPhoto}
+                        />
+                        <View style={styles.userInfo}>
+                            <Text style={styles.userName}>{item.fullname}</Text>
+                            <Text style={styles.userEmail}>{item.mail}</Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            );
+        };
 
-        if (isNaN(uid2)) {
-            Alert.alert('Error', 'Por favor, ingresa un valor numérico válido para uid2');
-            return;
-        }
+        return (
+            <Modal
+              isVisible={visiblePopUp}
+              animationIn="slideInDown"
+              animationOut="slideOutUp"
+              animationInTiming={100}
+            >
+              <View style={styles.popupContainer}>
+                <Searchbar 
+                    placeholder={'Buscar usuario'}
+                    value={searchQuery}
+                    onChangeText={this.handleSearch}
+                />
+                <View style={styles.userListContainer}>
+                  <FlatList
+                    data={filteredUsers}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id.toString()}
+                  />
+                </View>
 
-        this.createChatRoom(uid2);
-        this.setState({ uid2Input: '' });
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => this.setState({ visiblePopUp: false })}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+        );
+    };
+
+    handleSearch = (query) => {
+        this.setState({ searchQuery: query });
+    }
+
+    renderChatItem = ({ item }) => {
+        const photo = item.photo_url
+          ? { uri: item.photo_url }
+          : require('../assets/images/user_predet_image.png');
+
+        return (
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate(
+                'ChatTest', 
+                { chatId: item.id, 
+                  data: this.props.data }
+              )}
+              style={styles.chatItem}
+            >
+              <View style={styles.userItemContainer}>
+                <Image
+                  source={photo}
+                  style={styles.userPhoto}
+                />
+                <View style={styles.userInfo}>
+                  <Text style={styles.userName}>{item.fullname}</Text>
+                  <Text style={styles.userEmail}>{item.mail}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+        )
     }
 
     render() {
-        const { chats, uid2Input } = this.state;
+        const { chats, loading } = this.state;
 
-        return (
-            <View style={{ flex: 1, padding: 20 }}>
-                {chats.length > 0 ? (
-                    <FlatList
-                      data={chats}
-                      renderItem={({item}) => (
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate(
-                                            'ChatTest', 
-                                            { chatId: item.id, 
-                                              data: this.props.data }
-                                    )}
-                            style={styles.chatItem}
-                        >
-                            <Text>
-                              Chat ID: {item.id}{'\n'}
-                              Uid1: {item.uid1}{'\n'}
-                              Uid2: {item.uid2}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                    keyExtractor={(item) => item.id}
-                />
-                ) : (
-                    <Text style={styles.noChatsText}>No hay chats disponibles.</Text>
-                )}
-                <View style={styles.newChatContainer}>
-                    <TextInput
-                      style={styles.uid2Input}
-                      placeholder="Ingresa uid2"
-                      value={uid2Input}
-                      onChangeText={(text) => this.setState({ uid2Input: text})}  
-                      keyboardType="numeric"
-                    />
-                    <TouchableOpacity
-                      style={styles.newChatButton}
-                      onPress={this.handleNewChatPress}
-                    >
-                        <Text style={styles.newChatButtonText}>Nuevo Chat (para test)</Text>
-                    </TouchableOpacity>
-                </View>
+        if (loading) {
+          return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#21005D" />
+              <Text style={{marginTop: 30}}>Cargando mensajes</Text>
             </View>
-        );
+          )
+        }
+
+          return (
+              <View style={{ flex: 1, padding: 20 }}>
+                  {chats.length > 0 ? (
+                      <FlatList
+                        data={chats}
+                        renderItem={this.renderChatItem}
+                      keyExtractor={(item) => item.id}
+                  />
+                  ) : (
+                      <Text style={styles.noChatsText}>No hay chats disponibles.</Text>
+                  )}
+                  
+                  <TouchableOpacity
+                    style={styles.newChatButton}
+                    onPress={() => this.setState({ visiblePopUp: true })}
+                  >
+                    <Text style={styles.newChatButtonText}>Nuevo Chat</Text>
+                  </TouchableOpacity>
+                  
+                  {this.renderUserSearchBarPopUp()}
+              </View>
+          );
     }
 }
 
@@ -187,18 +322,55 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold'
     },
-    newChatContainer: {
+    uid2Input: {
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        marginBottom: 10,
+        paddingHorizontal: 10,       
+    },
+    popupContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10
+    },
+    closeButton: {
+        marginTop: 30,
+        alignSelf: 'center'
+    },
+    closeButtonText: {
+        color: '#21005D',
+        fontSize: 16 
+    },
+    userListContainer: {
+        height: '70%',
+        marginTop: 30
+    },
+    userItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 10
+        paddingVertical: 10
+    }, 
+    userItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
     },
-    uid2Input: {
-        flex: 1,
-        borderWidth: 1,
-        borderColor: 'grey',
-        marginRight: 10,
-        paddingHorizontal: 10,
-        borderRadius: 5        
+    userPhoto: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 10
+    },
+    userInfo: {
+        justifyContent: 'center'
+    },
+    userName: {
+        fontSize: 16,
+        fontWeight: 'bold'
+    },
+    userEmail: {
+        fontSize: 14,
+        color: 'gray'
     }
 });
 
