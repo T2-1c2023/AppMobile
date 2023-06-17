@@ -16,6 +16,7 @@ import { tokenManager } from '../src/TokenManager';
 import { titleManager } from '../src/TitleManager';
 import { UserContext } from '../src/contexts/UserContext';
 import RadiusInput from '../src/components/RadiusInput';
+import jwt_decode from 'jwt-decode';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -149,7 +150,17 @@ export default class UsersListScreen extends Component {
     }
 
     onPressUser(userId) {
-        console.log("[UserListScreen - onPressUser] UserId: " + userId)
+        const url = API_GATEWAY_URL + 'users/' + userId
+        const token = tokenManager.getAccessToken()
+        const config = { headers: { Authorization: token } }
+        axios.get(url, config)
+            .then(response => {
+                console.log(response.data)
+                this.props.navigation.navigate('ProfileScreen', { data: response.data, owner: userId === jwt_decode(token).id })
+            })
+            .catch(function (error) {
+                console.error('onPressUser ' + error);
+            });
     }
 
     updateUsersState(userIdToUpdate, followed) {
