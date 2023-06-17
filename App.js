@@ -88,6 +88,8 @@ export default class App extends Component {
         Notifications.addNotificationResponseReceivedListener((response) => {
             console.log(response);
         });
+
+    // TODO: en lugar de al registrarse conseguí el token acá (ver si falla lo del platform)
   }
 
   componentWillUnmount() {
