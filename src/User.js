@@ -17,9 +17,6 @@ export async function register(data) {
 
 		// TODO: en google docs aparece como 201 pero funciona con 200
 		if (response.status === 200) {
-			const token = response.data.token;
-			console.log("token actualizado: " + token)
-			await tokenManager.updateTokens(token);
 		}
 	} catch (error) {
 		handleRegisterError(error);

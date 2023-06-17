@@ -54,7 +54,7 @@ export default class RegisterScreen1 extends Component {
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }*/
-        const expo_push_token = '4356' //sólo hasta que ande lo del token
+        const expo_push_token = '' //sólo hasta que ande lo del token
 
         const data = {
             fullname: this.state.fullName,
@@ -68,10 +68,7 @@ export default class RegisterScreen1 extends Component {
         }
         await register(data);
 
-        if (this.userIsLogged()) {
-            const token = tokenManager.getAccessToken();
-            this.props.navigation.replace('PinCodeScreen', {decodedToken: jwt_decode(token), token: token});
-        }
+        this.props.navigation.navigate('PinCodeScreen', {mail: this.state.email});
         
         this.setState({ loading: false });
     }
@@ -315,7 +312,7 @@ export default class RegisterScreen1 extends Component {
                     <TextWithLink
                         text="¿Ya tienes cuenta?"
                         linkedText="Inicia sesión"
-                        onPress={() => 
+                        onPress={() =>
                             this.props.navigation.dispatch(
                                 // Reset del navigation stack para que no se muestre 
                                 // el botón de 'go back' a profile selection screen.
