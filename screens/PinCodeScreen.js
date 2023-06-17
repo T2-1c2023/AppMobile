@@ -29,14 +29,15 @@ export default class PinCodeScreen extends Component {
         const body = { mail: this.props.route.params.mail, code: this.state.pin }
         await axios.post(url, body)
             .then((response) => {
-                tokenManager.updateTokens(response.data.token)
-                const decodedToken = jwt_decode(response.data.token)
-                if (decodedToken.is_athlete)
-                    this.props.navigation.replace('InterestsScreen', { userId: decodedToken.id });
-                else
-                    this.updateContextAndRedirect();
+                tokenManager.updateTokens(response.data.token).then(() => {
+                    const decodedToken = jwt_decode(response.data.token)
+                    if (decodedToken.is_athlete)
+                        this.props.navigation.replace('InterestsScreen', { userId: decodedToken.id });
+                    else
+                        this.updateContextAndRedirect();
+                })
             })
-            .catch((error) => {              
+            .catch((error) => {
                 if (error.response && error.response.status === 401) {
                     Alert.alert('', "El PIN ingresado no es correcto")
                 } else {
@@ -59,12 +60,12 @@ export default class PinCodeScreen extends Component {
         if (tokenManager.isMixedUser())
             this.props.navigation.replace('RoleSelectionScreen')
         else {
-            tokenManager.isAthlete()? await this.context.setAsAthlete()
-            :
-            tokenManager.isTrainer()? await this.context.setAsTrainer()
-            :
-            alert('El usuario no cuenta con un rol asignado')
-    
+            tokenManager.isAthlete() ? await this.context.setAsAthlete()
+                :
+                tokenManager.isTrainer() ? await this.context.setAsTrainer()
+                    :
+                    alert('El usuario no cuenta con un rol asignado')
+
             this.props.navigation.replace('HomeScreen')
 
         }

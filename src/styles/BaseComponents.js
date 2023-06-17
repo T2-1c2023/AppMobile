@@ -196,6 +196,7 @@ export const InputData = React.forwardRef((props, ref) => {
                 mode='outlined'
                 placeholder={props.placeholder}
                 placeholderTextColor='grey'
+                keyboardType = {props.keyboardType !== undefined ? props.keyboardType : 'default' }
                 onChangeText={(newText) => {
                     setText(newText);
                     props.onChangeText(newText)

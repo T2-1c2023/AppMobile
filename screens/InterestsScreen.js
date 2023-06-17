@@ -89,7 +89,8 @@ export default class InterestsScreen extends Component {
     }
 
     loadInterestsTypes() {
-        axios.get(API_GATEWAY_URL + 'training-types', this.emptyBodyWithToken)
+        const url = API_GATEWAY_URL + 'training-types';
+        axios.get(url, this.emptyBodyWithToken)
             .then((response) => {
                 console.log('loadInterestsTypes ' + JSON.stringify(response.data));
                 this.loadInterests(response.data)

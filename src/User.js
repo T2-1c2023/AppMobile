@@ -17,9 +17,11 @@ export async function register(data) {
 
 		// TODO: en google docs aparece como 201 pero funciona con 200
 		if (response.status === 200) {
+			return true
 		}
 	} catch (error) {
 		handleRegisterError(error);
+		return false
 	}
 }
 

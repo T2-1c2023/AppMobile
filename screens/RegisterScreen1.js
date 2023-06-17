@@ -28,12 +28,14 @@ export default class RegisterScreen1 extends Component {
             password: '',
             confirmPassword: '',
             errorMessage: undefined,
+            weight: 0,
         }
 
         this.phoneInput = React.createRef()
         this.emailInput = React.createRef()
         this.passwordInput = React.createRef()
         this.confirmPasswordInput = React.createRef()
+        this.weightInput = React.createRef()
     }
 
     componentDidMount() {
@@ -62,10 +64,12 @@ export default class RegisterScreen1 extends Component {
             password: this.state.password,
             expo_push_token: expo_push_token
         }
-        await register(data);
+        const success = await register(data);
 
-        this.props.navigation.navigate('PinCodeScreen', {mail: this.state.email});
-        
+        if (success) {
+            this.props.navigation.navigate('PinCodeScreen', { mail: this.state.email });
+        }
+
         this.setState({ loading: false });
     }
 
@@ -96,27 +100,28 @@ export default class RegisterScreen1 extends Component {
     }
 
     allFieldsAreValid() {
-        const { fullName, email, password, confirmPassword } = this.state;
-        
+        const { fullName, email, password, confirmPassword, weight } = this.state;
+
         const passwordIsValid = password.length >= 8
         const confirmPasswordIsValid = password == confirmPassword
         const emailIsValid = this.emailIsValid(email)
         const fullNameIsValid = fullName.length > 0
+        const weightIsValid = weight > 0
 
-        return passwordIsValid && confirmPasswordIsValid && emailIsValid && fullNameIsValid
+        return passwordIsValid && confirmPasswordIsValid && emailIsValid && fullNameIsValid && weightIsValid
     }
 
     generateRoleText = () => {
         const { trainer, athlete } = this.props.route.params;
         if (trainer && athlete) {
             return 'Seleccionado: Entrenador y Atleta';
-          } else if (trainer) {
+        } else if (trainer) {
             return 'Seleccionado: Entrenador';
-          } else if (athlete) {
+        } else if (athlete) {
             return 'Seleccionado: Atleta';
-          } else {
+        } else {
             return 'Error: No se ha seleccionado un rol';
-          }
+        }
     };
 
     emailIsValid(email) {
@@ -136,194 +141,212 @@ export default class RegisterScreen1 extends Component {
         return this.state.password != this.state.confirmPassword && this.state.confirmPassword.length > 0
     }
 
+    incorrectWeight() {
+        return this.state.weight <= 0
+    }
+
     render() {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#21005D" />
-                    <Text style={{marginTop: 30}}>Creating account, please wait</Text>
+                    <Text style={{ marginTop: 30 }}>Creating account, please wait</Text>
                 </View>
             )
         } else {
             return (
-                <ScrollView 
+                <ScrollView
                     automaticallyAdjustKeyboardInsets={true}
                     keyboardShouldPersistTaps='handled'
                     style={styles.scrollView}
                 >
-                <View style={styles.container}>
-                    <LoginImage 
-                        style={{
-                            marginTop: 30,
-                        }}
-                    />
-
-                    <TextHeader 
-                        body="Ingresa tus datos"
-                    />
- 
-                    <ButtonStandard
-                        onPress={() => this.handleGoogleSignIn()}
-                        title="Registrate con Google"
-                        style={{
-                            marginTop: 30,
-                        }}
-                        whiteMode
-                        icon={({ color, size }) => (
-                            <Image
-                                source={require('../assets/images/google-icon.png')}
-                                style={{ width: 30, height: 30 }}
-                            />
-                        )}
-                    />
-
-                    <DividerWithMiddleText 
-                        text="o"
-                        style={{
-                            marginTop: 15,
-                        }} 
-                    />
-
-                    <TextDetails
-                        body={'Debes completar todos los campos para continuar'}
-                        style={{
-                            marginTop: 15,
-                        }}
-                    />
-
-                    <InputData 
-                        placeholder="Nombre y apellido"
-                        maxLength={30} 
-                        onChangeText={(input) => { 
-                            this.setState({ fullName: input }) 
-                        }}
-                        onSubmitEditing={() => this.phoneInput.current.focus()}
-                        style={{
-                            marginTop: 20,
-                        }} 
-                    />
-
-                    <InputData 
-                        placeholder="Número de teléfono"
-                        ref={this.phoneInput}
-                        maxLength={30} 
-                        onChangeText={(input) => { 
-                            this.setState({ phone: input }) 
-                        }}
-                        onSubmitEditing={() => this.emailInput.current.focus()}
-                        style={{
-                            marginTop: 5,
-                        }} 
-                    />
-
-                    <InputData 
-                        placeholder="Correo electrónico"
-                        ref={this.emailInput}
-                        maxLength={30}
-                        onChangeText={(input) => { 
-                            this.setState({ email: input }) 
-                        }}
-                        onSubmitEditing={() => this.passwordInput.current.focus()}
-                        warningMode = {this.emailWarningMode()}
-                        style={{
-                            marginTop: 5,
-                        }} 
-                    />
-
-                    { this.emailWarningMode() &&
-
-                        <HelperText 
-                            type="error" 
+                    <View style={styles.container}>
+                        <LoginImage
                             style={{
-                                color: 'red',
-                                width: 250,
+                                marginTop: 30,
                             }}
-                        >
-                            El correo es incorrecto
-                        </HelperText>
-                    }
+                        />
 
-                    <InputData 
-                        placeholder="Establecer contraseña"
-                        ref={this.passwordInput}
-                        secureTextEntry={true}
-                        onChangeText={(input) => { 
-                            this.setState({ password: input }) 
-                        }}
-                        onSubmitEditing={() => this.confirmPasswordInput.current.focus()}
-                        warningMode = {this.passwordWarningMode()}
-                        style={{
-                            marginTop: 5,
-                        }} 
-                    />
+                        <TextHeader
+                            body="Ingresa tus datos"
+                        />
 
-                    { this.passwordWarningMode() &&
-
-                        <HelperText 
-                            type="error" 
+                        <ButtonStandard
+                            onPress={() => this.handleGoogleSignIn()}
+                            title="Registrate con Google"
                             style={{
-                                color: 'red',
-                                width: 250,
+                                marginTop: 30,
                             }}
-                        >
-                            La contraseña debe ser más larga
-                        </HelperText>
-                    }
+                            whiteMode
+                            icon={({ color, size }) => (
+                                <Image
+                                    source={require('../assets/images/google-icon.png')}
+                                    style={{ width: 30, height: 30 }}
+                                />
+                            )}
+                        />
 
-                    <InputData 
-                        placeholder="Confirmar contraseña"
-                        ref={this.confirmPasswordInput}
-                        secureTextEntry={true} 
-                        onChangeText={(input) => { 
-                            this.setState({ confirmPassword: input }) 
-                        }}
-                        warningMode = {this.incorrectConfirmPassword()}
-                        style={{
-                            marginTop: 5,
-                        }} 
-                    />
-
-                    { this.incorrectConfirmPassword() &&
-
-                        <HelperText 
-                            type="error" 
+                        <DividerWithMiddleText
+                            text="o"
                             style={{
-                                color: 'red',
-                                width: 250,
+                                marginTop: 15,
                             }}
-                        >
-                            Las contraseñas no coinciden
-                        </HelperText>
-                    }
+                        />
 
-                    <ButtonStandard
-                        title="Siguiente"
-                        onPress={this.handleProceed}
-                        disabled={!this.allFieldsAreValid()}
-                        style={{
-                            marginTop: 25,
-                        }}
-                    />
+                        <TextDetails
+                            body={'Debes completar todos los campos para continuar'}
+                            style={{
+                                marginTop: 15,
+                            }}
+                        />
 
-                    <TextWithLink
-                        text="¿Ya tienes cuenta?"
-                        linkedText="Inicia sesión"
-                        onPress={() =>
-                            this.props.navigation.dispatch(
-                                // Reset del navigation stack para que no se muestre 
-                                // el botón de 'go back' a profile selection screen.
-                                CommonActions.reset({
-                                    index: 0,
-                                    routes: [{ name: 'LoginScreen' }]
-                                })
-                            )
+                        <InputData
+                            placeholder="Nombre y apellido"
+                            maxLength={30}
+                            onChangeText={(input) => {
+                                this.setState({ fullName: input })
+                            }}
+                            onSubmitEditing={() => this.phoneInput.current.focus()}
+                            style={{
+                                marginTop: 20,
+                            }}
+                        />
+
+                        <InputData
+                            placeholder="Número de teléfono"
+                            ref={this.phoneInput}
+                            maxLength={30}
+                            onChangeText={(input) => {
+                                this.setState({ phone: input })
+                            }}
+                            onSubmitEditing={() => this.emailInput.current.focus()}
+                            style={{
+                                marginTop: 5,
+                            }}
+                        />
+
+                        <InputData
+                            placeholder="Correo electrónico"
+                            ref={this.emailInput}
+                            maxLength={30}
+                            onChangeText={(input) => {
+                                this.setState({ email: input })
+                            }}
+                            onSubmitEditing={() => this.passwordInput.current.focus()}
+                            warningMode={this.emailWarningMode()}
+                            style={{
+                                marginTop: 5,
+                            }}
+                        />
+
+                        {this.emailWarningMode() &&
+
+                            <HelperText
+                                type="error"
+                                style={{
+                                    color: 'red',
+                                    width: 250,
+                                }}
+                            >
+                                El correo es incorrecto
+                            </HelperText>
                         }
-                        style={{
-                            marginTop: 30,
-                        }}
-                    />
 
-                </View>
+                        <InputData
+                            placeholder="Establecer contraseña"
+                            ref={this.passwordInput}
+                            secureTextEntry={true}
+                            onChangeText={(input) => {
+                                this.setState({ password: input })
+                            }}
+                            onSubmitEditing={() => this.confirmPasswordInput.current.focus()}
+                            warningMode={this.passwordWarningMode()}
+                            style={{
+                                marginTop: 5,
+                            }}
+                        />
+
+                        {this.passwordWarningMode() &&
+
+                            <HelperText
+                                type="error"
+                                style={{
+                                    color: 'red',
+                                    width: 250,
+                                }}
+                            >
+                                La contraseña debe ser más larga
+                            </HelperText>
+                        }
+
+                        <InputData
+                            placeholder="Confirmar contraseña"
+                            ref={this.confirmPasswordInput}
+                            secureTextEntry={true}
+                            onChangeText={(input) => {
+                                this.setState({ confirmPassword: input })
+                            }}
+                            onSubmitEditing={() => this.weightInput.current.focus()}
+                            warningMode={this.incorrectConfirmPassword()}
+                            style={{
+                                marginTop: 5,
+                            }}
+                        />
+
+                        {this.incorrectConfirmPassword() &&
+
+                            <HelperText
+                                type="error"
+                                style={{
+                                    color: 'red',
+                                    width: 250,
+                                }}
+                            >
+                                Las contraseñas no coinciden
+                            </HelperText>
+                        }
+
+                        <InputData
+                            placeholder="Peso (kg)"
+                            ref={this.weightInput}
+                            onChangeText={(input) => {
+                                this.setState({ weight: input })
+                            }}
+                            keyboardType = 'numeric'
+                            warningMode={this.incorrectWeight()}
+                            style={{
+                                marginTop: 5,
+                            }}
+                        />
+
+                        <ButtonStandard
+                            title="Siguiente"
+                            onPress={this.handleProceed}
+                            disabled={!this.allFieldsAreValid()}
+                            style={{
+                                marginTop: 25,
+                            }}
+                        />
+
+                        <TextWithLink
+                            text="¿Ya tienes cuenta?"
+                            linkedText="Inicia sesión"
+                            onPress={() =>
+                                this.props.navigation.dispatch(
+                                    // Reset del navigation stack para que no se muestre 
+                                    // el botón de 'go back' a profile selection screen.
+                                    CommonActions.reset({
+                                        index: 0,
+                                        routes: [{ name: 'LoginScreen' }]
+                                    })
+                                )
+                            }
+                            style={{
+                                marginTop: 30,
+                            }}
+                        />
+
+                    </View>
                 </ScrollView>
             )
         }
