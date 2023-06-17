@@ -125,7 +125,8 @@ export default class TrainingsList extends Component {
 const trainingStyles = StyleSheet.create({
     trainingContainer: {
         flex:1,
-        height: 100,
+        minHeight: 80,
+        marginTop: 3,
     },
 
     typeText: {
@@ -154,6 +155,7 @@ const trainingStyles = StyleSheet.create({
         fontSize: 16,
         // color: 'grey',
         width: '100%',
+        // backgroundColor: 'green',
         paddingLeft: 10,
         paddingRight: 15,
     },
