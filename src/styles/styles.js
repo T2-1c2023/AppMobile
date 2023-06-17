@@ -187,4 +187,21 @@ export default StyleSheet.create({
 
     buttonStandard: {
     },
+
+    smallButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 50,
+        elevation: 3,
+        height: 30,
+        width: 80,
+      },
+
+      smallButtonText: {
+        fontSize: 10,
+        lineHeight: 21,
+        fontWeight: 'bold',
+        letterSpacing: 0.25,
+        color: 'white',
+      },
 });

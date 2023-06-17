@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text, Pressable } from 'react-native';
-import { ButtonStandard } from '../styles/BaseComponents';
+import { SmallButton } from '../styles/BaseComponents';
 import { downloadImage } from '../../services/Media';
 import { ActivityIndicator } from 'react-native-paper'
 
@@ -104,7 +104,7 @@ class User extends Component {
             )
         else
             return (
-                <ButtonStandard
+                <SmallButton
                     title={title}
                     onPress={this.onPressFollow}
                     greyMode={followed}

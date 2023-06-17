@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Image, TouchableWithoutFeedback, Keyboard, Pressable } from 'react-native';
 import * as reactNative from 'react-native';
 import { Text, Divider, Button, TextInput, IconButton, DefaultTheme } from 'react-native-paper';
 import styles from './styles';
@@ -96,6 +96,20 @@ export const DividerWithLeftText = (props) => {
                 />
             }
         </View>
+    )
+}
+
+export const SmallButton = (props) => {
+    return (
+        <Pressable 
+            style={[styles.smallButton,{backgroundColor: props.greyMode? 'grey' : '#21005D'}]}
+            onPress={props.onPress}
+            disabled={props.disabled}
+        >
+            <Text style={styles.smallButtonText}>
+                {props.title}
+            </Text>
+        </Pressable>
     )
 }
 
