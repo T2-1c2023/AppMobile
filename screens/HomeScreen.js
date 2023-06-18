@@ -333,6 +333,15 @@ class HomeScreen extends Component {
                     </Drawer.Screen>
                 : null }
 
+                {this.context.isAthlete ? 
+                    <Drawer.Screen 
+                        name="             Recomendados"
+                    >
+                        {() => <TrainingsListScreen data={this.data} navigation={this.props.navigation} type={'recommended'} athleteId={this.data.id} />}
+
+                    </Drawer.Screen>
+                : null }
+
                 {this.context.isTrainer ? 
                     <Drawer.Screen 
                         name="Entrenamientos creados"
