@@ -38,6 +38,7 @@ export default class UsersListScreen extends Component {
         this.onChangeRadius = this.onChangeRadius.bind(this)
         this.onPressFilterSearch = this.onPressFilterSearch.bind(this)
         this.onPressSearch = this.onPressSearch.bind(this)
+        this.onPressCancelFilterSearch = this.onPressCancelFilterSearch.bind(this)
 
 
         // TODO: verificar si se termina usando
@@ -49,6 +50,13 @@ export default class UsersListScreen extends Component {
             users: [],
             loading: true,
             visibleFilter: false,
+            radiusFilterEnabled: false,
+            radiusFilter: 0,
+            showAthletesFilter: false,
+            showTrainersFilter: false,
+        }
+
+        this.previusFilters = {
             radiusFilterEnabled: false,
             radiusFilter: 0,
             showAthletesFilter: false,
@@ -132,7 +140,6 @@ export default class UsersListScreen extends Component {
     }
 
     async componentDidMount() {
-
         await this.loadUsers()
 
     }
@@ -146,7 +153,15 @@ export default class UsersListScreen extends Component {
     }
 
     onPressFilter() {
+        this.previusFilters = {
+            radiusFilterEnabled: this.state.radiusFilterEnabled,
+            radiusFilter: this.state.radiusFilter,
+            showAthletesFilter: this.state.showAthletesFilter,
+            showTrainersFilter: this.state.showTrainersFilter,
+        }
+
         this.setState({ visibleFilter: true })
+
     }
 
     onPressUser(userId) {
@@ -282,6 +297,11 @@ export default class UsersListScreen extends Component {
         this.loadUsers()
     }
 
+    onPressCancelFilterSearch() {
+        this.setState({ visibleFilter: false })
+        this.setState(this.previusFilters)
+    }
+
     filterPopUp() {
         return (
 
@@ -315,12 +335,14 @@ export default class UsersListScreen extends Component {
 
                         {this.renderRadiusFilter()}
 
-                        
-                        <ButtonStandard
-                            onPress={this.onPressFilterSearch}
-                            title="Buscar"
+                        <ConfirmationButtons
+                            confirmationText={"Buscar"}
+                            cancelText="Cancelar"
+                            onConfirmPress={this.onPressFilterSearch}
+                            onCancelPress={this.onPressCancelFilterSearch}
                             style={{
-                                marginTop: 50,
+                                marginTop: 40,
+                                alignSelf: 'center',
                             }}
                         />
                     </View>

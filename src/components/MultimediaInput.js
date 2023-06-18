@@ -32,12 +32,12 @@ export default class MultimediaInput extends Component {
 
     // TODO: mostrar la imagen en grande y opción de eliminarla.
     handleImagePress = (localPath) => {
-        alert('Local Image Pressed: ' + localPath);
+        // alert('Local Image Pressed: ' + localPath);
     }
 
     // TODO: mostrar la imagen en grande y opción de eliminarla.
     handleImageAlredyUploadPress = (uploadUri) => {
-        alert('Uploaded Image Pressed: ' + uploadUri);
+        // alert('Uploaded Image Pressed: ' + uploadUri);
     }
 
     handleUploadPress = async () => {

@@ -279,6 +279,7 @@ export default class GoalScreen extends Component {
             <ConfirmationButtons
                 confirmationText={creationMode? "Crear" : "Guardar cambios"}
                 cancelText="Cancelar"
+                disabled={this.state.title.length === 0}
                 onConfirmPress={creationMode? this.handleCreatePress : this.onPressSaveChanges}
                 onCancelPress={this.handleCancelPress}
                 style={{

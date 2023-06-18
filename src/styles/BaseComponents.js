@@ -281,7 +281,10 @@ export const TextBox = (props) => {
                 onChangeText={(newText) => handleChange(newText)}
                 value={props.value}
                 maxLength={props.maxLength}
-                placeholder={props.placeholder? props.placeholder : "Escribe aquí..."}
+                placeholder={
+                    props.placeholder? props.placeholder : 
+                        props.nonEditable? "" : "Escribe aquí..."
+                }
                 selectionColor="grey"
                 style={[textStyle, 
                     { marginTop: 10 }

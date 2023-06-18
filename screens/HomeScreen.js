@@ -86,7 +86,10 @@ class HomeScreen extends Component {
         return (
             <DrawerContentScrollView {...props}>
                 <DrawerItem 
-                    label={ this.context.name + " - Rol: " + (this.context.isTrainer? "Entrenador" : "Atleta")}
+                    label={ this.context.name }
+                />
+                <DrawerItem 
+                    label={ "Rol: " + (this.context.isTrainer? "Entrenador" : "Atleta")}
                 />
                 <DrawerItemList {...props} />
                 <DrawerItem 

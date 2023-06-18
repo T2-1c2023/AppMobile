@@ -160,6 +160,7 @@ const radiusStyles = StyleSheet.create({
     textInput: {
         backgroundColor: 'white',
         flex: 1,
+        color: 'black',
     },
 
 
