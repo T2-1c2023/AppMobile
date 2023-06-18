@@ -39,6 +39,12 @@ export default class NewTrainingScreen extends Component {
             initialDescription: '',
             initialLevel: 'basic',
             //initialTrainingType: 1,
+            met: 0,
+            metChanged: false,  //para que no aparezca el warning desde el principio, sólo cuando se escribió algo
+            initialMet: 0,
+            distance: 0,
+            distanceChanged: false, //ídem metChanged
+            initialDistance: 0,
         }
     }
 
@@ -73,6 +79,8 @@ export default class NewTrainingScreen extends Component {
                     initialTitle: training.title,
                     initialDescription: training.description,
                     initialLevel: this.levelStrToInt(training.severity),
+                    initialMet: training.met,
+                    initialDistance: training.distance,
                     //TO_DO trainingTypeId: 
                 });
             })
@@ -88,6 +96,8 @@ export default class NewTrainingScreen extends Component {
             "description": this.state.description,
             "type_id": this.state.trainingTypeId,
             "severity": this.levelStrToInt(this.state.level),
+            "met": this.state.met,
+            "distance": this.state.distance,
         }
         //console.log(body);
         //console.log(API_GATEWAY_URL + 'trainings')
@@ -134,13 +144,15 @@ export default class NewTrainingScreen extends Component {
     }
 
     allFieldsAreValid() {
-        const { title, description, trainingTypeId } = this.state;
+        const { title, description, trainingTypeId, met, metChanged } = this.state;
 
         const titleIsValid = title.length >= MIN_TRAINING_TITLE
         const descriptionIsValid = description.length >= MIN_TRAINING_DESCRIPTION
         const trainingTypeIdIsValid = trainingTypeId > 0
+        const metIsValid = this.state.met > 0
+        const distanceIsValid = this.state.distance > 0
 
-        return titleIsValid && descriptionIsValid && trainingTypeIdIsValid
+        return titleIsValid && descriptionIsValid && trainingTypeIdIsValid && metIsValid && distanceIsValid
     }
 
     titleWarningMode() {
@@ -149,6 +161,14 @@ export default class NewTrainingScreen extends Component {
 
     descriptionWarningMode() {
         return this.state.description.length > 0 && this.state.description.length < MIN_TRAINING_DESCRIPTION
+    }
+
+    metWarningMode() {
+        return this.state.metChanged && this.state.met <= 0
+    }
+    
+    distanceWarningMode() {
+        return this.state.distanceChanged && this.state.distance <= 0
     }
 
     trainingTypeWarningMode() {
@@ -253,6 +273,53 @@ export default class NewTrainingScreen extends Component {
                             marginTop: 10,
                         }}
                     />
+
+
+                    <TextBox
+                        title="MET"
+                        onChangeText={(met) => this.setState({ met: parseFloat(met), metChanged: true })}
+                        placeholder={this.state.initialMet.toString()}
+                        keyboardType = 'numeric'
+                        maxLength={10}
+                        style={{
+                            marginTop: 5,
+                        }}
+                    />
+
+                    {this.metWarningMode() &&
+                        <HelperText
+                            type="error"
+                            style={{
+                                color: 'red',
+                                width: 250,
+                            }}
+                        >
+                            El MET debe ser mayor a 0
+                        </HelperText>
+                    }
+
+                    <TextBox
+                        title="Distancia (km)"
+                        onChangeText={(distance) => this.setState({ distance: parseFloat(distance), distanceChanged: true })}
+                        placeholder={this.state.initialDistance.toString()}
+                        keyboardType = 'numeric'
+                        maxLength={10}
+                        style={{
+                            marginTop: 5,
+                        }}
+                    />
+
+                    {this.distanceWarningMode() &&
+                        <HelperText
+                            type="error"
+                            style={{
+                                color: 'red',
+                                width: 250,
+                            }}
+                        >
+                            La distancia debe ser mayor a 0
+                        </HelperText>
+                    }
 
                     <DividerWithLeftText
                         text="Ubicación"

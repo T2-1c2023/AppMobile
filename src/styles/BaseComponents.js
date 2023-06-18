@@ -281,6 +281,7 @@ export const TextBox = (props) => {
                 onChangeText={(newText) => handleChange(newText)}
                 value={props.value}
                 maxLength={props.maxLength}
+                keyboardType = {props.keyboardType !== undefined ? props.keyboardType : 'default' }
                 placeholder={
                     props.placeholder? props.placeholder : 
                         props.nonEditable? "" : "Escribe aquí..."
