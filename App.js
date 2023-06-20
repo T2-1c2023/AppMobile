@@ -40,8 +40,9 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import FlashMessage  from 'react-native-flash-message';
 import * as Notifications from 'expo-notifications';
 
-// Chat Test (borrar)
-import ChatTest from './screens/test_screens/ChatTest';
+import ChatScreen from './screens/ChatScreen';
+
+// TODO: borrar estas pantallas de test cuando no las necesites.
 import NotificationsTest from './screens/test_screens/NotificationsTest';
 import VerificationTest from './screens/test_screens/VerificationTest';
 
@@ -123,11 +124,11 @@ export default class App extends Component {
               // headerShown: false
             }}
           >
-            {/* <  TESTS ---------------------------------------------------------- */}
             <Stack.Screen 
-              name='ChatTest'
-              component={ChatTest}
+              name='ChatScreen'
+              component={ChatScreen}
             />
+            {/* <  TESTS ---------------------------------------------------------- */}
             <Stack.Screen 
               name='NotificationsTest'
               component={NotificationsTest}

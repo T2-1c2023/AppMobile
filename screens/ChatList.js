@@ -238,7 +238,7 @@ class ChatList extends Component {
         return (
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate(
-                'ChatTest', 
+                'ChatScreen', 
                 { chatId: item.id, 
                   data: this.props.data }
               )}

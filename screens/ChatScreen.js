@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import database from '@react-native-firebase/database';
 
-class ChatTest extends Component {
+class ChatScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
             chatId: props.route.params.chatId, 
             messages: [],
             inputText: '',
-            uid1: props.route.params.data.id,
-            uid2: 0 // TODO: probar con otro usuario
+            uid1: props.route.params.data.id
         }
     };
 
@@ -100,4 +99,4 @@ class ChatTest extends Component {
     }
 }
 
-export default ChatTest;
+export default ChatScreen;

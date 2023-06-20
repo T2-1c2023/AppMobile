@@ -24,7 +24,6 @@ import UsersListScreen from './UsersListScreen';
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
 import NotificationsTest from './test_screens/NotificationsTest';
-import ChatTest from './test_screens/ChatTest';
 import VerificationTest from './test_screens/VerificationTest';
 
 
