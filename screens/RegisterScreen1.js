@@ -48,11 +48,11 @@ export default class RegisterScreen1 extends Component {
 
         this.setState({ loading: true })
         // TODO: fix
-        /*let expo_push_token = await registerForPushNotificationsAsync();
+        let expo_push_token = await registerForPushNotificationsAsync();
         if (expo_push_token === undefined) {
             expo_push_token = '';
-        }*/
-        const expo_push_token = '' //sólo hasta que ande lo del token
+        }
+        //const expo_push_token = '' //sólo hasta que ande lo del token
 
         const data = {
             fullname: this.state.fullName,
@@ -81,8 +81,8 @@ export default class RegisterScreen1 extends Component {
         const is_trainer = this.props.route.params.trainer;
 
         // TODO: fix
-        // let expo_push_token = await registerForPushNotificationsAsync();
-        let expo_push_token = undefined;
+         let expo_push_token = await registerForPushNotificationsAsync();
+        //let expo_push_token = undefined;
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
