@@ -240,7 +240,10 @@ class ChatList extends Component {
               onPress={() => this.props.navigation.navigate(
                 'ChatScreen', 
                 { chatId: item.id, 
-                  data: this.props.data }
+                  data: this.props.data,
+                  otherUserName: item.fullname,
+                  userPhoto: photo
+                }
               )}
               style={styles.chatItem}
             >
