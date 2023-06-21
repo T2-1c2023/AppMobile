@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, Image } from 'react-native';
 import database from '@react-native-firebase/database';
 
 class ChatScreen extends Component {
@@ -11,12 +11,27 @@ class ChatScreen extends Component {
             inputText: '',
             uid1: props.route.params.data.id
         }
+        console.log(props.route.params.otherUserName);
     };
 
     // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje 
 
     componentDidMount() {
         const { chatId } = this.state;
+
+        // Update header
+        const { otherUserName, userPhoto } = this.props.route.params;
+        this.props.navigation.setOptions({
+            headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                    source={userPhoto}
+                    style={{ width: 40, height: 40, borderRadius: 20, marginLeft: -50, marginRight: 10 }}
+                />
+                <Text style={{ fontSize: 20 }}>{otherUserName}</Text>
+                </View>
+            ),
+        });
 
         const reference = database().ref('chats/' + chatId);
 
