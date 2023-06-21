@@ -96,9 +96,10 @@ export default class TrainingReviewScreen extends Component {
         })
             .then((response) => {
                 //this.setState({ goals: response.data });
-                console.log("response data " + response.data);
+                console.log("response data " + JSON.stringify(response.data));
                 if (response.data.length > 0) {
-                    this.setState({axiosReviewMethod:axios.patch});//TO_DO ver si se puede juntar review y rating, o hacer otra query
+                    this.setState({axiosReviewMethod:axios.patch, initialReview: response.data[0].review});
+                    this.setState({axiosReviewMethod:axios.patch});
                 }
                 
                 
