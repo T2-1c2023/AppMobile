@@ -34,6 +34,7 @@ export default class ProfileEditionScreen extends Component {
         this.handleProfilePicturePress = this.handleProfilePicturePress.bind(this);
         this.loadUserInfo = this.loadUserInfo.bind(this);
         this.onPressChangeRole = this.onPressChangeRole.bind(this);
+        this.onPressEditInterests = this.onPressEditInterests.bind(this);
 
         this.emptyBodyWithToken = { headers: {
             Authorization: tokenManager.getAccessToken()
@@ -270,6 +271,10 @@ export default class ProfileEditionScreen extends Component {
         this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
 
+    onPressEditInterests = () => {
+        this.props.navigation.navigate('InterestsScreen', { userId: jwt_decode(this.emptyBodyWithToken.headers.Authorization).id, from:'edit' });
+    }
+
     onPressEnrollFingerprint = () => {
         this.props.navigation.navigate('ValidatePasswordScreen', {data: this.props.route.params.data});
     }
@@ -294,9 +299,14 @@ export default class ProfileEditionScreen extends Component {
         return (
             <React.Fragment>
                 <TextLinked
+                    linkedText={'Editar intereses'}
+                    onPress={this.onPressEditInterests}
+                    style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 50}}
+                />
+                <TextLinked
                     linkedText={'Cambiar contraseña'}
                     onPress={this.onPressChangePassword}
-                    style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 50}}
+                    style={{alignSelf: 'flex-start', marginLeft: 30, marginTop: 30}}
                 />
                 <TextLinked
                     linkedText={'Registrar huella'}

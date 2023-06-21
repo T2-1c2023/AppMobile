@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Button, ScrollView, ActivityIndicator, Text } from 'react-native';
+import { View, Button, ScrollView, ActivityIndicator, Text, Share } from 'react-native';
 import { DaysInput, DividerWithLeftText, TextBox, ButtonStandard, ConfirmationButtons } from '../src/styles/BaseComponents';
 import MultimediaInput from '../src/components/MultimediaInput';
 import styles from '../src/styles/styles';
@@ -9,7 +9,7 @@ import Constants from 'expo-constants'
 import { tokenManager } from '../src/TokenManager';
 import { IconButton } from 'react-native-paper';
 import { UserContext } from '../src/contexts/UserContext';
-
+import { downloadImage } from '../services/Media';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -77,7 +77,8 @@ export default class GoalScreen extends Component {
             description: goalData.description,
             objective: goalData.objective,
         }, 
-            this.validateAndSetEditHeader(creatorId)
+            this.validateAndSetEditHeader(creatorId),
+            this.validateAndSetShareHeader()
         )
 
         if (this.mode === Mode.Edit)
@@ -93,6 +94,7 @@ export default class GoalScreen extends Component {
         this.onPressSaveChanges = this.onPressSaveChanges.bind(this)
         this.onPressCompleteGoal = this.onPressCompleteGoal.bind(this)
         this.onPressDeleteButton = this.onPressDeleteButton.bind(this)
+        this.onPressShareGoal = this.onPressShareGoal.bind(this)
 
         this.props = props
 
@@ -171,6 +173,50 @@ export default class GoalScreen extends Component {
                 ),
             });
         }
+    }
+
+    validateAndSetShareHeader() {
+        if (this.goalCompleted) {
+            this.props.navigation.setOptions({
+                headerRight: () => (
+                    <IconButton
+                        icon={'share'}
+                        iconColor='#21005D'
+                        size={30}
+                        onPress={this.onPressShareGoal} />
+                ),
+            });
+        }
+    }
+
+    async onPressShareGoal() {
+        console.log('onPressShareGoal');
+        console.log(this.initialImageIds[0])
+        
+        const uri = await downloadImage(this.initialImageIds[0])
+
+
+
+
+        console.log(uri)
+        try {
+            const result = await Share.share({
+                message: '¡Completé mi meta ' + this.state.title + ' - ' + this.state.description + ' en la app de FiuFit!',
+                
+            });
+            console.log(JSON.stringify(result))
+            if (result.action === Share.sharedAction) {
+              if (result.activityType) {
+                // shared with activity type of result.activityType
+              } else {
+                // shared
+              }
+            } else if (result.action === Share.dismissedAction) {
+              // dismissed
+            }
+          } catch (error) {
+            console.log(error.message);
+          }
     }
 
     getPatchUrl() {
@@ -435,6 +481,7 @@ export default class GoalScreen extends Component {
                         {this.shouldRenderDeleteButton() &&
                             this.renderDeleteButton()
                         }
+
                     </View>
 
                 </ScrollView>

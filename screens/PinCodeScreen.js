@@ -32,7 +32,7 @@ export default class PinCodeScreen extends Component {
                 tokenManager.updateTokens(response.data.token).then(() => {
                     const decodedToken = jwt_decode(response.data.token)
                     if (decodedToken.is_athlete)
-                        this.props.navigation.replace('InterestsScreen', { userId: decodedToken.id });
+                        this.props.navigation.replace('InterestsScreen', { userId: decodedToken.id, from:'pincode' });
                     else
                         this.updateContextAndRedirect();
                 })

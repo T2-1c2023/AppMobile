@@ -124,7 +124,12 @@ export default class InterestsScreen extends Component {
         if (this.state.selectedInterestsIds.length < 2)
             Alert.alert('', '¡Debés seleccionar al menos dos intereses!')
         else
-            this.props.navigation.replace('HomeScreen');
+            if (this.props.route.params.from == 'edit') {
+                this.props.navigation.goBack();
+            } else {
+                this.props.navigation.replace('HomeScreen');
+            } 
+        
     }
 
     componentDidMount() {
