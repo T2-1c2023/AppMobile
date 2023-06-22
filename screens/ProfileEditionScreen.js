@@ -73,8 +73,20 @@ export default class ProfileEditionScreen extends Component {
             return;
         }
 
-        const location = await Location.getCurrentPositionAsync({});
-        this.setState({ location: location });
+        Alert.alert(
+            'Actualizar ubicación',
+            'Desea modificar la ubicación con su ubicación actual?',
+            [
+                { text: 'Cancelar', style: 'cancel'},
+                {
+                  text: 'Continuar',
+                  onPress: async () => {
+                    const location = await Location.getCurrentPositionAsync({});
+                    this.setState({ location: location });
+                  }
+                }
+            ]
+        )
     }
 
     async loadUserInfo() {
@@ -281,6 +293,23 @@ export default class ProfileEditionScreen extends Component {
         )
     }
 
+    renderLocationField() {
+        return (
+          <React.Fragment>
+            <Text style={{ marginTop: 25, marginLeft: 25, alignSelf: 'flex-start' }}>Ubicación:</Text>
+            <TouchableOpacity 
+              onPress={this.getLocationPermission} 
+              style={{marginLeft: 25, alignSelf: 'flex-start' }}
+            >
+              <Text>
+                {this.state.location ? JSON.stringify(this.state.location) : 'Ubicación no disponible. Actualizar ubicación.'}
+              </Text>
+            </TouchableOpacity>
+            <View style={editionStyles.divider} />
+          </React.Fragment>
+        )
+    }
+
     onPressChangePassword = () => {
         this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
@@ -356,14 +385,9 @@ export default class ProfileEditionScreen extends Component {
                         {this.renderProfilePic()}
                         {this.renderNameField()}
 
-                        <TouchableOpacity onPress={this.getLocationPermission}>
-                            <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>
-                                Ubicación: {this.state.location ? JSON.stringify(this.state.location) : 'No hay ubicación' }
-                            </Text>
-                        </TouchableOpacity>
+                        {this.renderLocationField()}
                         
                         {this.renderPhoneField()}
-                        <View style={editionStyles.divider} />
 
                         {this.renderLinks()}
 
@@ -442,10 +466,11 @@ const editionStyles = StyleSheet.create({
     },
 
     divider: { 
-        width: '100%', 
-        height: 1, 
+        width: '95%', 
+        height: 2, 
         backgroundColor: 'grey',
-        marginTop: 50, 
+        marginTop: 10, 
+        opacity: 0.5
     },
 });
 

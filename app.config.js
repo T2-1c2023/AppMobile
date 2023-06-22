@@ -42,7 +42,7 @@ export default {
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow FiuFitApp to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Permitir a FiuFitApp usar tu ubicación."
         }
       ]
     ],
