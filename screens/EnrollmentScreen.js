@@ -117,7 +117,8 @@ export default class EnrollmentScreen extends Component {
     }
 
     componentDidMount() {
-        //titleManager.setTitle(this.props.mavigation, "Agregar huella", 22)
+        const title = this.props.route.params.from === 'LoginScreen' ? 'Ingresar huella' : 'Registrar huella'
+        titleManager.setTitle(this.props.navigation, title, 22)
         LocalAuthentication.hasHardwareAsync().then((hasHardware) => {
             if (!hasHardware) Alert.alert('', 'Tu celular no permite almacenar la huella');
         })

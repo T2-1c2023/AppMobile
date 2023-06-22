@@ -58,12 +58,12 @@ export default class ProfileEditionScreen extends Component {
     }
 
     async componentDidMount() {
+        titleManager.setTitle(this.props.navigation, "Editar perfil", 22)
         try {
             this.loadUserInfo()
         } catch (error) {
             console.log(error)
         }
-        titleManager.setTitle(this.props.navigation, "Editar perfil", 22)
     }
 
     getLocationPermission = async () => {

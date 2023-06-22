@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
 import { downloadImage } from '../services/Media';
+import { titleManager } from '../src/TitleManager';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -24,6 +25,7 @@ class ChatList extends Component {
     }
 
     async componentDidMount() {
+      titleManager.setTitle(this.props.navigation, 'Chats', 22)
       this.setState({ loading: true });
       await this.fetchChats();
       await this.loadUsers();
