@@ -11,7 +11,6 @@ class ChatScreen extends Component {
             inputText: '',
             uid1: props.route.params.data.id
         }
-        console.log(props.route.params.otherUserName);
     };
 
     // TODO: Mejorar formato de mensajes: mostrar fecha abajo del mensaje 
@@ -106,7 +105,7 @@ class ChatScreen extends Component {
                     onChangeText={(text) => this.setState({ inputText: text })}
                 />
                 <TouchableOpacity onPress={this.sendMessage} style={{ padding: 10, backgroundColor: '#21005D', borderRadius: 5}}>
-                    <Text style={{ color: 'white' }}>Send</Text>
+                    <Text style={{ color: 'white' }}>Enviar</Text>
                 </TouchableOpacity>
             </View>
           </View>

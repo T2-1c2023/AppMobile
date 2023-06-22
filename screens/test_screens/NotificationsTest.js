@@ -5,14 +5,14 @@ import * as Notifications from 'expo-notifications';
 
 // Handler that will cause the notification to show the alert
 // (even when user is not currently using the application)
-Notifications.setNotificationHandler({
+/*Notifications.setNotificationHandler({
     handleNotification: async () => ({
         // Configuration for when a notification is received
         shouldShowAlert: true,
         shouldPlaySound: false,
         shouldSetBadge: false
     })
-});
+});*/
 
 class NotificationsTest extends Component {
     constructor(props) {
@@ -22,11 +22,11 @@ class NotificationsTest extends Component {
             notification: false,
         };
         // So that I can unsubscribe from listeners on componentWillUnmount
-        this.notificationListener = React.createRef();
-        this.responseListener = React.createRef();
+        //this.notificationListener = React.createRef();
+        //this.responseListener = React.createRef();
     }
 
-    componentDidMount() {
+    /*componentDidMount() {
         this.registerForPushNotificationsAsync().then((token) => 
             this.setState({ expoPushToken: token })
         );
@@ -100,7 +100,7 @@ class NotificationsTest extends Component {
             },
             trigger: { seconds: 2},
         });
-    };
+    };*/
 
     render() {
         const  { expoPushToken, notification } = this.state;
@@ -119,10 +119,6 @@ class NotificationsTest extends Component {
                     <Text>Title: {notification && notification.request.content.body} </Text>
                     <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
                 </View>
-                <Button
-                    title="Press to schedule a notification"
-                    onPress={this.schedulePushNotification}
-                />
             </View>
         )
     }

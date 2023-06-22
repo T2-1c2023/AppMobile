@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView, Button } from 'react-native';
 import styles from '../src/styles/styles';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native-paper';
@@ -21,6 +21,8 @@ import { CommonActions } from '@react-navigation/native';
 import { TextInput, HelperText } from 'react-native-paper';
 
 import { UserContext } from '../src/contexts/UserContext';
+
+import * as Location from 'expo-location';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -46,7 +48,8 @@ export default class ProfileEditionScreen extends Component {
             fullname: props.route.params.data.fullname, 
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
-            newPhone: props.route.params.data.phone_number
+            newPhone: props.route.params.data.phone_number,
+            location: null
         }
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -61,6 +64,17 @@ export default class ProfileEditionScreen extends Component {
             console.log(error)
         }
         titleManager.setTitle(this.props.navigation, "Editar perfil", 22)
+    }
+
+    getLocationPermission = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permiso para acceder a la ubicación denegado');
+            return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        this.setState({ location: location });
     }
 
     async loadUserInfo() {
@@ -342,13 +356,17 @@ export default class ProfileEditionScreen extends Component {
                         {this.renderProfilePic()}
                         {this.renderNameField()}
 
-                        {/* TODO: reemplazar por input de nueva ubicación */}
-                        <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
+                        <TouchableOpacity onPress={this.getLocationPermission}>
+                            <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>
+                                Ubicación: {this.state.location ? JSON.stringify(this.state.location) : 'No hay ubicación' }
+                            </Text>
+                        </TouchableOpacity>
                         
                         {this.renderPhoneField()}
                         <View style={editionStyles.divider} />
 
                         {this.renderLinks()}
+
                     </View>
                 </ScrollView>
             )
