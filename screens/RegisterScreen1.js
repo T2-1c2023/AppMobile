@@ -8,11 +8,12 @@ import styles from '../src/styles/styles';
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
 import { googleSignIn } from '../src/GoogleAccount';
-import jwt_decode from 'jwt-decode';
 // Navigation
 import { CommonActions } from '@react-navigation/native';
 // Notifications
 import { registerForPushNotificationsAsync } from '../src/Notifications';
+// Location
+import * as Location from 'expo-location';
 
 import { titleManager } from '../src/TitleManager';
 
@@ -29,6 +30,10 @@ export default class RegisterScreen1 extends Component {
             confirmPassword: '',
             errorMessage: undefined,
             weight: 0,
+            location: {
+              latitude: 0,
+              longitude: 0
+            }
         }
 
         this.phoneInput = React.createRef()
@@ -47,12 +52,11 @@ export default class RegisterScreen1 extends Component {
             return
 
         this.setState({ loading: true })
-        // TODO: fix
+
         let expo_push_token = await registerForPushNotificationsAsync();
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
-        //const expo_push_token = '' //sólo hasta que ande lo del token
 
         const data = {
             fullname: this.state.fullName,
@@ -62,9 +66,15 @@ export default class RegisterScreen1 extends Component {
             is_trainer: this.props.route.params.trainer,
             is_athlete: this.props.route.params.athlete,
             password: this.state.password,
-            expo_push_token: expo_push_token
+            expo_push_token: expo_push_token,
+            location: {
+                latitude: this.state.location.latitude,
+                longitude: this.state.location.longitude
+            },
+            weight: parseInt(this.state.weight, 10)
         }
         const success = await register(data);
+        console.log(success)
 
         if (success) {
             this.props.navigation.navigate('PinCodeScreen', { mail: this.state.email });
@@ -80,12 +90,11 @@ export default class RegisterScreen1 extends Component {
         const is_athlete = this.props.route.params.athlete;
         const is_trainer = this.props.route.params.trainer;
 
-        // TODO: fix
-         let expo_push_token = await registerForPushNotificationsAsync();
-        //let expo_push_token = undefined;
+        let expo_push_token = await registerForPushNotificationsAsync();
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
+        // TODO: agregar peso y ubicación (re-ver porque no haces igual que en el login normal)
         await googleSignIn(phone_number, is_athlete, is_trainer, expo_push_token);
 
         if (this.userIsLogged()) {
@@ -145,7 +154,21 @@ export default class RegisterScreen1 extends Component {
         return this.state.weight <= 0
     }
 
+    getLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permiso para acceder a la ubicación denegado');
+            return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        // TODO: fijate como traducir latitud y longitud.
+        const { latitude, longitude } = location.coords;
+        this.setState({ location: { latitude, longitude } });
+    }
+
     render() {
+        const { latitude, longitude } = this.state.location;
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -318,6 +341,18 @@ export default class RegisterScreen1 extends Component {
                                 marginTop: 5,
                             }}
                         />
+
+                        <ButtonStandard
+                          title="Agregar Ubicación (opcional)"
+                          onPress={this.getLocation}
+                          style={{ marginTop: 10 }}
+                        />
+
+                        {(latitude != 0 && longitude != 0) && (
+                            <TextDetails
+                                body={`Latitude: ${latitude}\nLongitude: ${longitude}\n(Muestro así de forma temporal)`}
+                            />
+                        )}
 
                         <ButtonStandard
                             title="Siguiente"

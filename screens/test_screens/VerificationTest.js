@@ -65,6 +65,7 @@ class VerificationTest extends Component {
             video_id: videoId      
         }
 
+        // TODO: hacer un handleo de responses adecuado
         try {
             const response = await axios.post(url, data, { headers });
             console.log(response.data);
