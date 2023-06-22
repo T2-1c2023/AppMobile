@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { TextDetails } from '../src/styles/BaseComponents';
 import { TextBox } from '../src/styles/BaseComponents';
@@ -165,6 +165,10 @@ export default class TrainingReviewScreen extends Component {
 
     render() {
         return (
+            <ScrollView
+                automaticallyAdjustKeyboardInsets={true}
+                style={styles.scrollView}
+            >
             <View style={styles.container}>
 
                 <TextDetails
@@ -227,7 +231,7 @@ export default class TrainingReviewScreen extends Component {
                 
 
             </View>
-
+            </ScrollView>
         )
     }
 }
@@ -240,12 +244,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#DED8E1',
         flex: 1,
         alignItems: 'center',
-        //marginBottom: 20,
-    },
-    heading: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 80,
     },
     stars: {
         display: 'flex',
