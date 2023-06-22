@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, Image, StyleSheet, Pressable } from 'react-native';
+import { View, ScrollView, Text, Image, StyleSheet, Pressable, Alert } from 'react-native';
 import { DividerWithLeftText, TextBox, TextLinked } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import { ConfirmationButtons, ButtonStandard, ButtonWithLeftIcon } from '../src/styles/BaseComponents';
@@ -322,22 +322,31 @@ export default class TrainingScreen extends Component {
     }
 
     handleDataEditPress() {
+        
         this.props.navigation.navigate('NewTrainingScreen', { trainerData: tokenManager.getAccessToken(), isNew: false, trainingId: this.props.route.params.trainingId })
     }
 
     handleDeletePress() {
-        axios.delete(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
-            headers: {
-                Authorization: tokenManager.getAccessToken()
-            }
-        })
-            .then(response => {
-                alert('Entrenamiento eliminado');
-                this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type: 'created', trainerId:this.state.trainer.id });//al pasársela así cree que es la segunda pantalla, no desde drawer?
-            })
-            .catch(function (error) {
-                console.log('handleDeletePress ' + error);
-            });
+        Alert.alert('', '¿Desea eliminar este entrenamiento?', [
+        {
+            text: 'Cancelar',
+            style: 'cancel',
+        },
+        {   text: 'Eliminar',
+            onPress: () => axios.delete(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, {
+                                headers: {
+                                    Authorization: tokenManager.getAccessToken()
+                                }
+                            })
+                            .then(response => {
+                                alert('Entrenamiento eliminado');
+                                this.props.navigation.replace('TrainingsListScreen', { token: tokenManager.getAccessToken(), type: 'created', trainerId:this.state.trainer.id });//al pasársela así cree que es la segunda pantalla, no desde drawer?
+                            })
+                            .catch(function (error) {
+                                console.log('handleDeletePress ' + error);
+                            })
+        },
+    ]);
     }
 
     handleBackToTrainings() {
