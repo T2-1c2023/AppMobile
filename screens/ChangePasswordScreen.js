@@ -38,7 +38,7 @@ export default class ChangePasswordScreen extends Component {
             'Cambio de contraseña',
             'Esta seguro que desea cambiar la contraseña?',
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: 'Cancelar', style: 'cancel' },
                 { text: 'Continuar', onPress: this.changePassword}
             ],
             { cancelable: false }

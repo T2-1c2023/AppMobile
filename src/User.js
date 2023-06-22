@@ -86,57 +86,57 @@ export async function logInGoogleAcc(firebaseToken) {
 // Errors when user tries to register with mail/password
 function handleRegisterError(error) {
 	if (error.response && error.response.status === 409) {
-		Alert.alert('Email already registered', 'Please try signing in or use a different email address.');
+		Alert.alert('Email ya registrado', 'Intente ingresar o regístrese con otro email.');
 	} else if (error.response && error.response.status === 400) {
 		Alert.alert('Bad Request');
 	}
 	else {
-		Alert.alert('Failed to create account', 'Unkown error. Please check your connection or try again later\n\
-                Status code:', error.response.status);
+		Alert.alert('Falló al crear cuenta', 'Error desconocido. Verifique su conexión o intente más tarde\n\
+                Código:', error.response.status);
 	}
 }
 
 // Errors when user logs in with mail/password
 function handleLogInError(error) {
 	if (error.response && error.response.status === 401) {
-		Alert.alert('Incorrect Password', 'Please try again');
+		Alert.alert('Contraseña incorrecta', 'Intente nuevamente');
 	} else if (error.response && error.response.status === 404) {
-		Alert.alert("Email not found", 'Verify the email address and try again ' +
-			"or create a new account if you don't have one");
+		Alert.alert("Email no encontrado", 'Verifique su dirección de email e intente nuevamente ' +
+			"o cree una nueva, si no tiene");
 	} else if (error.response && error.response.status === 400) {
-		Alert.alert('Invalid email format', 'Your email should look something ' +
-			'like this:\nexample@example.com');
+		Alert.alert('Formato inválido de email', 'Su email debería ser así: ' +
+			'\nexample@example.com');
 	} else {
-		Alert.alert('Failed to login', 'Unkown error. Please check your connection or try again later\n\
-                Status code:', error.response.status);
+		Alert.alert('Falló el login', 'Error desconocido. Verifique su conexión o intente más tarde\n\
+                Código:', error.response.status);
 	}
 }
 
 function handleRegisterGoogleError(error) {
 	if (error.response && error.response.status === 409) {
-		Alert.alert('Email already registered', 'Please try signing in or use a different email address.');
+		Alert.alert('Email ya registrado', 'Intente ingresar o regístrese con otro email.');
 	} else if (error.response && error.response.status === 400) {
 		Alert.alert('Bad Request');
 	} else if (error.response && error.response.status === 401) {
-		Alert.alert('Unauthorized Request');
+		Alert.alert('No autorizado');
 	}
 	else {
-		Alert.alert('Failed to create account', 'Unkown error. Please check your connection or try again later\n\
+		Alert.alert('Falló al crear cuenta', 'Error desconocido. Verifique su conexión o intente más tarde\n\
                 Status code:', error.response.status);
 	}
 }
 
 function handleLogInGoogleError(error) {
 	if (error.response && error.response.status === 404) {
-		Alert.alert("Google Account isn't registered", "Create a new account if you don't have one");
+		Alert.alert("La cuenta de google no está registrada", "Cree una nueva cuenta si no tiene una");
 	} else if (error.response && error.response.status === 400) {
 		Alert.alert("Bad Request");
 	} else if (error.response && error.response.status === 401) {
-		Alert.alert("Unauthorized request");
+		Alert.alert("No autorizado");
 	}
 	else {
-		Alert.alert('Failed to login', 'Unkown error. Please check your connection or try again later\n\
-                Status code:', error.response.status);
+		Alert.alert('Falló el login', 'Error desconocido. Verifique su conexión o intente más tarde\n\
+			Código:', error.response.status);
 	}
 }
 
