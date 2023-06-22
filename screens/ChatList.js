@@ -91,6 +91,11 @@ class ChatList extends Component {
         }
         try {
             let response = await axios.get(url, config)
+            // TODO: ver que tiene la response cuando no está levantado el servicio de entrenamientos
+            // y mostrar una pantalla de 'volver a intentar'
+            console.log('Response ChatList');
+            console.log(response.data);
+            console.log('Fin response ChatList');
             this.setState({ users: response.data });
         } catch (error) {
             console.error("Error: " + JSON.stringify(error))
@@ -101,15 +106,12 @@ class ChatList extends Component {
     addUserDataToChats = async () => {
         const userId = this.props.data.id;
         const { users, chats } = this.state;
-        console.log(userId);
+  
         const updatedChats = await Promise.all(
           chats.map(async (chat) => {
             const userData = users.find(
-              // (user) => user.id === chat.uid1 || user.id === chat.uid2
-              // (user) => user.id === chat.uid1
               (user) => ((user.id === chat.uid1 || user.id === chat.uid2) && user.id != userId)
             );
-            console.log(userData);
 
             if (userData === undefined) {
               return { ...chat };
@@ -128,6 +130,8 @@ class ChatList extends Component {
             }
           })
         );
+
+        // TODO: revisar que updatedChats tenga info, sino pantalla de reload.
       
         this.setState({ chats: updatedChats });
     };
@@ -157,7 +161,7 @@ class ChatList extends Component {
                 this.setState({ loading: false });
             })
             .catch((error) => {
-                console.log('Error creating node:', error);
+                console.error('Error creating node:', error);
             })
     }
 
@@ -219,7 +223,7 @@ class ChatList extends Component {
                   style={styles.closeButton}
                   onPress={() => this.setState({ visiblePopUp: false })}
                 >
-                  <Text style={styles.closeButtonText}>Close</Text>
+                  <Text style={styles.closeButtonText}>Cerrar</Text>
                 </TouchableOpacity>
               </View>
             </Modal>

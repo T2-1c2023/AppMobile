@@ -38,6 +38,12 @@ export default {
           "icon": "./assets/icon.png",
           "color": "#ffffff",
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir a FiuFitApp usar tu ubicación."
+        }
       ]
     ],
     "web": {

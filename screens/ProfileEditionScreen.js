@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView, Button } from 'react-native';
 import styles from '../src/styles/styles';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native-paper';
@@ -21,6 +21,8 @@ import { CommonActions } from '@react-navigation/native';
 import { TextInput, HelperText } from 'react-native-paper';
 
 import { UserContext } from '../src/contexts/UserContext';
+
+import * as Location from 'expo-location';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -46,7 +48,8 @@ export default class ProfileEditionScreen extends Component {
             fullname: props.route.params.data.fullname, 
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
-            newPhone: props.route.params.data.phone_number
+            newPhone: props.route.params.data.phone_number,
+            location: null
         }
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -61,6 +64,29 @@ export default class ProfileEditionScreen extends Component {
             console.log(error)
         }
         titleManager.setTitle(this.props.navigation, "Editar perfil", 22)
+    }
+
+    getLocationPermission = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permiso para acceder a la ubicación denegado');
+            return;
+        }
+
+        Alert.alert(
+            'Actualizar ubicación',
+            'Desea modificar la ubicación con su ubicación actual?',
+            [
+                { text: 'Cancelar', style: 'cancel'},
+                {
+                  text: 'Continuar',
+                  onPress: async () => {
+                    const location = await Location.getCurrentPositionAsync({});
+                    this.setState({ location: location });
+                  }
+                }
+            ]
+        )
     }
 
     async loadUserInfo() {
@@ -267,6 +293,23 @@ export default class ProfileEditionScreen extends Component {
         )
     }
 
+    renderLocationField() {
+        return (
+          <React.Fragment>
+            <Text style={{ marginTop: 25, marginLeft: 25, alignSelf: 'flex-start' }}>Ubicación:</Text>
+            <TouchableOpacity 
+              onPress={this.getLocationPermission} 
+              style={{marginLeft: 25, alignSelf: 'flex-start' }}
+            >
+              <Text>
+                {this.state.location ? JSON.stringify(this.state.location) : 'Ubicación no disponible. Actualizar ubicación.'}
+              </Text>
+            </TouchableOpacity>
+            <View style={editionStyles.divider} />
+          </React.Fragment>
+        )
+    }
+
     onPressChangePassword = () => {
         this.props.navigation.navigate('ChangePasswordScreen', {data: this.props.route.params.data});
     }
@@ -342,13 +385,12 @@ export default class ProfileEditionScreen extends Component {
                         {this.renderProfilePic()}
                         {this.renderNameField()}
 
-                        {/* TODO: reemplazar por input de nueva ubicación */}
-                        <Text style={{marginTop: 50, alignSelf: 'flex-start', marginLeft: 30}}>Ubicacion: To be implemented</Text>
+                        {this.renderLocationField()}
                         
                         {this.renderPhoneField()}
-                        <View style={editionStyles.divider} />
 
                         {this.renderLinks()}
+
                     </View>
                 </ScrollView>
             )
@@ -424,10 +466,11 @@ const editionStyles = StyleSheet.create({
     },
 
     divider: { 
-        width: '100%', 
-        height: 1, 
+        width: '95%', 
+        height: 2, 
         backgroundColor: 'grey',
-        marginTop: 50, 
+        marginTop: 10, 
+        opacity: 0.5
     },
 });
 
