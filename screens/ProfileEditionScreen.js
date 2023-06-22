@@ -49,8 +49,12 @@ export default class ProfileEditionScreen extends Component {
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
             newPhone: props.route.params.data.phone_number,
-            location: null
+            location: {
+              latitude: props.route.params.data.latitude,
+              longitude: props.route.params.data.longitude
+            }
         }
+        console.log(props.route.params.data);
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.loadUserInfo();
@@ -82,7 +86,11 @@ export default class ProfileEditionScreen extends Component {
                   text: 'Continuar',
                   onPress: async () => {
                     const location = await Location.getCurrentPositionAsync({});
-                    this.setState({ location: location });
+                    // TODO: fijate como traducir latitud y longitud.
+                    // TODO: request a back end
+                    const { latitude, longitude } = location.coords;
+                    console.log(latitude, longitude);
+                    this.setState({ location: { latitude, longitude } });
                   }
                 }
             ]
@@ -294,6 +302,7 @@ export default class ProfileEditionScreen extends Component {
     }
 
     renderLocationField() {
+        const { latitude, longitude } = this.state.location;
         return (
           <React.Fragment>
             <Text style={{ marginTop: 25, marginLeft: 25, alignSelf: 'flex-start' }}>Ubicación:</Text>
@@ -302,7 +311,7 @@ export default class ProfileEditionScreen extends Component {
               style={{marginLeft: 25, alignSelf: 'flex-start' }}
             >
               <Text>
-                {this.state.location ? JSON.stringify(this.state.location) : 'Ubicación no disponible. Actualizar ubicación.'}
+                {(latitude != 0 && longitude != 0) ? JSON.stringify(this.state.location) : 'Ubicación no disponible. Actualizar ubicación.'}
               </Text>
             </TouchableOpacity>
             <View style={editionStyles.divider} />
