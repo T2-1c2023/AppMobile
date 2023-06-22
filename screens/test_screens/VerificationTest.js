@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, Button, Alert } from 'react-native';
+import { View, Button, Alert } from 'react-native';
 import Video from 'react-native-video';
 // TODO: adaptar Media.js para que funcione con videos
 import * as ImagePicker from 'expo-image-picker';
 import storage from '@react-native-firebase/storage';
+// Back end request
+import axios from 'axios';
+import Constants from 'expo-constants';
+import { tokenManager } from '../../src/TokenManager';
 
-// TODO: pegarle al api gateway
-
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 class VerificationTest extends Component {
     constructor(props) {
@@ -30,21 +33,41 @@ class VerificationTest extends Component {
                 'Desea subir el video?',
                 [
                     { text: 'Cancel', style: 'cancel' },
-                    { text: 'Continuar', onPress: () => this.uploadVideoFirebase(videoUri) }
+                    { 
+                      text: 'Continuar', 
+                      onPress: () => this.uploadVideoFirebaseRecognizedTrainer(videoUri) 
+                    }
                 ]
             );
         }
     };
 
-    // Tries to upload image to firebase. On succes, returns the stored image id
-    uploadVideoFirebase = async (uri) => {
+    // Tries to upload video to firebase. On success, sends request to back end
+    uploadVideoFirebaseRecognizedTrainer = async (uri) => {
         try {
-        // Image id for firebase storage
-        const videoId = Date.now().toString();
-        const storageRef = storage().ref().child(`videos/${videoId}`);
-        await storageRef.putFile(uri);
-        // For future requests of image stored in firebase storage
-        // return imageId;
+            // Video id for firebase storage
+            const videoId = Date.now().toString();
+            const storageRef = storage().ref().child(`videos/${videoId}`);
+            await storageRef.putFile(uri);
+            this.requestRecognizedTrainer(videoId);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    requestRecognizedTrainer = async (videoId) => {
+        const trainer_id = this.props.data.id;
+        const url = API_GATEWAY_URL + 'recognized-trainers/' + trainer_id;
+        const headers = {
+            Authorization: tokenManager.getAccessToken()
+        }
+        const data = {
+            video_id: videoId      
+        }
+
+        try {
+            const response = await axios.post(url, data, { headers });
+            console.log(response.data);
         } catch (error) {
             console.error(error);
         }
