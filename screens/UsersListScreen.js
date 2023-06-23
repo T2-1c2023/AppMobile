@@ -85,7 +85,8 @@ export default class UsersListScreen extends Component {
 
     getParams() {
 
-        let radius = this.state.radiusFilterEnabled ? this.state.radiusFilter : 0
+        let radius = this.state.showTrainersFilter && this.state.radiusFilterEnabled? 
+            this.state.radiusFilter : null
 
         let params = {
             fullname: this.state.fullname,
@@ -115,7 +116,7 @@ export default class UsersListScreen extends Component {
             return params
         }
 
-        
+        return params
     }
 
     async loadUsers() {
@@ -125,11 +126,13 @@ export default class UsersListScreen extends Component {
         const params = this.getParams()
 
         const config = { 
+            headers: { Authorization: tokenManager.getAccessToken() }, 
             params: params,
-            headers: { Authorization: tokenManager.getAccessToken() } 
         }
         try {
+            console.log("[UsersListScreen] Loading users from: " + url + " with config: " + JSON.stringify(config))
             let response = await axios.get(url, config)
+            console.log("[UsersListScreen] Response: ", response.data)
             this.setState({ users: response.data }, 
                 () => {
                     this.setState({ loading: false })
