@@ -17,8 +17,6 @@ export default class ChangePasswordScreen extends Component {
         this.ConfirmPassTextInput = React.createRef()
         this.state = {
             loading: false,
-            currentPass: '',
-            currentPassHidden: true,
             newPass: '',
             newPassHidden: true,
             confirmPass: '',
@@ -93,7 +91,7 @@ export default class ChangePasswordScreen extends Component {
     }
 
     fieldsNotEmpty() {
-        return this.state.currentPass !== '' && this.state.newPass !== '' && this.state.confirmPass !== ''
+        return this.state.newPass !== '' && this.state.confirmPass !== ''
     }
 
     render() {
@@ -107,24 +105,6 @@ export default class ChangePasswordScreen extends Component {
         } else {
             return (
                 <View style={ styles.container }>
-                    <TextInput
-                        label="Constraseña actual"
-                        theme={textStyles.themeColors}
-                        onChangeText={text => this.setState({ currentPass: text })}
-                        onSubmitEditing={() => this.newPassTextInput.current.focus()}
-                        mode='flat'
-                        style={
-                            textStyles.inputText
-                        }
-                        secureTextEntry = {this.state.currentPassHidden}
-                        right={
-                            <TextInput.Icon 
-                                icon={this.state.currentPassHidden? "eye-outline" : "eye-off-outline"}
-                                iconColor="black" 
-                                onPress={() => this.setState({ currentPassHidden: !this.state.currentPassHidden })}
-                            />
-                        }
-                    />
                     <TextInput
                         ref={this.newPassTextInput}
                         label="Nueva contraseña"
