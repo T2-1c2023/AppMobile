@@ -36,23 +36,14 @@ class Activity extends Component {
             this.setState({ imageUri: {uri: imageUri}});
     }
 
-    handleImagePress(id) {
-        alert('Image Pressed with id: ' + id)
-    }
-
     activityImage(id) {
         return (
             <View style={activityStyles.imageContainer}>
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => this.handleImagePress(id)}
-                >
-                    <Image
-                        source={this.state.imageUri}
-                        style={ activityStyles.image }
-                        resizeMode= 'contain'
-                    />
-                </TouchableOpacity>
+                <Image
+                    source={this.state.imageUri}
+                    style={ activityStyles.image }
+                    resizeMode= 'contain'
+                />
             </View>
         )
     }
