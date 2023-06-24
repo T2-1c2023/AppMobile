@@ -268,6 +268,23 @@ export default class TrainingData extends Component {
 
                 </View>
 
+                <DividerWithMultipleTexts
+                    texts={['MET', 'Distancia']}
+                />
+
+                <View style={dataStyles.dataBox}>
+                    <Text
+                        style={dataStyles.metText}
+                    >
+                        {this.props.training.met}
+                    </Text>
+                    <Text 
+                        style={dataStyles.distanceText}
+                    >
+                        {this.props.training.distance}
+                    </Text>
+                </View>
+
                 {this.renderCalificationsData()}
 
                 {this.renderSuscriptorsAndFavourites()}
@@ -299,6 +316,20 @@ const dataStyles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16,
         fontWeight: 'bold',
+        color: 'black',
+    },
+
+    metText: {
+        width: 235,
+        textAlign: 'center',
+        fontSize: 16,
+        color: 'black',
+    },
+
+    distanceText: {
+        width: 155,
+        textAlign: 'left',
+        fontSize: 16,
         color: 'black',
     },
 

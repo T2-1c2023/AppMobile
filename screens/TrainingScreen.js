@@ -450,7 +450,7 @@ export default class TrainingScreen extends Component {
             return (
             <React.Fragment>
                 <Text style={{fontSize: 14, fontWeight: 'bold', color: 'green', marginRight: 5}}>
-                    Haz completado el entrenamiento ¡Felicitaciones!
+                    Has completado el entrenamiento ¡Felicitaciones!
                 </Text>
             </React.Fragment>
             )
