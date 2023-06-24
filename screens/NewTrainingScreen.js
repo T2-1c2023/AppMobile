@@ -74,12 +74,17 @@ export default class NewTrainingScreen extends Component {
         axios.get(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, this.emptyBodyWithToken)
             .then(response => {
                 const training = response.data;
-                console.log(training);//debug
+                console.log(training);
                 this.setState({
+                    title: training.title,
                     initialTitle: training.title,
+                    description: training.description,
                     initialDescription: training.description,
+                    level: this.levelStrToInt(training.severity),
                     initialLevel: this.levelStrToInt(training.severity),
+                    met: training.met,
                     initialMet: training.met,
+                    distance: training.distance,
                     initialDistance: training.distance,
                     //TO_DO trainingTypeId: 
                 });
@@ -91,7 +96,6 @@ export default class NewTrainingScreen extends Component {
 
     async handleCreatePress() {
         const body = {
-            "trainer_id": this.state.trainerId,
             "title": this.state.title,
             "description": this.state.description,
             "type_id": this.state.trainingTypeId,
@@ -99,12 +103,11 @@ export default class NewTrainingScreen extends Component {
             "met": this.state.met,
             "distance": this.state.distance,
         }
-        //console.log(body);
-        //console.log(API_GATEWAY_URL + 'trainings')
 
         try {
             let response;
             if (this.isNew) {
+                body.trainer_id = this.state.trainerId
                 response = await axios.post(API_GATEWAY_URL + 'trainings', body, this.emptyBodyWithToken)
             } else {
                 response = await axios.patch(API_GATEWAY_URL + 'trainings/' + this.props.route.params.trainingId, body, this.emptyBodyWithToken)
@@ -189,6 +192,7 @@ export default class NewTrainingScreen extends Component {
                         onChangeText={(title) => this.setState({ title })}
                         maxLength={60}
                         placeholder={this.state.initialTitle}
+                        defaultValue={this.state.initialTitle}
                         warningMode={true}
                         style={{
                             marginTop: 5,
@@ -212,6 +216,7 @@ export default class NewTrainingScreen extends Component {
                         onChangeText={(description) => this.setState({ description })}
                         maxLength={250}
                         placeholder={this.state.initialDescription}
+                        defaultValue={this.state.initialDescription}
                         style={{
                             marginTop: 5,
                         }}
@@ -279,6 +284,7 @@ export default class NewTrainingScreen extends Component {
                         title="MET"
                         onChangeText={(met) => this.setState({ met: parseFloat(met), metChanged: true })}
                         placeholder={this.state.initialMet.toString()}
+                        defaultValue={this.isNew ? undefined : this.state.initialMet.toString()}
                         keyboardType = 'numeric'
                         maxLength={10}
                         style={{
@@ -302,6 +308,7 @@ export default class NewTrainingScreen extends Component {
                         title="Distancia (km)"
                         onChangeText={(distance) => this.setState({ distance: parseFloat(distance), distanceChanged: true })}
                         placeholder={this.state.initialDistance.toString()}
+                        defaultValue={this.isNew ? undefined : this.state.initialDistance.toString()}
                         keyboardType = 'numeric'
                         maxLength={10}
                         style={{

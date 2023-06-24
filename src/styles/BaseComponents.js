@@ -280,6 +280,7 @@ export const TextBox = (props) => {
                 multiline = {props.singleline? false : true}
                 onChangeText={(newText) => handleChange(newText)}
                 value={props.value}
+                defaultValue={props.defaultValue}
                 maxLength={props.maxLength}
                 keyboardType = {props.keyboardType !== undefined ? props.keyboardType : 'default' }
                 placeholder={
