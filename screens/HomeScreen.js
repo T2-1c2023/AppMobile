@@ -25,6 +25,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
 import NotificationsTest from './test_screens/NotificationsTest';
 import VerificationTest from './test_screens/VerificationTest';
+import StatisticsScreen from './StatisticsScreen';
 
 
 
@@ -292,7 +293,6 @@ class HomeScreen extends Component {
                 {this.context.isAthlete && this.renderAthleteTrainingGoalsButton(completed=false)}
                 {this.context.isAthlete && this.renderAthleteTrainingGoalsButton(completed=true)}
 
-
                 {this.context.isAthlete && this.renderTitle5("Entrenamientos", "dumbbell")}
 
                 {this.context.isAthlete ? 
@@ -411,6 +411,19 @@ class HomeScreen extends Component {
                         {() => <VerificationTest data={this.data} />}
                     </Drawer.Screen>
                 : null }
+
+                <Drawer.Screen
+                    name="Estadisticas"
+                    options={{
+                        drawerIcon: () => (
+                            <View style={styles.drawerIconContainer}>
+                                <FontAwesome name="calculator" size={20} color="black" />
+                            </View>
+                        ),
+                    }}
+                >
+                    {() => <StatisticsScreen />}
+                </Drawer.Screen>
 
             </Drawer.Navigator>
         );

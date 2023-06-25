@@ -18,6 +18,7 @@ import NewTrainingScreen from './screens/NewTrainingScreen';
 import TrainingActivitiesScreen from './screens/TrainingActivitiesScreen';
 import TrainingsListScreen from './screens/TrainingsListScreen';
 import UsersListScreen from './screens/UsersListScreen';
+import StatisticsScreen from './screens/StatisticsScreen';
 
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import TrainingScreen from './screens/TrainingScreen'; 
@@ -300,6 +301,11 @@ export default class App extends Component {
             <Stack.Screen
               name="RoleSelectionScreen"
               component={RoleSelectionScreen}
+            />
+
+            <Stack.Screen
+              name="StatisticsScreen"
+              component={StatisticsScreen}
             />
 
           </Stack.Navigator>
