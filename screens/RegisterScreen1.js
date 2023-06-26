@@ -99,6 +99,8 @@ export default class RegisterScreen1 extends Component {
             expo_push_token: expo_push_token,
         }
 
+        // TODO: agregar pop up para cargar datos con peso y ubicación
+
         const userMail = await googleSignIn(data);
         
         console.log(userMail);
