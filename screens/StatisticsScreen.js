@@ -39,9 +39,9 @@ export default class StatisticsScreen extends Component {
             sessions: [],
         }
 
-        // this.focusListener = this.props.navigation.addListener('focus', () => {
-        //     this.componentDidMount()
-        // })
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this.componentDidMount()
+        })
     }
 
     getSessionsFormatted(sessionsResponse) {

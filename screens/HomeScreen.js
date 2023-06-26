@@ -26,7 +26,7 @@ import Styles from '../src/styles/styles';
 import NotificationsTest from './test_screens/NotificationsTest';
 import VerificationTest from './test_screens/VerificationTest';
 import StatisticsScreen from './StatisticsScreen';
-
+import Icon from 'react-native-paper/src/components/Icon'
 
 
 import { IconButton } from 'react-native-paper';
@@ -92,6 +92,13 @@ class HomeScreen extends Component {
                     label={ "Rol: " + (this.context.isTrainer? "Entrenador" : "Atleta")}
                 />
                 <DrawerItemList {...props} />
+
+                <DrawerItem
+                    label={"Estadisticas"}
+                    icon={() => <Icon source="calculator" size={25} color='black'/>}
+                    onPress={() => this.props.navigation.navigate('StatisticsScreen')}
+                />
+
                 <DrawerItem 
                     label="Cerrar Sesión"
                     onPress={this.handleLogout}

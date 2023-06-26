@@ -49,6 +49,7 @@ export default class TrainingScreen extends Component {
         this.onPressTrainingGoals = this.onPressTrainingGoals.bind(this)
         this.onPressRate = this.onPressRate.bind(this)
         this.onPressViewAllReviews = this.onPressViewAllReviews.bind(this)
+        this.onPressRegisterSession = this.onPressRegisterSession.bind(this)
 
         this.state = {
             isInFavorites: false,
@@ -531,6 +532,30 @@ export default class TrainingScreen extends Component {
         this.props.navigation.navigate('TrainingReviewScreen', params)
     }
 
+    shouldRenderRegisterSessionButton() {
+        return this.canSubscribe() && this.state.isSubscribed
+    }
+
+    onPressRegisterSession() {
+        console.log("[onPressRegisterSession] this.state.training.id ", this.state.training.id)
+        console.log("Navigation: ", this.props.navigation)
+        this.props.navigation.navigate('TrainingSessionScreen', { trainingId: this.state.training.id })
+    }
+
+    renderRegisterSessionButton() {
+        return (
+            <ButtonStandard
+                onPress={this.onPressRegisterSession}
+                title={"Registrar sesión"}
+                style={{
+                    marginTop: 20,
+                }}
+                icon={'note-check'}
+                succeededTheme
+            />
+        )
+    }
+
     render() {
         return (
             <ScrollView
@@ -591,6 +616,15 @@ export default class TrainingScreen extends Component {
                     />
 
                     {this.renderDivider()}
+
+                    {this.shouldRenderRegisterSessionButton &&
+                        <React.Fragment>
+                            {this.renderRegisterSessionButton()}
+                            {this.renderDivider()}
+                        </React.Fragment>
+                    }
+                            
+                    
 
                     {this.renderCreatorAndGoalsArea()}
 
