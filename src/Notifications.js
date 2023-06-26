@@ -26,7 +26,7 @@ export async function registerForPushNotificationsAsync() {
     }
 
     if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
+        Notifications.setNotificationChannelAsync('default', {
             name: 'default', // Display name of notification channel
             // To ensure notifications from this channel are displayed
             importance: Notifications.AndroidImportance.MAX,

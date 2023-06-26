@@ -14,6 +14,7 @@ import { CommonActions } from '@react-navigation/native';
 import { registerForPushNotificationsAsync } from '../src/Notifications';
 // Location
 import * as Location from 'expo-location';
+import { getLocation } from '../services/Geocoding';
 
 import { titleManager } from '../src/TitleManager';
 
@@ -33,7 +34,8 @@ export default class RegisterScreen1 extends Component {
             location: {
               latitude: 0,
               longitude: 0
-            }
+            },
+            locationDisplayName: ''
         }
 
         this.phoneInput = React.createRef()
@@ -162,13 +164,16 @@ export default class RegisterScreen1 extends Component {
         }
 
         const location = await Location.getCurrentPositionAsync({});
-        // TODO: fijate como traducir latitud y longitud.
         const { latitude, longitude } = location.coords;
         this.setState({ location: { latitude, longitude } });
+
+        const formattedLocation = await getLocation(latitude, longitude);
+        console.log(formattedLocation);
+        this.setState( { locationDisplayName: formattedLocation });
     }
 
     render() {
-        const { latitude, longitude } = this.state.location;
+        const { locationDisplayName } = this.state;
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -348,10 +353,16 @@ export default class RegisterScreen1 extends Component {
                           style={{ marginTop: 10 }}
                         />
 
-                        {(latitude != 0 && longitude != 0) && (
-                            <TextDetails
-                                body={`Latitude: ${latitude}\nLongitude: ${longitude}\n(Muestro así de forma temporal)`}
-                            />
+                        { locationDisplayName !== '' && (
+                            /*<TextDetails
+                                body={locationDisplayName}
+                                style={{ marginTop: 10 }}
+                            />*/
+                            <View style={{ width: 250, marginTop: 10 }}>
+                                <Text style={{ textAlign: 'center', fontWeight: '500' }}>
+                                    {locationDisplayName}
+                                </Text>
+                            </View>
                         )}
 
                         <ButtonStandard
@@ -359,7 +370,7 @@ export default class RegisterScreen1 extends Component {
                             onPress={this.handleProceed}
                             disabled={!this.allFieldsAreValid()}
                             style={{
-                                marginTop: 25,
+                                marginTop: 10,
                             }}
                         />
 

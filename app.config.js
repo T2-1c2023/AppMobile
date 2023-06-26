@@ -4,7 +4,7 @@ export default {
   "expo": {
     "name": "FiuFitApp",
     "slug": "FiuFitApp",
-    "scheme": "https://auth.expo.io/@juanh2607/FiuFitApp", // Id único de la aplicación
+    "scheme": "fiufitapp", // Id único de la aplicación
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -68,29 +68,28 @@ export default class App extends Component {
     super(props);
     this.state = {
       isLoading: true,
+      notification: false,
     };
-    // So that I can unsubscribe from listeners on componentWillUnmount
-    this.notificationListener = React.createRef();
-    this.responseListener = React.createRef();
+    this.notificationListener = React.createRef(),
+    this.responseListener = React.createRef()
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     // await new Promise(resolve => setTimeout(resolve, 1000));
 
     this.setState({ isLoading: false });
 
     // Set notification listeners
     // When a notification is received by the app, the callback function is called. 
-    this.notificationListener.current = 
-    Notifications.addNotificationReceivedListener((notification) => {
-        this.setState({ notification });
+    this.notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      this.setState({ notification });
     });
 
     // When user interacts with notification, the callback function is called.
-    this.responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {
-            console.log(response);
-        });
+    this.responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log('App.js | Response Received Listener:');
+      console.log(response);
+    });
 
     // TODO: en lugar de al registrarse conseguí el token acá (ver si falla lo del platform)
   }
