@@ -232,6 +232,7 @@ export const InputData = React.forwardRef((props, ref) => {
                     // </TouchableWithoutFeedback>
                 }
                 style={styles.inputData}
+                autoComplete={props.autoComplete ?? 'off'}
             />
         </View>
     )

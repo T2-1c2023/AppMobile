@@ -266,6 +266,7 @@ export default class RegisterScreen1 extends Component {
                             style={{
                                 marginTop: 5,
                             }}
+                            autoComplete="username"
                         />
 
                         {this.emailWarningMode() &&
@@ -320,6 +321,7 @@ export default class RegisterScreen1 extends Component {
                             style={{
                                 marginTop: 5,
                             }}
+                            autoComplete="password"
                         />
 
                         {this.incorrectConfirmPassword() &&

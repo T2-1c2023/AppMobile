@@ -113,7 +113,8 @@ export default StyleSheet.create({
 
     texBoxCounter: { 
         alignSelf: 'flex-end', 
-        marginRight: 25
+        marginRight: 25,
+        color: 'black',
     },
 
     flexibleTextBox: {
@@ -131,6 +132,7 @@ export default StyleSheet.create({
 
     flexibleTextBoxCounter: {
         alignSelf: 'flex-end',
+        color: 'black',
     },
 
     daysWord: { 

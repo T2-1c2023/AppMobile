@@ -190,13 +190,14 @@ export default class NewTrainingScreen extends Component {
                     <TextBox
                         title="Título"
                         onChangeText={(title) => this.setState({ title })}
-                        maxLength={60}
+                        maxLength={20}
                         placeholder={this.state.initialTitle}
                         defaultValue={this.state.initialTitle}
                         warningMode={true}
                         style={{
                             marginTop: 5,
                         }}
+                        singleline
                     />
 
                     {this.titleWarningMode() &&

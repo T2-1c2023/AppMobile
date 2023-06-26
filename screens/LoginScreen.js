@@ -188,6 +188,7 @@ export default class LoginScreen extends Component {
                             style={{
                                 marginTop: 15,
                             }}
+                            autoComplete="username"
                         />
                         <InputData
                             ref={this.passwordInput}
@@ -199,6 +200,7 @@ export default class LoginScreen extends Component {
                             style={{
                                 marginTop: 5,
                             }}
+                            autoComplete="password"
                         />
 
                         <TextWithLink

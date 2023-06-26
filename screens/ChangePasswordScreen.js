@@ -123,6 +123,7 @@ export default class ChangePasswordScreen extends Component {
                                 onPress={() => this.setState({ newPassHidden: !this.state.newPassHidden})}
                             />
                         }
+                        autoComplete="password-new"
                     />
 
                     { this.passWarningMode() &&
@@ -157,6 +158,7 @@ export default class ChangePasswordScreen extends Component {
                                 onPress={() => this.setState({ confirmPassHidden: !this.state.confirmPassHidden })}
                             />
                         }
+                        autoComplete="password-new"
                     />
                     {this.confirmPassWarningMode() && 
                         <HelperText 
