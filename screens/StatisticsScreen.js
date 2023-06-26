@@ -66,6 +66,7 @@ export default class StatisticsScreen extends Component {
     }
 
     componentDidMount() {
+        titleManager.setTitle(this.props.navigation, 'Estadísticas', 22)
         this.loadStats()
     }
 

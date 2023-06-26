@@ -94,7 +94,7 @@ class HomeScreen extends Component {
                 <DrawerItemList {...props} />
 
                 {this.context.isAthlete && <DrawerItem
-                    label={"Estadisticas"}
+                    label={"Estadísticas"}
                     icon={() => <Icon source="calculator" size={25} color='black'/>}
                     onPress={() => this.props.navigation.navigate('StatisticsScreen')}
                 />}

@@ -40,6 +40,10 @@ export default class TrainingSessionScreen extends Component {
         }
     }
 
+    componentDidMount() {
+        titleManager.setTitle(this.props.navigation, 'Registrar sesión', 22)
+    }
+
     renderSlider() {
         return (
             <Slider
