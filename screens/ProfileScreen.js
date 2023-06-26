@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import styles from '../src/styles/styles';
+import { ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 // Image upload
 import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
@@ -17,6 +18,8 @@ import InterestsList from '../src/components/InterestsList';
 
 import { UserContext } from '../src/contexts/UserContext';
 import { UsersListMode } from './UsersListScreen';
+
+import { getLocation } from '../services/Geocoding';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -51,7 +54,7 @@ export default class ProfileScreen extends Component {
         
         // variables dinamicas (no pueden sacarse del token)
         this.state = {
-            // TODO: agregar pantalla de carga
+            loading: true,
             interests: [],
             profilePic: require('../assets/images/user_predet_image.png'),
             fullname: '',
@@ -59,7 +62,7 @@ export default class ProfileScreen extends Component {
             
             // TODO: Cuando esten las requests deben inicializarse en loadUserInfo()
             certifiedTrainer: false,
-            location: 'to be implemented',
+            location: '',
 
             // only applied when this.owner == false
             // TODO: quitar hardcodeo
@@ -94,7 +97,9 @@ export default class ProfileScreen extends Component {
         const certifiedTrainer = response.data.is_recognized_trainer
         this.setState({ fullname, phone_number, certifiedTrainer })
 
-        // TODO: cargar latitude y longitud
+        const { latitude, longitude } = response.data;
+        const formattedLocation = await getLocation(latitude, longitude);
+        this.setState( { location: formattedLocation });
 
         if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, response.data.fullname, 22)}
     }
@@ -119,9 +124,10 @@ export default class ProfileScreen extends Component {
 
     async componentDidMount() {
         try {
-            this.loadInterests()
-            this.loadUserInfo()
+            await this.loadInterests()
+            await this.loadUserInfo()
             this.loadFollowingInfo()
+            this.setState({ loading: false });
             console.log("contexto: ", this.context)
         } catch (error) {
             console.log(error)
@@ -277,11 +283,11 @@ export default class ProfileScreen extends Component {
 
     renderTitleAndText(title, text) {
         return (
-            <View style={{ alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ color: 'grey', fontWeight: 'bold' }}>
+            <View style={{ alignItems: 'center', marginTop: 10, width: 250 }}>
+                <Text style={{  textAlign: 'center', color: 'grey', fontWeight: 'bold' }}>
                     {title}
                 </Text>
-                <Text style={{ color: 'black' }}>
+                <Text style={{ textAlign: 'center', color: 'black' }}>
                     {text}
                 </Text>
             </View>
@@ -368,20 +374,31 @@ export default class ProfileScreen extends Component {
     }
 
     render() {
-        return (
-            <ScrollView
-                automaticallyAdjustKeyboardInsets={true}
-                style={styles.scrollView}
-            >
-                <View style={styles.container}>
-                    {this.renderHeader()}
-                    {this.owner && this.renderPersonalData()}
-                    {this.renderContactInfo()}
-                    {this.renderInterests()}
-                    {this.renderTrainingsInfo()}
-                </View>
-            </ScrollView>
-        );
+        const { loading } = this.state;
+
+        if (loading) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#21005D" />
+                    <Text style={{ marginTop: 30 }}>Cargando...</Text>
+                </View>                
+            )
+        } else {
+            return (
+                <ScrollView
+                    automaticallyAdjustKeyboardInsets={true}
+                    style={styles.scrollView}
+                >
+                    <View style={styles.container}>
+                        {this.renderHeader()}
+                        {this.owner && this.renderPersonalData()}
+                        {this.renderContactInfo()}
+                        {this.renderInterests()}
+                        {this.renderTrainingsInfo()}
+                    </View>
+                </ScrollView>
+            );
+        }
     }
 }
 

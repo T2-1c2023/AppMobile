@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView, But
 import styles from '../src/styles/styles';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native-paper';
+import { showMessage } from 'react-native-flash-message';
 // Image upload
 import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
 import Constants from 'expo-constants'
@@ -53,7 +54,6 @@ export default class ProfileEditionScreen extends Component {
             newPhone: props.route.params.data.phone_number,
             locationDisplayName: ''
         }
-        console.log(props.route.params.data);
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.loadUserInfo();
@@ -89,6 +89,7 @@ export default class ProfileEditionScreen extends Component {
                 
                     const { latitude, longitude } = location.coords;
                     const formattedLocation = await getLocation(latitude, longitude);
+                    console.log(formattedLocation);
                     if (formattedLocation !== this.state.locationDisplayName) {
                         
                         try {
@@ -97,9 +98,15 @@ export default class ProfileEditionScreen extends Component {
                                 latitude: latitude,
                                 longitude: longitude
                             }
-                            // TODO: averiguar por error 400 (bad request)
                             await updateUserData(newData, userId);
                             this.setState( { locationDisplayName: formattedLocation });
+                            showMessage({
+                                message: 'Datos de usuario cambiados con éxito',
+                                type: 'success',
+                                duration: 3000,
+                                backgroundColor: '#00B386',
+                                color: '#FFFFFF'
+                            });
                         } catch (error) {
                             console.log(error);
                         }
@@ -117,7 +124,6 @@ export default class ProfileEditionScreen extends Component {
     async loadUserInfo() {
         this.setState({ loading: true, loadingMessage: 'Cargando datos...'});
         const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id
-        console.log(url)
         const response = await axios.get(url, this.emptyBodyWithToken)
 
         const photo_id = response.data.photo_id
