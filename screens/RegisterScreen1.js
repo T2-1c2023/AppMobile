@@ -111,15 +111,16 @@ export default class RegisterScreen1 extends Component {
     }
 
     allFieldsAreValid() {
-        const { fullName, email, password, confirmPassword, weight } = this.state;
+        const { fullName, email, password, confirmPassword, weight, locationDisplayName } = this.state;
 
         const passwordIsValid = password.length >= 8
         const confirmPasswordIsValid = password == confirmPassword
         const emailIsValid = this.emailIsValid(email)
         const fullNameIsValid = fullName.length > 0
         const weightIsValid = weight > 0
+        const locationIsValid = (locationDisplayName !== '')
 
-        return passwordIsValid && confirmPasswordIsValid && emailIsValid && fullNameIsValid && weightIsValid
+        return passwordIsValid && confirmPasswordIsValid && emailIsValid && fullNameIsValid && weightIsValid && locationIsValid
     }
 
     generateRoleText = () => {
@@ -348,16 +349,12 @@ export default class RegisterScreen1 extends Component {
                         />
 
                         <ButtonStandard
-                          title="Agregar Ubicación (opcional)"
+                          title="Agregar Ubicación"
                           onPress={this.getLocation}
                           style={{ marginTop: 10 }}
                         />
 
                         { locationDisplayName !== '' && (
-                            /*<TextDetails
-                                body={locationDisplayName}
-                                style={{ marginTop: 10 }}
-                            />*/
                             <View style={{ width: 250, marginTop: 10 }}>
                                 <Text style={{ textAlign: 'center', fontWeight: '500' }}>
                                     {locationDisplayName}
