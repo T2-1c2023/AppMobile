@@ -419,19 +419,6 @@ class HomeScreen extends Component {
                     </Drawer.Screen>
                 : null }
 
-                <Drawer.Screen
-                    name="Estadisticas"
-                    options={{
-                        drawerIcon: () => (
-                            <View style={styles.drawerIconContainer}>
-                                <FontAwesome name="calculator" size={20} color="black" />
-                            </View>
-                        ),
-                    }}
-                >
-                    {() => <StatisticsScreen />}
-                </Drawer.Screen>
-
             </Drawer.Navigator>
         );
     }

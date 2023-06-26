@@ -21,6 +21,9 @@ import jwt_decode from 'jwt-decode';
 import Timeline from 'react-native-timeline-flatlist'
 import Icon from 'react-native-paper/src/components/Icon'
 
+import { Slider } from '@rneui/themed';
+import * as Elements from '@rneui/themed'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class StatisticsScreen extends Component {
@@ -28,6 +31,8 @@ export default class StatisticsScreen extends Component {
 
     constructor(props) {
         super(props)
+        this.onValueChange = this.onValueChange.bind(this)
+        this.onSlidingComplete = this.onSlidingComplete.bind(this)
 
         this.state = {
             loading: true,
@@ -37,6 +42,7 @@ export default class StatisticsScreen extends Component {
             goalsAmmount: 0,
             sessionsAmmount: 0,
             sessions: [],
+            days: 10,
         }
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -68,9 +74,12 @@ export default class StatisticsScreen extends Component {
 
         let athleteId = this.context.userId
         let url = API_GATEWAY_URL + "athletes/" + athleteId + "/sessions"
+        
         let config = {
             headers: { Authorization: tokenManager.getAccessToken() },
-            params: {}
+            params: {
+                days_before: this.state.days,
+            }
         } 
 
         axios.get(url, config)
@@ -101,11 +110,53 @@ export default class StatisticsScreen extends Component {
             <View style={statsStyles.statContainer}>
                 <Icon 
                     source={iconName} 
-                    size={40} 
+                    size={25} 
                     color='#21005D'/>
                 <Text style={statsStyles.statText}>
                     {title}: {value} {unit}
                 </Text>
+            </View>
+        )
+    }
+
+    onValueChange(value) {
+        this.setState({days: value})
+    }
+
+    onSlidingComplete() {
+        this.loadStats()
+    }
+
+    renderSlider() {
+        return (
+            <View style={statsStyles.sliderContainer}>
+                <Text style={statsStyles.days}>
+                    Últimos {this.state.days} días
+                </Text>
+                <Slider
+                    value={this.state.days}
+                    maximumValue={360}
+                    minimumValue={10}
+                    step={10}
+                    style={statsStyles.slider}
+                    onSlidingComplete={this.onSlidingComplete}
+                    allowTouchTrack
+                    onValueChange={this.onValueChange}
+                    trackStyle={{ height: 5, backgroundColor: 'transparent' }}
+                    thumbStyle={{ height: 20, width: 20, backgroundColor: 'transparent' }}
+                    thumbProps={{
+                        children: (
+                            <Elements.Icon
+                                name="clock-o"
+                                type="font-awesome"
+                                size={20}
+                                reverse
+                                containerStyle={{ bottom: 20, right: 20 }}
+                                color="green"
+                            />
+                        ),
+                    }}
+                />
             </View>
         )
     }
@@ -115,13 +166,14 @@ export default class StatisticsScreen extends Component {
         (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#21005D" />
-                <Text style={{marginTop: 30}}>Cargando estadisticas ...</Text>
+                <Text style={{marginTop: 30, color: 'black'}}>Cargando estadisticas ...</Text>
             </View>
         )
         :
         (
             <View style={{flex:1, backgroundColor: '#DED8E1',}} >
-                <View style={[styles.container, {marginTop: 10, flex: 0.4}]}>
+                {this.renderSlider()}
+                <View style={[styles.container, {marginTop: 10, flex: 0.3}]}>
                     {this.renderStat("Cantidad de sesiones", "counter", this.state.sessionsAmmount, "")}
                     {this.renderStat("Tiempo consumido", "timer-outline", this.state.time, "min")}
                     {this.renderStat("Calorías consumidas", "fire", this.state.calories, "kcal")}
@@ -133,6 +185,7 @@ export default class StatisticsScreen extends Component {
                     style={statsStyles.timeline}
                     data={this.state.sessions}
                     timeContainerStyle={{minWidth:80}}
+                    titleStyle={{fontSize:16, fontWeight: 'bold', color: 'green', marginTop: -12}}
                 />
             </View>
         )
@@ -152,13 +205,31 @@ const statsStyles = StyleSheet.create({
 
     statText: {
         marginLeft: 10,
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        color: 'black',
     },
 
     timeline: {
-        flex: 0.6, 
+        flex: 0.5,
         backgroundColor: '#DED8E1', 
         paddingLeft: 30
     },
+
+    slider: { 
+        width: 250, 
+        marginTop: 40,
+    },
+
+    sliderContainer: {
+        flex: 0.2,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    days: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    }
 })
