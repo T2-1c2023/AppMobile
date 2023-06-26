@@ -23,6 +23,7 @@ import { TextInput, HelperText } from 'react-native-paper';
 import { UserContext } from '../src/contexts/UserContext';
 
 import * as Location from 'expo-location';
+import { getLocation } from '../services/Geocoding';
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
@@ -44,15 +45,13 @@ export default class ProfileEditionScreen extends Component {
 
         this.state = {
             loading: false,
+            loadingMessage: 'Realizando cambio...',
             profilePic: require('../assets/images/user_predet_image.png'),
             fullname: props.route.params.data.fullname, 
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
             newPhone: props.route.params.data.phone_number,
-            location: {
-              latitude: props.route.params.data.latitude,
-              longitude: props.route.params.data.longitude
-            }
+            locationDisplayName: ''
         }
         console.log(props.route.params.data);
 
@@ -85,12 +84,30 @@ export default class ProfileEditionScreen extends Component {
                 {
                   text: 'Continuar',
                   onPress: async () => {
+                    this.setState({ loading: true });
                     const location = await Location.getCurrentPositionAsync({});
-                    // TODO: fijate como traducir latitud y longitud.
-                    // TODO: request a back end
+                
                     const { latitude, longitude } = location.coords;
-                    console.log(latitude, longitude);
-                    this.setState({ location: { latitude, longitude } });
+                    const formattedLocation = await getLocation(latitude, longitude);
+                    if (formattedLocation !== this.state.locationDisplayName) {
+                        
+                        try {
+                            const userId = this.props.route.params.data.id;
+                            const newData = {
+                                latitude: latitude,
+                                longitude: longitude
+                            }
+                            // TODO: averiguar por error 400 (bad request)
+                            await updateUserData(newData, userId);
+                            this.setState( { locationDisplayName: formattedLocation });
+                        } catch (error) {
+                            console.log(error);
+                        }
+                        this.setState({ loading: false });
+                    } else {
+                        this.setState({ loading: false });
+                        Alert.alert('No se encontraron cambios', 'Su ubicación actual coincide con la ubicación obtenida');
+                    }
                   }
                 }
             ]
@@ -98,6 +115,7 @@ export default class ProfileEditionScreen extends Component {
     }
 
     async loadUserInfo() {
+        this.setState({ loading: true, loadingMessage: 'Cargando datos...'});
         const url = API_GATEWAY_URL + 'users/' + this.props.route.params.data.id
         console.log(url)
         const response = await axios.get(url, this.emptyBodyWithToken)
@@ -113,6 +131,11 @@ export default class ProfileEditionScreen extends Component {
         const phone = response.data.phone_number;
         const newPhone = response.data.phone_number;
         this.setState({ fullname, newFullName, phone, newPhone });
+
+        const { latitude, longitude } = response.data;
+        const formattedLocation = await getLocation(latitude, longitude);
+        this.setState( { locationDisplayName: formattedLocation });
+        this.setState({ loading: false, loadingMessage: 'Realizando cambios...'});
     }
 
     renderProfilePic() {
@@ -302,7 +325,7 @@ export default class ProfileEditionScreen extends Component {
     }
 
     renderLocationField() {
-        const { latitude, longitude } = this.state.location;
+        const { locationDisplayName } = this.state;
         return (
           <React.Fragment>
             <Text style={{ marginTop: 25, marginLeft: 25, alignSelf: 'flex-start' }}>Ubicación:</Text>
@@ -311,7 +334,7 @@ export default class ProfileEditionScreen extends Component {
               style={{marginLeft: 25, alignSelf: 'flex-start' }}
             >
               <Text>
-                {(latitude != 0 && longitude != 0) ? JSON.stringify(this.state.location) : 'Ubicación no disponible. Actualizar ubicación.'}
+                {(locationDisplayName !== '') ? locationDisplayName : 'Ubicación no disponible. Actualizar ubicación.'}
               </Text>
             </TouchableOpacity>
             <View style={editionStyles.divider} />
@@ -381,7 +404,7 @@ export default class ProfileEditionScreen extends Component {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#21005D" />
-                    <Text style={{marginTop: 30}}>Realizando cambio...</Text>
+                    <Text style={{marginTop: 30}}>{this.state.loadingMessage}</Text>
                 </View>
             )
         } else {
