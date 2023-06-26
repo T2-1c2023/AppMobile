@@ -90,7 +90,8 @@ export default class ProfileScreen extends Component {
 
         const fullname = response.data.fullname
         const phone_number = response.data.phone_number
-        this.setState({ fullname, phone_number })
+        const certifiedTrainer = response.data.is_recognized_trainer
+        this.setState({ fullname, phone_number, certifiedTrainer })
         if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, response.data.fullname, 22)}
     }
 

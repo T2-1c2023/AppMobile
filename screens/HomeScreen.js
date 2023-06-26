@@ -93,11 +93,11 @@ class HomeScreen extends Component {
                 />
                 <DrawerItemList {...props} />
 
-                <DrawerItem
+                {this.context.isAthlete && <DrawerItem
                     label={"Estadisticas"}
                     icon={() => <Icon source="calculator" size={25} color='black'/>}
                     onPress={() => this.props.navigation.navigate('StatisticsScreen')}
-                />
+                />}
 
                 <DrawerItem 
                     label="Cerrar Sesión"

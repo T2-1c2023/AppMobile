@@ -66,7 +66,7 @@ export default class UsersListScreen extends Component {
         this.mode = this.params.mode
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
-            // this.loadUsers()
+            this.loadUsers()
         })
     }
 
@@ -168,6 +168,7 @@ export default class UsersListScreen extends Component {
     }
 
     onPressUser(userId) {
+        this.setState({ loading: true })
         const url = API_GATEWAY_URL + 'users/' + userId
         const token = tokenManager.getAccessToken()
         const config = { headers: { Authorization: token } }
