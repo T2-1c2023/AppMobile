@@ -18,6 +18,9 @@ import { TextInput, Button, Card } from 'react-native-paper';
 import { PinInput } from '../src/components/PinInput'
 import { TextHeader, TextDetails, DividerWithMiddleText, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
 
+import { UserContext } from '../src/contexts/UserContext';
+import { CommonActions } from '@react-navigation/native';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export const Mode = {
@@ -28,6 +31,8 @@ export const Mode = {
 }
 
 export default class InterestsScreen extends Component {
+    static contextType = UserContext
+
     constructor(props) {
         super(props)
         this.handleSelection = this.handleSelection.bind(this)
@@ -127,7 +132,14 @@ export default class InterestsScreen extends Component {
             if (this.props.route.params.from == 'edit') {
                 this.props.navigation.goBack();
             } else {
-                this.props.navigation.replace('HomeScreen');
+                this.props.navigation.dispatch(
+                    // Reset del navigation stack para que no se muestre 
+                    // el botón de 'go back' a profile selection screen.
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }]
+                    })
+                )
             } 
         
     }
