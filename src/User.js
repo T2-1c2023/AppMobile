@@ -42,22 +42,18 @@ export async function logIn(mail, password) {
 		});
 }
 
-// TODO: ver manejo de nº de teléfono
-export async function registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer,
-	                                    expo_push_token) {
-	const data = {
-		token: firebaseToken,
-		phone_number: phone_number,
-		is_athlete: is_athlete,
-		is_trainer: is_trainer,
-		expo_push_token: expo_push_token
-	}
+// On success returns true, on failure returns undefined.
+export async function registerGoogleAcc(data) {
+	// TODO: La siguiente información la tiene que actualizar el usuario al editar el perfil (temporal?)
+	data.phone_number = '123456789';
+	data.location = { latitude: 0, longitude: 0 };
+	data.weight = 0;
+	console.log('Enviando:', data);
 
 	await axios.post(API_GATEWAY_URL + 'register/oauth', data)
 		.then(async (response) => {
 			if (response.status === 200) {
-				const token = response.data.token;
-				await tokenManager.updateTokens(token);
+				return true;
 			}
 		})
 		.catch((error) => {

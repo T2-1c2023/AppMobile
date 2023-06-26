@@ -88,19 +88,22 @@ export default class RegisterScreen1 extends Component {
     async handleGoogleSignIn() {
         this.setState({ loading: true });
 
-        const phone_number = '0123456789';
-        const is_athlete = this.props.route.params.athlete;
-        const is_trainer = this.props.route.params.trainer;
-
         let expo_push_token = await registerForPushNotificationsAsync();
         if (expo_push_token === undefined) {
             expo_push_token = '';
         }
-        // TODO: agregar peso y ubicación (re-ver porque no haces igual que en el login normal)
-        await googleSignIn(phone_number, is_athlete, is_trainer, expo_push_token);
 
-        if (this.userIsLogged()) {
-            this.props.navigation.replace('HomeScreen');
+        const data = {
+            is_trainer: this.props.route.params.trainer,
+            is_athlete: this.props.route.params.athlete,
+            expo_push_token: expo_push_token,
+        }
+
+        const userMail = await googleSignIn(data);
+        
+        console.log(userMail);
+        if (userMail !== undefined) {
+            this.props.navigation.navigate('PinCodeScreen', { mail: userMail });
         }
 
         this.setState({ loading: false });

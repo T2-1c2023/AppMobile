@@ -3,12 +3,14 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import { registerGoogleAcc, logInGoogleAcc } from './User';
 import auth from '@react-native-firebase/auth'
 import { tokenManager } from './TokenManager';
+import jwt_decode from "jwt-decode";
 
 GoogleSignin.configure({
     webClientId: Constants.manifest?.extra?.webClientId
 });   // Default options: you get user email and basic profile info.
 
-export async function googleSignIn(phone_number, is_athlete, is_trainer, expo_push_token) {
+// On success returns user's mail, on failure returns undefined.
+export async function googleSignIn(data) {
     try {
         // Check if your device supports Google Play
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
@@ -20,7 +22,15 @@ export async function googleSignIn(phone_number, is_athlete, is_trainer, expo_pu
         await auth().signInWithCredential(googleCredential)
             .then(async (userCredential) => {
                 const firebaseToken = await userCredential.user.getIdToken();
-                await registerGoogleAcc(firebaseToken, phone_number, is_athlete, is_trainer, expo_push_token);
+                data.token = firebaseToken;
+                 
+                const success = await registerGoogleAcc(data);
+
+                if (success) {
+                    const decodedToken = await jwt_decode(data.token);
+                    return decodedToken.email;
+                }
+                    
             })
             .catch((error) => {
                 console.error(error);
