@@ -51,6 +51,7 @@ export default class ProfileScreen extends Component {
         
         // variables dinamicas (no pueden sacarse del token)
         this.state = {
+            // TODO: agregar pantalla de carga
             interests: [],
             profilePic: require('../assets/images/user_predet_image.png'),
             fullname: '',
@@ -92,6 +93,9 @@ export default class ProfileScreen extends Component {
         const phone_number = response.data.phone_number
         const certifiedTrainer = response.data.is_recognized_trainer
         this.setState({ fullname, phone_number, certifiedTrainer })
+
+        // TODO: cargar latitude y longitud
+
         if (this.props.route !== undefined) {titleManager.setTitle(this.props.navigation, response.data.fullname, 22)}
     }
 
