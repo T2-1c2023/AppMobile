@@ -35,16 +35,11 @@ export default class NewTrainingScreen extends Component {
             trainingTypeId: 0,
             level: 'basic',
             trainerId: jwt_decode(this.props.route.params.trainerData).id,
-            initialTitle: '',
-            initialDescription: '',
-            initialLevel: 'basic',
             //initialTrainingType: 1,
             met: 0,
             metChanged: false,  //para que no aparezca el warning desde el principio, sólo cuando se escribió algo
-            initialMet: 0,
             distance: 0,
             distanceChanged: false, //ídem metChanged
-            initialDistance: 0,
         }
     }
 
@@ -77,15 +72,10 @@ export default class NewTrainingScreen extends Component {
                 console.log(training);
                 this.setState({
                     title: training.title,
-                    initialTitle: training.title,
                     description: training.description,
-                    initialDescription: training.description,
                     level: this.levelStrToInt(training.severity),
-                    initialLevel: this.levelStrToInt(training.severity),
                     met: training.met,
-                    initialMet: training.met,
                     distance: training.distance,
-                    initialDistance: training.distance,
                     //TO_DO trainingTypeId: 
                 });
             })
@@ -191,8 +181,8 @@ export default class NewTrainingScreen extends Component {
                         title="Título"
                         onChangeText={(title) => this.setState({ title })}
                         maxLength={20}
-                        placeholder={this.state.initialTitle}
-                        defaultValue={this.state.initialTitle}
+                        placeholder={this.state.title}
+                        value={this.state.title}
                         warningMode={true}
                         style={{
                             marginTop: 5,
@@ -216,8 +206,8 @@ export default class NewTrainingScreen extends Component {
                         title="Descripción"
                         onChangeText={(description) => this.setState({ description })}
                         maxLength={250}
-                        placeholder={this.state.initialDescription}
-                        defaultValue={this.state.initialDescription}
+                        placeholder={this.state.description}
+                        value={this.state.description}
                         style={{
                             marginTop: 5,
                         }}
@@ -273,7 +263,7 @@ export default class NewTrainingScreen extends Component {
                     />
 
                     <LevelInput
-                        initialLevel={this.state.initialLevel}
+                        initialLevel={this.state.level}
                         setSelected={(level) => this.setState({ level })}
                         style={{
                             marginTop: 10,
@@ -284,8 +274,8 @@ export default class NewTrainingScreen extends Component {
                     <TextBox
                         title="MET"
                         onChangeText={(met) => this.setState({ met: parseFloat(met), metChanged: true })}
-                        placeholder={this.state.initialMet.toString()}
-                        defaultValue={this.isNew ? undefined : this.state.initialMet.toString()}
+                        placeholder={this.state.met.toString()}
+                        value={this.isNew ? undefined : this.state.met.toString()}
                         keyboardType = 'numeric'
                         maxLength={10}
                         style={{
@@ -308,8 +298,8 @@ export default class NewTrainingScreen extends Component {
                     <TextBox
                         title="Distancia (km)"
                         onChangeText={(distance) => this.setState({ distance: parseFloat(distance), distanceChanged: true })}
-                        placeholder={this.state.initialDistance.toString()}
-                        defaultValue={this.isNew ? undefined : this.state.initialDistance.toString()}
+                        placeholder={this.state.distance.toString()}
+                        value={this.isNew ? undefined : this.state.distance.toString()}
                         keyboardType = 'numeric'
                         maxLength={10}
                         style={{

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Keyboard, Alert } from 'react-native';
+import { View, StyleSheet, Keyboard, Alert, ScrollView } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import { PinInput } from '../src/components/PinInput'
 import { TextHeader, TextDetails, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage } from '../src/styles/BaseComponents';
@@ -32,7 +32,7 @@ export default class PinCodeScreen extends Component {
                 tokenManager.updateTokens(response.data.token).then(() => {
                     const decodedToken = jwt_decode(response.data.token)
                     if (decodedToken.is_athlete)
-                        this.props.navigation.replace('InterestsScreen', { userId: decodedToken.id, from:'pincode' });
+                        this.props.navigation.replace('InterestsScreen', { userId: decodedToken.id, from: 'pincode' });
                     else
                         this.updateContextAndRedirect();
                 })
@@ -77,43 +77,48 @@ export default class PinCodeScreen extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <ScrollView
+                automaticallyAdjustKeyboardInsets={true}
+                style={styles.scrollView}
+            >
+                <View style={styles.container}>
 
-                <LoginImage />
+                    <LoginImage />
 
-                <TextHeader
-                    body="Código de verificación"
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
+                    <TextHeader
+                        body="Código de verificación"
+                        style={{
+                            marginTop: 20,
+                        }}
+                    />
 
-                <TextDetails
-                    numberOfLines={2}
-                    body="Por favor ingresa el código que enviamos a tu cuenta de Whatsapp"
-                    style={{
-                        marginTop: 20,
-                    }}
-                />
+                    <TextDetails
+                        numberOfLines={2}
+                        body="Por favor ingresa el código que enviamos a tu cuenta de Whatsapp"
+                        style={{
+                            marginTop: 20,
+                        }}
+                    />
 
-                <PinInput
-                    onChange={(input) => this.setState({ pin: input })}
-                    style={{
-                        marginTop: 30,
-                    }}
-                />
+                    <PinInput
+                        onChange={(input) => this.setState({ pin: input })}
+                        style={{
+                            marginTop: 30,
+                        }}
+                    />
 
-                <ButtonStandard
-                    onPress={() => {
-                        this.handleVerifyPin();
-                    }}
-                    title="Verificar"
-                    style={{
-                        marginTop: 100,
-                    }}
-                />
+                    <ButtonStandard
+                        onPress={() => {
+                            this.handleVerifyPin();
+                        }}
+                        title="Verificar"
+                        style={{
+                            marginTop: 100,
+                        }}
+                    />
 
-            </View>
+                </View>
+            </ScrollView>
         );
     }
 }

@@ -58,7 +58,7 @@ export default class EnrollmentScreen extends Component {
                 payload: payload
             })
         } catch (error) {
-            console.log(error)
+            Alert.alert("","No tenés huella registrada")
             return
         }
         const { success, signature } = result
@@ -146,7 +146,7 @@ export default class EnrollmentScreen extends Component {
             await axios.post(url, body, this.emptyBodyWithToken)
                 .then((response) => {
                     Alert.alert('', 'Huella registrada exitosamente')
-                    this.props.navigation.replace('ProfileScreen', { data: decodedToken, owner: true })
+                    this.props.navigation.goBack()
                 })
                 .catch((error) => {
                     if (error.response && error.response.status === 409) {

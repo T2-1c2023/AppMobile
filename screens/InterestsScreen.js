@@ -194,7 +194,7 @@ export default class InterestsScreen extends Component {
 class Interest extends Component {
     constructor(props) {
         super(props)
-        this.handleLongPress = this.handleLongPress.bind(this)
+        this.handlePress = this.handlePress.bind(this)
         this.state = {
             selected: this.props.selected,
             uri: null
@@ -202,7 +202,7 @@ class Interest extends Component {
 
     }
 
-    handleLongPress() {
+    handlePress() {
         if (this.props.canEdit) {
             const selected = !this.state.selected
             this.setState({ selected })
@@ -220,7 +220,7 @@ class Interest extends Component {
             <Card
                 elevation={3}
                 style={this.state.selected ? goalsStyles.cardSelected : goalsStyles.card}
-                onLongPress={this.handleLongPress}
+                onPress={this.handlePress}
             >
                 <View style={{ position: 'relative' }}>
                     {this.state.selected &&

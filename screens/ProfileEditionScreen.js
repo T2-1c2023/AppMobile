@@ -351,7 +351,7 @@ export default class ProfileEditionScreen extends Component {
     }
 
     onPressEnrollFingerprint = () => {
-        this.props.navigation.navigate('ValidatePasswordScreen', {data: this.props.route.params.data});
+        this.props.navigation.replace('EnrollmentScreen', {from: 'ValidatePasswordScreen'});
     }
 
     onPressChangeRole() {

@@ -31,8 +31,7 @@ export default class TrainingReviewScreen extends Component {
             },
             title: '',
             description: '',
-            review: '',
-            initialReview: 'Define tu experiencia',
+            review: 'Define tu experiencia',
             axiosReviewMethod: axios.post,
         }
         this.starRatingOptions = [1, 2, 3, 4, 5];
@@ -98,8 +97,7 @@ export default class TrainingReviewScreen extends Component {
                 //this.setState({ goals: response.data });
                 console.log("response data " + JSON.stringify(response.data));
                 if (response.data.length > 0) {
-                    this.setState({axiosReviewMethod:axios.patch, initialReview: response.data[0].review});
-                    this.setState({axiosReviewMethod:axios.patch});
+                    this.setState({axiosReviewMethod:axios.patch, review: response.data[0].review});
                 }
                 
                 
@@ -210,7 +208,8 @@ export default class TrainingReviewScreen extends Component {
                     title="Detalle"
                     onChangeText={(review) => this.setState({ review })}
                     maxLength={60}
-                    placeholder={this.state.initialReview}
+                    placeholder={this.state.review}
+                    value={this.state.review}
                     style={{
                         marginTop: 5,
                     }}
