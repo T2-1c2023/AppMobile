@@ -119,6 +119,10 @@ export default class UsersListScreen extends Component {
         return params
     }
 
+    filterMyUser(users) {
+        return users.filter(user => user.id !== this.context.userId)
+    }
+
     async loadUsers() {
         this.setState({ loading: true })
 
@@ -132,8 +136,8 @@ export default class UsersListScreen extends Component {
         try {
             console.log("[UsersListScreen] Loading users from: " + url + " with config: " + JSON.stringify(config))
             let response = await axios.get(url, config)
-            console.log("[UsersListScreen] Response: ", response.data)
-            this.setState({ users: response.data }, 
+            const users = this.filterMyUser(response.data)
+            this.setState({ users: users }, 
                 () => {
                     this.setState({ loading: false })
                 })

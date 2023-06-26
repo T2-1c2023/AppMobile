@@ -95,7 +95,7 @@ export default class TrainingSessionScreen extends Component {
     }
 
     onPressCancel() {
-        console.log("Canceling session")
+        this.props.navigation.goBack()
     }
 
     renderConfirmationButtons() {

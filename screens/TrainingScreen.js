@@ -617,7 +617,7 @@ export default class TrainingScreen extends Component {
 
                     {this.renderDivider()}
 
-                    {this.shouldRenderRegisterSessionButton &&
+                    {this.shouldRenderRegisterSessionButton() &&
                         <React.Fragment>
                             {this.renderRegisterSessionButton()}
                             {this.renderDivider()}
