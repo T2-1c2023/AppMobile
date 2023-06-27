@@ -147,8 +147,30 @@ export default class UsersListScreen extends Component {
     }
 
     async componentDidMount() {
-        await this.loadUsers()
+        let title;
+        switch (this.mode) {
+            case UsersListMode.Followed:
+                title = 'Seguidos'
+                break
+            case UsersListMode.Followers:
+                title = 'Seguidores'
+                break
+            case UsersListMode.Search:
+                title = 'Buscar'
+                break
+            default:
+                throw new Error("[UsersListScreen] Invalid mode: " + this.mode)
+        }
 
+        this.props.navigation.setOptions({
+            headerTitle: () => (
+                <Text style={{ fontSize: 22, textAlign: 'center' }}>
+                    {title}
+                </Text>
+            )
+        })
+        
+        await this.loadUsers()
     }
 
     onPressSearch(searchText) {
