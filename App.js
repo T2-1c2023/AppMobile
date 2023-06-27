@@ -46,7 +46,6 @@ import ChatScreen from './screens/ChatScreen';
 
 // TODO: borrar estas pantallas de test cuando no las necesites.
 import NotificationsTest from './screens/test_screens/NotificationsTest';
-import VerificationTest from './screens/test_screens/VerificationTest';
 
 import { AppProvider } from './src/contexts/UserContext';
 
@@ -133,10 +132,6 @@ export default class App extends Component {
             <Stack.Screen 
               name='NotificationsTest'
               component={NotificationsTest}
-            />
-            <Stack.Screen 
-              name='VerificationTest'
-              component={VerificationTest}
             />
             {/* /> TESTS ---------------------------------------------------------- */}
 
