@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView } fr
 import styles from '../src/styles/styles';
 import { ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import Modal from 'react-native-modal';
+import TrainerVerification from '../src/components/TrainerVerification';
 // Image upload
 import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
 import Constants from 'expo-constants'
@@ -68,6 +70,8 @@ export default class ProfileScreen extends Component {
             // only applied when this.owner == false
             // TODO: quitar hardcodeo
             following: false,
+
+            verificationPopUp: false
         }
         this.focusListener = this.props.navigation.addListener('focus', () => {
             this.loadInterests();
@@ -254,6 +258,11 @@ export default class ProfileScreen extends Component {
         }
     }
 
+    // Callback function to show pop up when trainer logo in ProfileHeader is pressed
+    showVerificationPopUp = () => {
+        this.setState({ verificationPopUp: true });
+    }
+
     renderHeader() {
         return (
             <ProfileHeader
@@ -267,6 +276,7 @@ export default class ProfileScreen extends Component {
                 style={{
                     marginTop: 15
                 }}
+                onPressTrainerLogo={this.showVerificationPopUp}
             />
         )
     }
@@ -377,6 +387,29 @@ export default class ProfileScreen extends Component {
         )
     }
 
+    // Callback function to close pop up
+    closeVerificationPopUp = () => {
+        this.setState({ verificationPopUp: false });
+    }
+
+    renderVerificationPopUp = () => {
+        const { verificationPopUp, fullname } = this.state;
+
+        return (
+          <Modal
+            isVisible={verificationPopUp}
+            animationIn="slideInDown"
+            animationOut="slideOutUp"
+            animationInTiming={100}
+          >
+            <TrainerVerification 
+              data={fullname} 
+              onClose={this.closeVerificationPopUp} 
+            />
+          </Modal>
+        )
+    }
+
     render() {
         const { loading } = this.state;
 
@@ -399,6 +432,8 @@ export default class ProfileScreen extends Component {
                         {this.renderContactInfo()}
                         {this.renderInterests()}
                         {this.renderTrainingsInfo()}
+
+                        {this.renderVerificationPopUp()}
                     </View>
                 </ScrollView>
             );

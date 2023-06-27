@@ -31,6 +31,14 @@ export default class ProfileHeader extends Component {
         )
     }
 
+    // Callback for ProfileScreen
+    handleTrainerLogoPress = () => {
+        const { onPressTrainerLogo } = this.props;
+        if (onPressTrainerLogo) {
+            onPressTrainerLogo();
+        }
+    }
+
     renderRoles() {
         return (
             <View style={profileStyles.rolesContainer}>
@@ -42,10 +50,14 @@ export default class ProfileHeader extends Component {
                 )}
                 {this.props.isTrainer && (
                     <View style={{position: 'relative'}}>
-                        <Image
-                            source={require('../../assets/images/trainer.png')}
-                            style={profileStyles.trainerPic}
-                        />
+                        <TouchableOpacity
+                          onPress={this.handleTrainerLogoPress}
+                        >
+                            <Image
+                                source={require('../../assets/images/trainer.png')}
+                                style={profileStyles.trainerPic}
+                            />
+                        </TouchableOpacity>
                         {this.props.certifiedTrainer && (
                             <View style={{position: 'absolute', top: 0, right: -10}}>
                                 <TouchableOpacity
