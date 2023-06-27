@@ -22,8 +22,11 @@ export default class TrainerVerification extends Component {
         this.state = {
             loading: false,
             requestSent: false,
+            pendingRequest: false,
             videoUri: null,
         };
+
+        console.log(props.data);
     };
 
     selectVideo = async () => {
@@ -64,7 +67,7 @@ export default class TrainerVerification extends Component {
             const videoId = Date.now().toString();
             const storageRef = storage().ref().child(`videos/${videoId}`);
             await storageRef.putFile(uri);
-            this.requestRecognizedTrainer(videoId);
+            await this.requestRecognizedTrainer(videoId);
         } catch (error) {
             alert(error);
         }
@@ -80,20 +83,23 @@ export default class TrainerVerification extends Component {
             video_id: videoId
         }
 
-        // TODO: hacer un handleo de responses adecuado
         try {
             const response = await axios.post(url, data, { headers });
             console.log(response.data);
             this.setState({ requestSent: true });
         } catch (error) {
-            console.error(error);
+            if (error.response.status === 406) {
+                this.setState({ requestSent: true, pendingRequest: true });
+            } else {
+                alert(error, error.message);
+            }
         }
     }
 
     render() {
         const { onClose } = this.props;
-        const { fullname } = this.props.data;
-        const { videoUri, loading, requestSent } = this.state;
+        const { fullname, is_recognized_trainer } = this.props.data;
+        const { videoUri, loading, requestSent, pendingRequest } = this.state;
 
         if (loading) {
             return (
@@ -103,16 +109,38 @@ export default class TrainerVerification extends Component {
                 </View>                
             )
         } else if (requestSent) {
+            if (pendingRequest) {
+                return (
+                    <View style={styles.popupContainer}>
+                        <Text style={styles.title}>Solicitud Pendiente</Text>
+                        <Text style={styles.description}>Ya tiene una solicitud de verificación pendiente.</Text>
+                        <Text style={styles.description}>Por favor, espere la confirmación de verificación por parte del equipo de administración.</Text>
+                        <View style={[styles.buttonContainer, { marginTop: 10 }]}>
+                            <ButtonStandard title="Cerrar" onPress={onClose} />
+                        </View>
+                    </View>
+                )
+            } else {
+                return (
+                    <View style={styles.popupContainer}>
+                        <Text style={styles.title}>Solicitud Enviada</Text>
+                        <Text style={styles.description}>Su solicitud de verificación ha sido enviada correctamente.</Text>
+                        <Text style={styles.description}>Por favor, espere la confirmación de verificación por parte del equipo de administración.</Text>
+                        <Text style={styles.description}>Éxitos!</Text>
+                        <View style={[styles.buttonContainer, { marginTop: 10 }]}>
+                            <ButtonStandard title="Cerrar" onPress={onClose} />
+                        </View>
+                    </View>
+                )
+            }
+        } else if (is_recognized_trainer) { 
             return (
-              <View style={styles.popupContainer}>
-                <Text style={styles.title}>Solicitud Enviada</Text>
-                <Text style={styles.description}>Su solicitud de verificación ha sido enviada correctamente.</Text>
-                <Text style={styles.description}>Por favor, espere la confirmación de verificación por parte del equipo de administración.</Text>
-                <Text style={styles.description}>Éxitos!</Text>
-                <View style={styles.buttonContainer}>
-                  <ButtonStandard title="Cerrar" onPress={onClose} />
+                <View style={styles.popupContainer}>
+                    <Text style={styles.title}>Ya se encuentra verificado!</Text>
+                    <View style={[styles.buttonContainer, { marginTop: 10 }]}>
+                        <ButtonStandard title="Cerrar" onPress={onClose} />
+                    </View>
                 </View>
-              </View>
             )
         } else {
             return (
