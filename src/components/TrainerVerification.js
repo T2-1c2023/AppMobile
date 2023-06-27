@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity, Pressable } from 'reac
 import { ButtonStandard } from '../styles/BaseComponents';
 import Video from 'react-native-video';
 import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator } from 'react-native-paper';
 // Video
 import * as ImagePicker from 'expo-image-picker';
 import storage from '@react-native-firebase/storage';
@@ -19,6 +20,8 @@ export default class TrainerVerification extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
+            requestSent: false,
             videoUri: null,
         };
     };
@@ -35,52 +38,125 @@ export default class TrainerVerification extends Component {
         }
     }
 
+    handleContinuePress = async () => {
+        const { videoUri } = this.state;
+        
+        Alert.alert(
+            'Confirmar',
+            'Desea subir el video?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Continuar',
+                    onPress: async () => {
+                        this.setState({ loading: true });
+                        await this.uploadVideoFirebaseRecognizedTrainer(videoUri)
+                        this.setState({ loading: false });
+                    }
+                }
+            ]
+        );
+    }
+
+    // Tries to upload video to firebase. On success, sends request to backend
+    uploadVideoFirebaseRecognizedTrainer = async (uri) => {
+        try {
+            const videoId = Date.now().toString();
+            const storageRef = storage().ref().child(`videos/${videoId}`);
+            await storageRef.putFile(uri);
+            this.requestRecognizedTrainer(videoId);
+        } catch (error) {
+            alert(error);
+        }
+    }
+
+    requestRecognizedTrainer = async (videoId) => {
+        const trainer_id = this.props.data.id;
+        const url = API_GATEWAY_URL + 'recognized-trainers/' + trainer_id;
+        const headers = {
+            Authorization: tokenManager.getAccessToken()
+        }
+        const data = {
+            video_id: videoId
+        }
+
+        // TODO: hacer un handleo de responses adecuado
+        try {
+            const response = await axios.post(url, data, { headers });
+            console.log(response.data);
+            this.setState({ requestSent: true });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     render() {
         const { onClose } = this.props;
         const { fullname } = this.props.data;
-        const { videoUri } = this.state;
+        const { videoUri, loading, requestSent } = this.state;
 
-        return (
-          <View style={styles.popupContainer}>
-            <Text style={styles.title}>Solicitud de Verificación de Entrenador</Text>
-            <Text style={styles.description}>Hola {fullname}!{'\n'} Por favor, seleccione un video para solicitar la verificación como entrenador:</Text>
-            
-            {videoUri ? (
-                    <View style={{ alignItems: 'center'}}>
-                      <TouchableOpacity onPress={this.selectVideo}>
-                        <Video source={{ uri: videoUri }} style={{ width: 300, height: 300 }} repeat={true} />
-                      </TouchableOpacity>
-                      <View style={styles.buttonContainer}>
-                        <Pressable
-                        style={({ pressed }) => [
-                            styles.pressableButton,
-                            { backgroundColor: pressed ? '#150043' : '#21005D' },
-                        ]}
-                        onPress={() => console.log('Pressed')}
-                        >
-                          <Text style={styles.buttonText}>Enviar Solicitud</Text>
-                        </Pressable>
-                       </View>
-                    </View>
-                ) : (
-                    <View style={styles.iconContainer}>
+        if (loading) {
+            return (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#21005D" />
+                    <Text style={styles.loadingText}>Enviando Solicitud...</Text>
+                </View>                
+            )
+        } else if (requestSent) {
+            return (
+              <View style={styles.popupContainer}>
+                <Text style={styles.title}>Solicitud Enviada</Text>
+                <Text style={styles.description}>Su solicitud de verificación ha sido enviada correctamente.</Text>
+                <Text style={styles.description}>Por favor, espere la confirmación de verificación por parte del equipo de administración.</Text>
+                <Text style={styles.description}>Éxitos!</Text>
+                <View style={styles.buttonContainer}>
+                  <ButtonStandard title="Cerrar" onPress={onClose} />
+                </View>
+              </View>
+            )
+        } else {
+            return (
+            <View style={styles.popupContainer}>
+                <Text style={styles.title}>Solicitud de Verificación de Entrenador</Text>
+                <Text style={styles.description}>Hola {fullname}!{'\n'} Por favor, seleccione un video para solicitar la verificación como entrenador:</Text>
+                
+                {videoUri ? (
+                        <View style={{ alignItems: 'center'}}>
                         <TouchableOpacity onPress={this.selectVideo}>
-                          <Ionicons name="videocam-outline" size={80} color="gray" />
+                            <Video source={{ uri: videoUri }} style={{ width: 300, height: 300 }} repeat={true} />
                         </TouchableOpacity>
-                    </View>
-                )}
-            
-            <View style={styles.stepContainer}>
-              <Text style={styles.stepDescription}>
-                Una vez enviado espere la confirmación de verificación por parte del equipo de administración.
-                {'\n'}Éxitos!
-                </Text>
+                        <View style={styles.buttonContainer}>
+                            <Pressable
+                            style={({ pressed }) => [
+                                styles.pressableButton,
+                                { backgroundColor: pressed ? '#150043' : '#21005D' },
+                            ]}
+                            onPress={this.handleContinuePress}
+                            >
+                            <Text style={styles.buttonText}>Enviar Solicitud</Text>
+                            </Pressable>
+                        </View>
+                        </View>
+                    ) : (
+                        <View style={styles.iconContainer}>
+                            <TouchableOpacity onPress={this.selectVideo}>
+                            <Ionicons name="videocam-outline" size={80} color="gray" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                
+                <View style={styles.stepContainer}>
+                <Text style={styles.stepDescription}>
+                    Una vez enviado espere la confirmación de verificación por parte del equipo de administración.
+                    {'\n'}Éxitos!
+                    </Text>
+                </View>
+                <View style={styles.buttonContainer}>
+                <ButtonStandard title='Cerrar' onPress={onClose} />
+                </View>
             </View>
-            <View style={styles.buttonContainer}>
-              <ButtonStandard title='Cerrar' onPress={onClose} />
-            </View>
-          </View>
-        )
+            )
+        }
     }
 }
 
@@ -128,4 +204,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    loadingText: {
+        marginTop: 30
+    }
 })
