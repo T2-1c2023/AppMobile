@@ -393,7 +393,8 @@ export default class ProfileScreen extends Component {
     }
 
     renderVerificationPopUp = () => {
-        const { verificationPopUp, fullname } = this.state;
+        const { verificationPopUp } = this.state;
+    
 
         return (
           <Modal
@@ -403,7 +404,7 @@ export default class ProfileScreen extends Component {
             animationInTiming={100}
           >
             <TrainerVerification 
-              data={fullname} 
+              data={this.props.data} 
               onClose={this.closeVerificationPopUp} 
             />
           </Modal>
