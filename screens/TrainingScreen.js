@@ -24,6 +24,7 @@ import { tokenManager } from '../src/TokenManager';
 import { UserContext } from '../src/contexts/UserContext';
 
 import { ListMode } from './GoalsListScreen';
+import { getLocation } from '../services/Geocoding';
 
 const MAX_ACTIVITIES = 20;
 
@@ -291,13 +292,13 @@ export default class TrainingScreen extends Component {
             this.setState({ training });
             this.loadTrainerInfo(training.trainer_id);
             titleManager.setTitle(this.props.navigation, this.state.training.title, 22)
+            
         } catch (error) {
             console.log('loadTrainingInfo ' + error);
         }
 
         if (this.context.isAthlete)
             this.loadAthleteRatingInfo();
-        
     }
 
     loadTrainerInfo(trainer_id) {
@@ -311,6 +312,11 @@ export default class TrainingScreen extends Component {
                 this.setState({ trainer });
                 // Update profile picture if needed
                 this.getUriById(trainer.photo_id);
+                getLocation(trainer.latitude, trainer.longitude).then((formattedLocation) => {
+                    console.log(formattedLocation)
+                    this.setState( { location: formattedLocation });
+                })
+                
                 return response.data
             })
             .catch(function (error) {
@@ -590,6 +596,7 @@ export default class TrainingScreen extends Component {
                         myScore={this.state.myScore}
                         canRate={this.canRate()}
                         isAlreadyRated={this.state.isAlreadyRated}
+                        location={this.state.location}
                         onPressViewAllReviews={this.onPressViewAllReviews}
                         onPressRate={this.onPressRate}
                         style={{

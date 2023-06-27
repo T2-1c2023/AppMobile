@@ -263,7 +263,7 @@ export default class TrainingData extends Component {
                     <Text 
                         style={dataStyles.locationText}
                     >
-                        {'to be implemented'}
+                        {this.props.location}
                     </Text>
 
                 </View>
