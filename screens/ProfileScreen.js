@@ -59,10 +59,11 @@ export default class ProfileScreen extends Component {
             profilePic: require('../assets/images/user_predet_image.png'),
             fullname: '',
             phone_number: '',
-            
+            location: '',
+            weight: '',
+
             // TODO: Cuando esten las requests deben inicializarse en loadUserInfo()
             certifiedTrainer: false,
-            location: '',
 
             // only applied when this.owner == false
             // TODO: quitar hardcodeo
@@ -95,7 +96,8 @@ export default class ProfileScreen extends Component {
         const fullname = response.data.fullname
         const phone_number = response.data.phone_number
         const certifiedTrainer = response.data.is_recognized_trainer
-        this.setState({ fullname, phone_number, certifiedTrainer })
+        const weight = response.data.weight
+        this.setState({ fullname, phone_number, weight, certifiedTrainer })
 
         const { latitude, longitude } = response.data;
         const formattedLocation = await getLocation(latitude, longitude);
@@ -295,12 +297,14 @@ export default class ProfileScreen extends Component {
     }
 
     renderPersonalData() {
+        const { location, phone_number, weight } = this.state;
         return (
             <React.Fragment>
                 {this.renderSectionTitle('Datos personales')}
                 
-                {this.renderTitleAndText('Ubicación', this.state.location)}
-                {this.renderTitleAndText('Teléfono', this.state.phone_number)}
+                {this.renderTitleAndText('Ubicación', location)}
+                {this.renderTitleAndText('Teléfono', phone_number)}
+                {this.renderTitleAndText('Peso', weight)}
             </React.Fragment>
         )
     }

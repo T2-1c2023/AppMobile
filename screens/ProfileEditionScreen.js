@@ -52,6 +52,8 @@ export default class ProfileEditionScreen extends Component {
             newFullName: props.route.params.data.fullname,
             phone: props.route.params.data.phone_number,
             newPhone: props.route.params.data.phone_number,
+            weight: props.route.params.data.weight.toString(),
+            newWeight: props.route.params.data.weight.toString(),
             locationDisplayName: ''
         }
 
@@ -100,13 +102,6 @@ export default class ProfileEditionScreen extends Component {
                             }
                             await updateUserData(newData, userId);
                             this.setState( { locationDisplayName: formattedLocation });
-                            showMessage({
-                                message: 'Datos de usuario cambiados con éxito',
-                                type: 'success',
-                                duration: 3000,
-                                backgroundColor: '#00B386',
-                                color: '#FFFFFF'
-                            });
                         } catch (error) {
                             console.log(error);
                         }
@@ -201,15 +196,26 @@ export default class ProfileEditionScreen extends Component {
     }
 
     nameEmpty() {
-        return this.state.fullname == '';
+        return this.state.newFullName == '';
     }
 
     invalidPhone() {
-        return this.state.phone == '';
+        return this.state.newPhone == '';
+    }
+
+    invalidWeight() {
+        return this.state.newWeight <= 0 || isNaN(Number(this.state.newWeight));
     }
 
     handleNameFieldBlur = () => {
         const { fullname, newFullName } = this.state;
+
+        if (this.nameEmpty()) {
+            this.setState({ newFullName: this.state.name });
+            Alert.alert('Nombre inválido', 'El nombre no puede quedar vacío.\nVuelva a intentar');
+            return;
+        }
+
         if (newFullName.trim() !== fullname.trim()) {
             Alert.alert(
                 'Desea modificar su nombre de usuario a "' + newFullName + '"?',
@@ -246,12 +252,18 @@ export default class ProfileEditionScreen extends Component {
 
     handlePhoneNumberFieldBlur = () => {
         const { phone, newPhone } = this.state;
+        if (this.invalidPhone()) {
+            this.setState({ newPhone: this.state.phone });
+            Alert.alert('Teléfono inválido', 'El teléfono no puede quedar vacío.\nVuelva a intentar');
+            return;
+        }
+
         if (newPhone.trim() !== phone.trim()) {
             Alert.alert(
                 'Desea modificar su número de teléfono a "' + newPhone + '"?',
                 '',
                 [
-                    { text: 'Cancel', style: 'cancel', 
+                    { text: 'Cancelar', style: 'cancel', 
                       onPress: () => {this.setState({ newPhone: phone })}
                     },
                     { text: 'Continuar', onPress: this.handleChangePhone }
@@ -271,9 +283,50 @@ export default class ProfileEditionScreen extends Component {
             }
             await updateUserData(newData, userId);
             this.setState({ phone: newPhone });
-        } catch (error) {   
+        } catch (error) { // No changes were made, reset
             console.log(error);
             this.setState({ newPhone: this.state.phone });
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
+    handleWeightFieldBlur = () => {
+        const { weight, newWeight } = this.state;
+        if (this.invalidWeight()) {
+            this.setState({ newWeight: this.state.weight });
+            Alert.alert('Peso inválido', 'El peso debe ser mayor a 0.\nVuelva a intentar');
+            return;
+        }
+
+        if (newWeight.trim() !== weight.trim()) {
+            Alert.alert(
+                'Desea modificar su peso a "' + newWeight + '"?',
+                '',
+                [
+                    { text: 'Cancelar', style: 'cancel', 
+                      onPress: () => {this.setState({ newWeight: weight })}
+                    },
+                    { text: 'Continuar', onPress: this.handleChangeWeight }
+                ],
+                { cancelable: false }
+            );
+        } else console.log('No hubo cambios');
+    }
+
+    handleChangeWeight = async () => {
+        this.setState({ loading: true });
+        try {
+            const { newWeight } = this.state;
+            const userId = this.props.route.params.data.id;
+            const newData = {
+                weight: newWeight
+            }
+            await updateUserData(newData, userId);
+            this.setState({ weight: newWeight });
+        } catch (error) { // No changes were made, reset
+            console.log(error);
+            this.setState({ newWeight: this.state.weight });
         } finally {
             this.setState({ loading: false });
         }
@@ -346,6 +399,32 @@ export default class ProfileEditionScreen extends Component {
             <View style={editionStyles.divider} />
           </React.Fragment>
         )
+    }
+
+    renderWeightField() {
+        return (
+            <React.Fragment>
+                <TextInput
+                    label={'Peso'}
+                    keyboardType='numeric'
+                    onChangeText={(newWeight) => this.setState({ newWeight })}
+                    onBlur={this.handleWeightFieldBlur}
+                    theme={this.invalidWeight()? editionStyles.themeErrorColors : editionStyles.themeColors}
+                    value={this.state.newWeight}
+                    mode='flat'
+                    style={editionStyles.inputText}
+                />
+                {this.invalidWeight() &&
+                    <HelperText 
+                        type="error" 
+                        visible
+                        style={editionStyles.helperText}
+                    >
+                        El peso debe ser mayor a 0
+                    </HelperText>
+                }
+            </React.Fragment>
+        )        
     }
 
     onPressChangePassword = () => {
@@ -426,6 +505,8 @@ export default class ProfileEditionScreen extends Component {
                         {this.renderLocationField()}
                         
                         {this.renderPhoneField()}
+
+                        {this.renderWeightField()}
 
                         {this.renderLinks()}
 
