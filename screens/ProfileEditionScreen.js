@@ -318,9 +318,10 @@ export default class ProfileEditionScreen extends Component {
         this.setState({ loading: true });
         try {
             const { newWeight } = this.state;
+            const newWeightInt = parseInt(newWeight, 10);
             const userId = this.props.route.params.data.id;
             const newData = {
-                weight: newWeight
+                weight: newWeightInt
             }
             await updateUserData(newData, userId);
             this.setState({ weight: newWeight });
