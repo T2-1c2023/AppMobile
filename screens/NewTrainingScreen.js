@@ -90,8 +90,8 @@ export default class NewTrainingScreen extends Component {
             "description": this.state.description,
             "type_id": this.state.trainingTypeId,
             "severity": this.levelStrToInt(this.state.level),
-            "met": this.state.met,
-            "distance": this.state.distance,
+            "met": parseFloat(this.state.met),
+            "distance": parseFloat(this.state.distance),
         }
 
         try {
@@ -273,9 +273,9 @@ export default class NewTrainingScreen extends Component {
 
                     <TextBox
                         title="MET"
-                        onChangeText={(met) => this.setState({ met: parseFloat(met), metChanged: true })}
+                        onChangeText={(met) => this.setState({ met: met, metChanged: true })}
                         placeholder={this.state.met.toString()}
-                        value={this.isNew ? undefined : this.state.met.toString()}
+                        value={this.state.met.toString()}
                         keyboardType = 'numeric'
                         maxLength={10}
                         style={{
@@ -297,9 +297,9 @@ export default class NewTrainingScreen extends Component {
 
                     <TextBox
                         title="Distancia (km)"
-                        onChangeText={(distance) => this.setState({ distance: parseFloat(distance), distanceChanged: true })}
+                        onChangeText={(distance) => this.setState({ distance: distance, distanceChanged: true })}
                         placeholder={this.state.distance.toString()}
-                        value={this.isNew ? undefined : this.state.distance.toString()}
+                        value={this.state.distance.toString()}
                         keyboardType = 'numeric'
                         maxLength={10}
                         style={{
