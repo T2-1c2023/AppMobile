@@ -413,7 +413,8 @@ export default class ProfileScreen extends Component {
             animationInTiming={100}
           >
             <TrainerVerification 
-              data={this.props.data} 
+              data={this.props.data}
+              certifiedTrainer={this.state.certifiedTrainer}
               onClose={this.closeVerificationPopUp} 
             />
           </Modal>
