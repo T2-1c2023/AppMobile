@@ -36,29 +36,14 @@ class TokenManager {
         return this.accessToken
     }
 
+    tokenLoaded() {
+        return this.accessToken !== null
+    }
+
     getPayload() {
         return this.payload
     }
 
-    
-    //  ejemplo de payload
-    // {
-    //     "blocked": false, 
-    //     "exp": 1686251891, 
-    //     "expo_push_token": "", 
-    //     "fullname": "Mr. Atleta", 
-    //     "iat": 1686248291, 
-    //     "id": 71, 
-    //     "is_admin": false, 
-    //     "is_athlete": true, 
-    //     "is_trainer": false, 
-    //     "is_verified": true, 
-    //     "latitude": "0", 
-    //     "longitude": "0", 
-    //     "mail": "atleta@atleta.com", 
-    //     "phone_number": "0123456789", 
-    //     "photo_id": "1685408897172"
-    // }
     updatePayload() {
         this.payload = jwt_decode(this.accessToken)
     }

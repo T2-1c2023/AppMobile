@@ -8,6 +8,8 @@ import { ActivityIndicator } from 'react-native-paper';
 import { updateUserData } from '../src/User';
 import { titleManager } from '../src/TitleManager';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 export default class ChangePasswordScreen extends Component {
     constructor(props) {
         super(props)

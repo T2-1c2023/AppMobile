@@ -23,6 +23,8 @@ import { UsersListMode } from './UsersListScreen';
 
 import { getLocation } from '../services/Geocoding';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class ProfileScreen extends Component {
@@ -74,17 +76,23 @@ export default class ProfileScreen extends Component {
             verificationPopUp: false
         }
         this.focusListener = this.props.navigation.addListener('focus', () => {
-            this.loadInterests();
-            this.loadUserInfo();
-            this.loadFollowingInfo();
+            // this.loadInterests();
+            // this.loadUserInfo();
+            // this.loadFollowingInfo();
+            this.componentDidMount()
         });
     }
 
     async loadInterests() {
         const url = API_GATEWAY_URL + 'users/' + this.id + '/interests'
-        const response = await axios.get(url, this.emptyBodyWithToken)
-        const interests = response.data
-        this.setState({ interests })
+        try {
+            const response = await axios.get(url, this.emptyBodyWithToken)
+            const interests = response.data
+            this.setState({ interests })
+        }
+        catch (error) {
+            console.log(error.response)
+        }
     }
 
     async loadUserInfo() {
@@ -122,7 +130,7 @@ export default class ProfileScreen extends Component {
                     this.setState({ following });
                 })
                 .catch(function (error) {
-                    console.log('onPressFollowing ' + error);
+                    responseErrorHandler(error.response, this.props.navigation)
                 });
         }
         
@@ -134,9 +142,8 @@ export default class ProfileScreen extends Component {
             await this.loadUserInfo()
             this.loadFollowingInfo()
             this.setState({ loading: false });
-            console.log("contexto: ", this.context)
         } catch (error) {
-            console.log(error)
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 
@@ -183,6 +190,7 @@ export default class ProfileScreen extends Component {
             })
             .catch(function (error) {
                 console.log('onPressFollowing ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -201,6 +209,7 @@ export default class ProfileScreen extends Component {
             })
             .catch(function (error) {
                 console.log('onPressUnfollow ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
