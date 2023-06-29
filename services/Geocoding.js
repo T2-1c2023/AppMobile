@@ -24,7 +24,8 @@ export async function getLocation(latitude, longitude) {
             
         return locationString;
     } catch (error) {
-        alert('El servicio Nominatim no se encuentra disponible para obtener la dirección', error);
+        //alert('El servicio Nominatim no se encuentra disponible para obtener la dirección', error);
+        console.error(error);
         return '';
     }
 }
