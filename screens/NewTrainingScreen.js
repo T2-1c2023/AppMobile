@@ -322,18 +322,6 @@ export default class NewTrainingScreen extends Component {
                         </HelperText>
                     }
 
-                    <DividerWithLeftText
-                        text="Ubicación"
-                        style={{
-                            marginTop: 10,
-                        }}
-                    />
-
-                    {/* TODO: reemplazar por componente de input de ubicación
-                -------------------- */}
-                    <Text>To be implemented </Text>
-                    {/* -------------------- */}
-
                     <ConfirmationButtons
                         confirmationText={this.isNew ? "Crear entrenamiento" : "Editar entrenamiento"}
                         cancelText="Cancelar"
