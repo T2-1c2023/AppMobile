@@ -28,7 +28,7 @@ export default class PinCodeScreen extends Component {
 
     async handleVerifyPin() {
         const url = API_GATEWAY_URL + "register/verify"
-        const body = { mail: this.props.route.params.mail, code: this.state.pin }
+        const body = { mail: this.context.email, code: this.state.pin }
         await axios.post(url, body)
             .then((response) => {
                 tokenManager.updateTokens(response.data.token).then(() => {

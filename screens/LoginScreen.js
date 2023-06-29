@@ -64,13 +64,15 @@ export default class LoginScreen extends Component {
         const { email, password } = this.state   
         const allFieldsAreLoaded = this.allFieldsAreLoaded()
         const emailIsValid = this.emailIsValid()
+
         if (!allFieldsAreLoaded)
             return
 
+        console.log("[LoginScreen] email: " + email + " password: " + password)
+        this.context.setEmail(email)
+        console.log("[LoginScreen] context email: " + this.context.email)
         try {
-            console.log("[LoginScreen] about to login with: " + email + " " + password)
-            await logIn(email, password)
-            console.log("[LoginScreen] after login with: " + email + " " + password)
+            await logIn(email, password, this.props.navigation)
         } catch (error) {
             console.log("[LoginScreen] error: " + error)
         }

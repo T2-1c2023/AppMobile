@@ -6,9 +6,14 @@ export class AppProvider extends React.Component {
     state = {
         name: '',
         userId: '',
+        email: '',
         isAthlete: false,
         isTrainer: false,
     };
+
+    setEmail = (email) => {
+        this.setState({ email });
+    }
 
     setName = (name) => {
         this.setState({ name });
@@ -30,6 +35,9 @@ export class AppProvider extends React.Component {
 
     render() {
         const values = {
+            email : this.state.email,
+            setEmail: this.setEmail,
+
             name: this.state.name,
             setName: this.setName,
 

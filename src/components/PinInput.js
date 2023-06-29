@@ -39,6 +39,7 @@ export class PinInput extends Component {
                             caretHidden={true}
                             style={[pinStyles.digitInput, styles.pinInput]}
                             ref={this.p1Ref}
+                            theme={pinStyles.theme}
                             keyboardType='numeric'
                             maxLength={1}
                             onChangeText={(input) => {
@@ -60,6 +61,7 @@ export class PinInput extends Component {
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            theme={pinStyles.theme}
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
@@ -91,6 +93,7 @@ export class PinInput extends Component {
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            theme={pinStyles.theme}
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
@@ -124,6 +127,7 @@ export class PinInput extends Component {
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            theme={pinStyles.theme}
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
@@ -157,6 +161,7 @@ export class PinInput extends Component {
                     </View>
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            theme={pinStyles.theme}
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
@@ -191,6 +196,7 @@ export class PinInput extends Component {
 
                     <View style={pinStyles.digitContainer}>
                         <TextInput
+                            theme={pinStyles.theme}
                             underlineColor="transparent"
                             placeholder='-'
                             caretHidden={true}
@@ -240,5 +246,20 @@ const pinStyles = StyleSheet.create({
         borderBottomRightRadius: 40,
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
-    }
+    },
+
+    theme: {
+        colors: { 
+            //placeholder unfocus (big and small)
+            onSurfaceVariant: 'black',
+            
+            //underline unfocus
+            onSurface: 'black',
+
+            //underline and title focus
+            primary: 'black',    
+            
+            text: 'black',
+        }
+    },
 })

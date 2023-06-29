@@ -7,12 +7,7 @@ import { tokenManager } from '../TokenManager';
 // responseErrorHandler(error.response, this.props.navigation)
 
 goToPinCodeScreen = (navigation) => {
-    navigation.dispatch(
-        CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'PinCodeScreen' }]
-        })
-    )
+    navigation.replace('PinCodeScreen');
 }
 
 goToLoginScreen = (navigation) => {
@@ -51,7 +46,7 @@ handle423 = (navigation) => {
     }
 }
 
-handle422 = () => {
+handle422 = (navigation) => {
     alert("Debes verificar tu número de teléfono");
     goToPinCodeScreen(navigation);
 }
