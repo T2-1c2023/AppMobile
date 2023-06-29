@@ -24,6 +24,8 @@ import Icon from 'react-native-paper/src/components/Icon'
 import { Slider } from '@rneui/themed';
 import * as Elements from '@rneui/themed'
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class StatisticsScreen extends Component {
@@ -101,6 +103,7 @@ export default class StatisticsScreen extends Component {
             })
             .catch((error) => {
                 console.log(error)
+                responseErrorHandler(error.response, this.props.navigation)
             }
         )
 

@@ -60,6 +60,7 @@ export default class TrainingGoalsEditionScreen extends Component {
             })
             .catch(error => {
                 console.log(error)
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -74,6 +75,7 @@ export default class TrainingGoalsEditionScreen extends Component {
             })
             .catch(error => {
                 console.log(error)
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -109,6 +111,7 @@ export default class TrainingGoalsEditionScreen extends Component {
                 this.setState({ goals, selectedGoalsIds });
             }).catch(function (error) {
                 console.log(error);
+                responseErrorHandler(error.response, this.props.navigation)
             }
             );
 

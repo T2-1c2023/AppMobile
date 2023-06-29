@@ -21,6 +21,8 @@ import jwt_decode from 'jwt-decode';
 // import Icon from 'react-native-paper/src/components/Icon'
 import { Slider, Icon } from '@rneui/themed';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingSessionScreen extends Component {
@@ -95,6 +97,7 @@ export default class TrainingSessionScreen extends Component {
             .catch(error => {
                 console.log("Error registering session")
                 console.log(error)
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 

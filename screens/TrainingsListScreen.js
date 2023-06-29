@@ -17,6 +17,8 @@ import jwt_decode from 'jwt-decode';
 import { titleManager } from '../src/TitleManager';
 import { UserContext } from '../src/contexts/UserContext';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 const Type = { Favourites: 0, Enrolled: 1, All: 2, Created: 3, Recommended: 4};
@@ -215,6 +217,7 @@ export default class TrainingsListScreen extends Component {
             })
             .catch(function (error) {
                 console.log("refreshActivities " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -233,6 +236,7 @@ export default class TrainingsListScreen extends Component {
             })
             .catch(function (error) {
                 console.log("refreshTrainingsTypes" + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 

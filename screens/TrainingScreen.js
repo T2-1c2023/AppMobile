@@ -26,6 +26,8 @@ import { UserContext } from '../src/contexts/UserContext';
 import { ListMode } from './GoalsListScreen';
 import { getLocation } from '../services/Geocoding';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const MAX_ACTIVITIES = 20;
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
@@ -109,6 +111,7 @@ export default class TrainingScreen extends Component {
             }
         } catch (error) {
             console.error("changeFavoriteStatus " + error)
+            responseErrorHandler(error.response, this.props.navigation)
         }
 
         return
@@ -134,6 +137,7 @@ export default class TrainingScreen extends Component {
             })
             .catch(function (error) {
                 console.log('isInFavorites ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
         return isInFavorites
     }
@@ -182,6 +186,7 @@ export default class TrainingScreen extends Component {
             })
             .catch(function (error) {
                 console.log('subscribe ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -203,6 +208,7 @@ export default class TrainingScreen extends Component {
                 if (error.response) {
                     console.log(error.response.data); // => the response payload 
                 }
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -228,6 +234,7 @@ export default class TrainingScreen extends Component {
                 })
                 .catch(function (error) {
                     console.log('isSubscribed' + error);
+                    responseErrorHandler(error.response, this.props.navigation)
                 });
         }
     }
@@ -275,6 +282,7 @@ export default class TrainingScreen extends Component {
                 this.setState({ isAlreadyRated: false })
             } 
             console.error("alreadyRatedd" + error);
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 
@@ -295,6 +303,7 @@ export default class TrainingScreen extends Component {
             
         } catch (error) {
             console.log('loadTrainingInfo ' + error);
+            responseErrorHandler(error.response, this.props.navigation)
         }
 
         if (this.context.isAthlete)
@@ -321,6 +330,7 @@ export default class TrainingScreen extends Component {
             })
             .catch(function (error) {
                 console.log('TRAINER ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -351,6 +361,7 @@ export default class TrainingScreen extends Component {
                             })
                             .catch(function (error) {
                                 console.log('handleDeletePress ' + error);
+                                responseErrorHandler(error.response, this.props.navigation)
                             })
         },
     ]);
@@ -443,6 +454,7 @@ export default class TrainingScreen extends Component {
             })
             .catch(function (error) {
                 console.log('loadSubscribedAthleteGoalsLeft ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 

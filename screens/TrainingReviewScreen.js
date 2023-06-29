@@ -12,6 +12,8 @@ import { tokenManager } from '../src/TokenManager';
 import jwt_decode from 'jwt-decode';
 import { titleManager } from '../src/TitleManager';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingReviewScreen extends Component {
@@ -78,6 +80,7 @@ export default class TrainingReviewScreen extends Component {
             })
             .catch((error) => {
                 console.error("loadReviewInfo " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -105,6 +108,7 @@ export default class TrainingReviewScreen extends Component {
             })
             .catch((error) => {
                 console.error("loadReviewInfo " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -130,6 +134,7 @@ export default class TrainingReviewScreen extends Component {
             })
             .catch((error) => {
                 console.error("handleSendReview " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -157,6 +162,7 @@ export default class TrainingReviewScreen extends Component {
                 })
                 .catch((error) => {
                     console.error("sendTextReview " + error);
+                    responseErrorHandler(error.response, this.props.navigation)
                 })
         }
     }

@@ -11,6 +11,8 @@ import { titleManager } from '../src/TitleManager';
 import jwt_decode from "jwt-decode";
 import { UserContext } from '../src/contexts/UserContext';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class PinCodeScreen extends Component {
@@ -42,6 +44,7 @@ export default class PinCodeScreen extends Component {
                     Alert.alert('', "El PIN ingresado no es correcto")
                 } else {
                     console.log("handleVerifyPin " + error);
+                    responseErrorHandler(error.response, this.props.navigation)
                 }
             })
     }

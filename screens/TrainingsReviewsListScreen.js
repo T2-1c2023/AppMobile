@@ -8,6 +8,8 @@ import StarsScore from '../src/components/StarsScore';
 import { titleManager } from '../src/TitleManager';
 import jwt_decode from 'jwt-decode';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class TrainingsReviewsListScreen extends Component {
@@ -49,6 +51,7 @@ export default class TrainingsReviewsListScreen extends Component {
             })
             .catch(function (error) {
                 console.log("refreshActivities " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -90,6 +93,7 @@ export default class TrainingsReviewsListScreen extends Component {
             })
             .catch(function (error) {
                 console.error('handlePressedReview ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 

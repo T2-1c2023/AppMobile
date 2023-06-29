@@ -13,6 +13,8 @@ import axios from 'axios';
 
 import { titleManager } from '../src/TitleManager';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const MAX_ACTIVITIES = 20;
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
@@ -64,6 +66,7 @@ export default class TrainingActivitiesScreen extends Component {
             })
             .catch(function (error) {
                 console.log(error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 

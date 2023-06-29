@@ -18,6 +18,8 @@ import { UserContext } from '../src/contexts/UserContext';
 import RadiusInput from '../src/components/RadiusInput';
 import jwt_decode from 'jwt-decode';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export const UsersListMode = {
@@ -143,6 +145,7 @@ export default class UsersListScreen extends Component {
                 })
         } catch (error) {
             console.log("[UsersListScreen] Error: " + JSON.stringify(error))
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 
@@ -205,6 +208,7 @@ export default class UsersListScreen extends Component {
             })
             .catch(function (error) {
                 console.error('onPressUser ' + error);
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -236,6 +240,7 @@ export default class UsersListScreen extends Component {
             })
             .catch((error) => {
                 console.log("[sendFollowRequest] Error: " + JSON.stringify(error))
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -257,6 +262,7 @@ export default class UsersListScreen extends Component {
             })
             .catch((error) => {
                 console.log("[sendUnfollowRequest] Error: " + JSON.stringify(error))
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 

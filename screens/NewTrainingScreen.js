@@ -12,6 +12,8 @@ import Constants from 'expo-constants'
 import { HelperText } from 'react-native-paper';
 import { titleManager } from '../src/TitleManager';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 const MIN_TRAINING_TITLE = 2;       //TODO a definir
@@ -44,9 +46,13 @@ export default class NewTrainingScreen extends Component {
     }
 
     async getTrainingsTypes() {
-        const response = await axios.get(API_GATEWAY_URL + 'training-types', this.emptyBodyWithToken)
-        //console.log(response.data);     
-        return response.data
+        try {
+            const response = await axios.get(API_GATEWAY_URL + 'training-types', this.emptyBodyWithToken)     
+            return response.data
+        }
+        catch (error) {
+            responseErrorHandler(error, this.props.navigation)
+        }
     }
 
     async componentDidMount() {
@@ -80,7 +86,8 @@ export default class NewTrainingScreen extends Component {
                 });
             })
             .catch(function (error) {
-                console.log('loadTrainingInfo ' + error);
+                console.log('loadTrainingInfo ' + error)
+                responseErrorHandler(error.response, this.props.navigation)
             });
     }
 
@@ -113,16 +120,12 @@ export default class NewTrainingScreen extends Component {
                 }
             }
         } catch (error) {
-            this.handleNewTrainingError(error);
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 
     handleCancelPress = async () => {
         this.props.navigation.goBack();
-    }
-
-    handleNewTrainingError(error) {
-        console.error(error);
     }
 
     levelStrToInt(levelStr) {

@@ -11,6 +11,11 @@ import { googleLogIn } from '../src/GoogleAccount';
 
 import { UserContext } from '../src/contexts/UserContext';
 import { titleManager } from '../src/TitleManager';
+import axios from 'axios';
+
+import Constants from 'expo-constants';
+
+const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class LoginScreen extends Component {
     static contextType = UserContext;
@@ -90,7 +95,25 @@ export default class LoginScreen extends Component {
         }
     }
 
+    async verifyServersHealth() {
+        try {
+            // /health
+            const urlUsers = "https://users-g6-1c-2023.onrender.com/health"
+            const urlTrainings = "https://trainings-g6-1c-2023.onrender.com/health"
+            const urlRecommendations = "https://recommendation-g6-1c-2023.onrender.com/health"
+            const urlAPIGateway =  API_GATEWAY_URL
+            await axios.get(urlUsers)
+            await axios.get(urlTrainings)
+            await axios.get(urlAPIGateway)
+            await axios.get(urlRecommendations)
+        }
+        catch (error) {
+            alert("Algunos servidores parecen no estar disponibles. Vuelva a intentarlo.")
+        }
+    }
+
     async componentDidMount() {
+        await this.verifyServersHealth()
         await tokenManager._loadTokens()
         if (this.alreadyLogged()) {
             await this.updateContextAndRedirect()

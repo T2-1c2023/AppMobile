@@ -26,6 +26,8 @@ import { UserContext } from '../src/contexts/UserContext';
 import * as Location from 'expo-location';
 import { getLocation } from '../services/Geocoding';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export default class ProfileEditionScreen extends Component {
@@ -58,7 +60,7 @@ export default class ProfileEditionScreen extends Component {
         }
 
         this.focusListener = this.props.navigation.addListener('focus', () => {
-            this.loadUserInfo();
+            this.componentDidMount();
         });
     }
 
@@ -68,6 +70,7 @@ export default class ProfileEditionScreen extends Component {
             this.loadUserInfo()
         } catch (error) {
             console.log(error)
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 

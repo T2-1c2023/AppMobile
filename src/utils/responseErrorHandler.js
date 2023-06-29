@@ -35,6 +35,9 @@ export function responseErrorHandler(response, navigation) {
         else if (response.status === 500) {
             console.log("[responseErrorHandler] 500");
         }
+        else if (response.status === 503) {
+            // console.log("[responseErrorHandler] 503");
+        }
         else if (response.status === 400) {
             console.log("[responseErrorHandler] 400");
         }
