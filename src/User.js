@@ -44,21 +44,18 @@ export async function logIn(mail, password) {
 
 // On success returns true, on failure returns undefined.
 export async function registerGoogleAcc(data) {
-	// TODO: La siguiente información la tiene que actualizar el usuario al editar el perfil (temporal?)
-	data.phone_number = '123456789';
-	data.location = { latitude: 0, longitude: 0 };
-	data.weight = 0;
 	console.log('Enviando:', data);
 
-	await axios.post(API_GATEWAY_URL + 'register/oauth', data)
-		.then(async (response) => {
-			if (response.status === 200) {
-				return true;
-			}
-		})
-		.catch((error) => {
-			handleRegisterGoogleError(error);
-		});
+	try {
+		const response = await axios.post(API_GATEWAY_URL + 'register/oauth', data);
+		if (response.status === 200) {
+		console.log('Users retorna true');
+		return true;
+		}
+	} catch (error) {
+		handleRegisterGoogleError(error);
+		throw error; // Re-throw the error to propagate it
+	}
 }
 
 export async function logInGoogleAcc(firebaseToken) {

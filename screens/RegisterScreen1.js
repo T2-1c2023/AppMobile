@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 // Visuals
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
 import { TextHeader, DividerWithMiddleText, ButtonStandard, InputData, TextWithLink, LoginImage, TextDetails } from '../src/styles/BaseComponents';
 import { ActivityIndicator, HelperText } from 'react-native-paper';
 import styles from '../src/styles/styles';
+import Modal from 'react-native-modal';
 // Register logic
 import { register } from '../src/User';
 import { tokenManager } from '../src/TokenManager';
@@ -24,6 +25,7 @@ export default class RegisterScreen1 extends Component {
         this.handleProceed = this.handleProceed.bind(this)
         this.state = {
             loading: false,
+            googleSignInPopUp: false,
             fullName: '',
             phone: '',
             email: '',
@@ -75,6 +77,8 @@ export default class RegisterScreen1 extends Component {
             },
             weight: parseInt(this.state.weight, 10)
         }
+
+        console.log(data);
         const success = await register(data);
         console.log(success)
 
@@ -85,7 +89,7 @@ export default class RegisterScreen1 extends Component {
         this.setState({ loading: false });
     }
 
-    async handleGoogleSignIn() {
+    handleGoogleSignIn = async () => {
         this.setState({ loading: true });
 
         let expo_push_token = await registerForPushNotificationsAsync();
@@ -97,13 +101,17 @@ export default class RegisterScreen1 extends Component {
             is_trainer: this.props.route.params.trainer,
             is_athlete: this.props.route.params.athlete,
             expo_push_token: expo_push_token,
+            phone_number: this.state.phone,
+            location: {
+                latitude: this.state.location.latitude,
+                longitude: this.state.location.longitude
+            },
+            weight: parseInt(this.state.weight, 10)
         }
-
-        // TODO: agregar pop up para cargar datos con peso y ubicación
 
         const userMail = await googleSignIn(data);
         
-        console.log(userMail);
+        console.log('RegisterScreen1 recibió', userMail);
         if (userMail !== undefined) {
             this.props.navigation.navigate('PinCodeScreen', { mail: userMail });
         }
@@ -159,7 +167,8 @@ export default class RegisterScreen1 extends Component {
     }
 
     incorrectWeight() {
-        return this.state.weight <= 0
+        const weightInt = parseInt(this.state.weight); 
+        return (weightInt <= 0 || isNaN(weightInt)) && this.state.weight.length > 0
     }
 
     getLocation = async () => {
@@ -176,6 +185,97 @@ export default class RegisterScreen1 extends Component {
         const formattedLocation = await getLocation(latitude, longitude);
         console.log(formattedLocation);
         this.setState( { locationDisplayName: formattedLocation });
+    }
+
+    allGoogleFieldsAreValid = () => {
+        const { phone, weight, locationDisplayName } = this.state;
+
+        // TODO: el checkeo de teléfono es más complejo, por ahora queda así
+        const phoneIsValid = phone !== '';
+        const weightIsValid = weight > 0;
+        const locationIsValid = (locationDisplayName !== '');
+
+        return phoneIsValid && weightIsValid && locationIsValid;
+    }
+
+    renderGoogleSignInPopUp = () => {
+        const { googleSignInPopUp, locationDisplayName } = this.state;
+        
+        return (
+          <Modal
+            isVisible={googleSignInPopUp}
+            animationIn='slideInDown'
+            animationOut='slideOutUp'
+            animationInTiming={100}
+          >
+            <View style={popupStyles.popupContainer}>
+              <Text style={popupStyles.title}>Complete los siguientes campos antes de continuar:</Text>
+              <InputData
+                placeholder="Número de teléfono"
+                ref={this.phoneInput}
+                maxLength={30}
+                onChangeText={(input) => {
+                  this.setState({ phone: input })
+                }}
+                onSubmitEditing={() => this.emailInput.current.focus()}
+                style={{
+                  marginTop: 5,
+                }}
+              />
+
+              <InputData
+                placeholder="Peso (kg)"
+                ref={this.weightInput}
+                onChangeText={(input) => {
+                    this.setState({ weight: input })
+                }}
+                keyboardType = 'numeric'
+                warningMode={this.incorrectWeight()}
+                style={{
+                    marginTop: 5,
+                }}
+              />
+
+              {this.incorrectWeight() &&
+                <HelperText
+                    type="error"
+                    style={{
+                        color: 'red',
+                        width: 250,
+                    }}
+                >
+                    El peso debe ser mayor a 0
+                </HelperText>
+                }
+
+              <ButtonStandard
+                  title="Agregar Ubicación"
+                  onPress={this.getLocation}
+                  style={{ marginTop: 10 }}
+              />
+
+              { locationDisplayName !== '' && (
+                  <View style={{ width: 250, marginTop: 10 }}>
+                      <Text style={{ textAlign: 'center', fontWeight: '500' }}>
+                          {locationDisplayName}
+                      </Text>
+                  </View>
+              )}
+
+              <ButtonStandard 
+                title='Continuar' 
+                onPress={this.handleGoogleSignIn}
+                disabled={!this.allGoogleFieldsAreValid()}
+                style={{ marginTop: 10 }} 
+              />             
+
+              <ButtonStandard 
+                title='Cerrar' onPress={() => this.setState({ googleSignInPopUp: false })}
+                style={{ marginTop: 10 }} 
+              />
+            </View>
+          </Modal>
+        )
     }
 
     render() {
@@ -206,7 +306,7 @@ export default class RegisterScreen1 extends Component {
                         />
 
                         <ButtonStandard
-                            onPress={() => this.handleGoogleSignIn()}
+                            onPress={() => this.setState({ googleSignInPopUp: true })}
                             title="Registrate con Google"
                             style={{
                                 marginTop: 30,
@@ -396,9 +496,26 @@ export default class RegisterScreen1 extends Component {
                             }}
                         />
 
+                        {this.renderGoogleSignInPopUp()}
+
                     </View>
                 </ScrollView>
             )
         }
     }
 }
+
+const popupStyles = StyleSheet.create({
+    popupContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center'
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 400,
+        marginBottom: 10,
+        textAlign: 'center'
+    }
+})
