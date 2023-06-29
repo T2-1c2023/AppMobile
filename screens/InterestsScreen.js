@@ -21,6 +21,8 @@ import { TextHeader, TextDetails, DividerWithMiddleText, InputData, TextWithLink
 import { UserContext } from '../src/contexts/UserContext';
 import { CommonActions } from '@react-navigation/native';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export const Mode = {
@@ -69,6 +71,7 @@ export default class InterestsScreen extends Component {
             })
             .catch((error) => {
                 console.error("handleSelection error " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -88,6 +91,7 @@ export default class InterestsScreen extends Component {
             })
             .catch(error => {
                 console.log('handleDeselection ' + error)
+                responseErrorHandler(error.response, this.props.navigation)
             })
 
 
@@ -102,6 +106,7 @@ export default class InterestsScreen extends Component {
             })
             .catch((error) => {
                 console.error('loadInterestsTypes ' + error)
+                responseErrorHandler(error.response, this.props.navigation)
             })
 
     }
@@ -122,6 +127,7 @@ export default class InterestsScreen extends Component {
             })
             .catch((error) => {
                 console.error("loadInterests error " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 

@@ -88,10 +88,11 @@ export default class GoalsListScreen extends Component {
                 this.setState({ goals: response.data });
                 this.setState({ loading: false });
                 
-                console.log("goals retrieve: "+response.data);
+                console.log("goals retrieve: " + response.data);
             })
             .catch((error) => {
                 console.error("loadGoals error " + error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 

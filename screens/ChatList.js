@@ -9,6 +9,8 @@ import { tokenManager } from '../src/TokenManager';
 import { downloadImage } from '../services/Media';
 import { titleManager } from '../src/TitleManager';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler';
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 class ChatList extends Component {
@@ -101,6 +103,7 @@ class ChatList extends Component {
             this.setState({ users: response.data });
         } catch (error) {
             console.error("Error: " + JSON.stringify(error))
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 

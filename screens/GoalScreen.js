@@ -11,6 +11,8 @@ import { IconButton } from 'react-native-paper';
 import { UserContext } from '../src/contexts/UserContext';
 import { downloadImage } from '../services/Media';
 
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 export const Mode = {
@@ -60,6 +62,7 @@ export default class GoalScreen extends Component {
             })
             .catch((error) => {
                 console.log(error);
+                responseErrorHandler(error.response, this.props.navigation)
             }
         )
     }
@@ -291,6 +294,7 @@ export default class GoalScreen extends Component {
             await this.sendPutRequest(multimediaIds)
         } catch (error) {
             console.log(error);
+            responseErrorHandler(error.response, this.props.navigation)
         }
 
         this.props.navigation.goBack();
@@ -304,6 +308,7 @@ export default class GoalScreen extends Component {
             await this.sendPostRequest(multimediaIds)
         } catch (error) {
             console.log(error);
+            responseErrorHandler(error.response, this.props.navigation)
         }
    
         this.props.navigation.goBack();
@@ -363,6 +368,7 @@ export default class GoalScreen extends Component {
             })
             .catch((error) => {
                 console.log(error);
+                responseErrorHandler(error.response, this.props.navigation)
             })
     }
 
@@ -379,6 +385,7 @@ export default class GoalScreen extends Component {
             this.props.navigation.goBack();
         } catch (error) {
             console.log(error)
+            responseErrorHandler(error.response, this.props.navigation)
         }
     }
 

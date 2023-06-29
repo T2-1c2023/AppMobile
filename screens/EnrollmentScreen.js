@@ -13,6 +13,7 @@ import Constants from 'expo-constants'
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 import { UserContext } from '../src/contexts/UserContext';
 import { InputData } from '../src/styles/BaseComponents';
+import { responseErrorHandler } from '../src/utils/responseErrorHandler'
 
 export default class EnrollmentScreen extends Component {
     static contextType = UserContext;
@@ -87,6 +88,7 @@ export default class EnrollmentScreen extends Component {
                                 break;
                             default:
                                 Alert.alert('Error desconocido');
+                                responseErrorHandler(error.response, this.props.navigation)
                         }
                     }
 
@@ -153,6 +155,7 @@ export default class EnrollmentScreen extends Component {
                         Alert.alert('', "Ya existe una huella registrada para este usuario")
                     } else {
                         console.log("handleEnrollment " + error);
+                        responseErrorHandler(error.response, this.props.navigation)
                     }
                 })
 

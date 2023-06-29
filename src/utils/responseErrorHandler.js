@@ -30,15 +30,15 @@ export function responseErrorHandler(response, navigation) {
             handle401(navigation);
         }
         else if (response.status === 404) {
-            console.log('404');
+            console.log("[responseErrorHandler] 404");
         }
         else if (response.status === 500) {
-            console.log('500');
+            console.log("[responseErrorHandler] 500");
         }
         else if (response.status === 400) {
-            console.log('400');
+            console.log("[responseErrorHandler] 400");
         }
         else {
-            console.log('unknown error');
+            console.log("[responseErrorHandler] " + response.status);
         }
 }
