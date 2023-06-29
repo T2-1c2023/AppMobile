@@ -34,6 +34,7 @@ export async function logIn(mail, password) {
 		.then(async (response) => {
 			if (response.status === 200) {
 				const token = response.data.token;
+				console.log("[checkpoint]")
 				await tokenManager.updateTokens(token);
 			}
 		})

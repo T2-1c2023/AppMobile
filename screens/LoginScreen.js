@@ -67,8 +67,14 @@ export default class LoginScreen extends Component {
         if (!allFieldsAreLoaded)
             return
 
-        await logIn(email, password)
-            
+        try {
+            console.log("[LoginScreen] about to login with: " + email + " " + password)
+            await logIn(email, password)
+            console.log("[LoginScreen] after login with: " + email + " " + password)
+        } catch (error) {
+            console.log("[LoginScreen] error: " + error)
+        }
+
         if (this.alreadyLogged()) {
             await this.updateContextAndRedirect()
         }
