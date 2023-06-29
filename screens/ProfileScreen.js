@@ -257,14 +257,14 @@ export default class ProfileScreen extends Component {
                     onPress={this.onPressFollowing}
                 />
             )
-        } else {
+        } /*else {
             return (
                 <ButtonStandard
                     title='Enviar mensaje'
                     onPress={this.onPressSendMessage}
                 />
             )
-        }
+        }*/
     }
 
     // Callback function to show pop up when trainer logo in ProfileHeader is pressed
