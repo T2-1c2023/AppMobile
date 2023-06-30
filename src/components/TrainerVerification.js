@@ -25,8 +25,6 @@ export default class TrainerVerification extends Component {
             pendingRequest: false,
             videoUri: null,
         };
-
-        console.log(props.data);
     };
 
     selectVideo = async () => {

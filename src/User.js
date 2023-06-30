@@ -4,6 +4,8 @@ import { tokenManager } from './TokenManager'
 import Constants from 'expo-constants'
 import { showMessage } from 'react-native-flash-message';
 
+import { responseErrorHandler } from './utils/responseErrorHandler'
+
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
 
 // TODO: usar constantes para los errores
@@ -25,11 +27,12 @@ export async function register(data) {
 	}
 }
 
-export async function logIn(mail, password) {
+export async function logIn(mail, password, navigation) {
 	const data = {
 		mail: mail,
 		password: password
 	}
+	console.log("[checkpoint]")
 	await axios.post(API_GATEWAY_URL + 'login', data)
 		.then(async (response) => {
 			if (response.status === 200) {
@@ -39,7 +42,12 @@ export async function logIn(mail, password) {
 			}
 		})
 		.catch((error) => {
-			handleLogInError(error);
+			console.log("[Error]: ",error)
+			if (error.response && error.response.status === 422) {
+				responseErrorHandler(error.response, navigation)
+			} else {
+				handleLogInError(error);
+			}
 		});
 }
 

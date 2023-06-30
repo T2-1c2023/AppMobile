@@ -48,7 +48,7 @@ export default class ProfileHeader extends Component {
                         style={profileStyles.athletePic}
                     />
                 )}
-                {this.props.isTrainer && (
+                {(this.props.isTrainer && this.props.owner) && (
                     <View style={{position: 'relative'}}>
                         <TouchableOpacity
                           onPress={this.handleTrainerLogoPress}
@@ -58,6 +58,26 @@ export default class ProfileHeader extends Component {
                                 style={profileStyles.trainerPic}
                             />
                         </TouchableOpacity>
+                        {this.props.certifiedTrainer && (
+                            <View style={{position: 'absolute', top: 0, right: -10}}>
+                                <TouchableOpacity
+                                    onPress={this.handleCertifiedTrainerPress}
+                                >
+                                    <Image
+                                        source={require('../../assets/images/certificate.png')}
+                                        style={profileStyles.certifiedTrainerPic}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
+                )}
+                {(this.props.isTrainer && !this.props.owner) && (
+                    <View style={{position: 'relative'}}>
+                        <Image
+                            source={require('../../assets/images/trainer.png')}
+                            style={profileStyles.trainerPic}
+                        />
                         {this.props.certifiedTrainer && (
                             <View style={{position: 'absolute', top: 0, right: -10}}>
                                 <TouchableOpacity
