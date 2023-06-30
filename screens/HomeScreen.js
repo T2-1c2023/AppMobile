@@ -23,7 +23,7 @@ import UsersListScreen from './UsersListScreen';
 // Temporary (Test)
 import { View, Text, StyleSheet } from 'react-native';
 import Styles from '../src/styles/styles';
-import NotificationsTest from './test_screens/NotificationsTest';
+// import NotificationsTest from './test_screens/NotificationsTest';
 import StatisticsScreen from './StatisticsScreen';
 import Icon from 'react-native-paper/src/components/Icon'
 
@@ -392,7 +392,7 @@ class HomeScreen extends Component {
                     }
                 </Drawer.Screen>
 
-                <Drawer.Screen name="Notificaciones Test"
+                {/*<Drawer.Screen name="Notificaciones Test"
                     options={{
                         drawerIcon: () => (
                             <View style={styles.drawerIconContainer}>
@@ -402,7 +402,7 @@ class HomeScreen extends Component {
                     }}
                 >
                     {() => <NotificationsTest />}
-                </Drawer.Screen>
+                </Drawer.Screen>*/}
             </Drawer.Navigator>
         );
     }

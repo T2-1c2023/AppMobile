@@ -25,8 +25,6 @@ export default class TrainerVerification extends Component {
             pendingRequest: false,
             videoUri: null,
         };
-
-        console.log(props.data);
     };
 
     selectVideo = async () => {
@@ -97,8 +95,8 @@ export default class TrainerVerification extends Component {
     }
 
     render() {
-        const { onClose } = this.props;
-        const { fullname, is_recognized_trainer } = this.props.data;
+        const { onClose, certifiedTrainer } = this.props;
+        const { fullname } = this.props.data;
         const { videoUri, loading, requestSent, pendingRequest } = this.state;
 
         if (loading) {
@@ -133,7 +131,7 @@ export default class TrainerVerification extends Component {
                     </View>
                 )
             }
-        } else if (is_recognized_trainer) { 
+        } else if (certifiedTrainer) { 
             return (
                 <View style={styles.popupContainer}>
                     <Text style={styles.title}>Ya se encuentra verificado!</Text>

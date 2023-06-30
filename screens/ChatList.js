@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
+import ChatElement from '../src/components/ChatElement';
 import database from '@react-native-firebase/database';
 import Constants from 'expo-constants';
 import axios from 'axios';
@@ -180,7 +181,7 @@ class ChatList extends Component {
             (user) =>
               user.id !== userId &&
               !chats.find((chat) => chat.uid1 === user.id || chat.uid2 === user.id) &&
-              user.fullname.toLowerCase().includes(searchQuery.toLowerCase())   
+                          user.fullname.toLowerCase().includes(searchQuery.toLowerCase())   
         );
 
         const renderItem = ({ item }) => {
@@ -189,16 +190,9 @@ class ChatList extends Component {
                     style={styles.userItem}
                     onPress={() => this.createChatRoom(item.id)}
                 >
-                    <View style={styles.userItemContainer}>
-                        <Image
-                            source={require('../assets/images/user_predet_image.png')}
-                            style={styles.userPhoto}
-                        />
-                        <View style={styles.userInfo}>
-                            <Text style={styles.userName}>{item.fullname}</Text>
-                            <Text style={styles.userEmail}>{item.mail}</Text>
-                        </View>
-                    </View>
+                  <ChatElement
+                    data={item}
+                  />
                 </TouchableOpacity>
             );
         };

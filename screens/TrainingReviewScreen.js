@@ -15,6 +15,7 @@ import { titleManager } from '../src/TitleManager';
 import { responseErrorHandler } from '../src/utils/responseErrorHandler'
 
 const API_GATEWAY_URL = Constants.manifest?.extra?.apiGatewayUrl;
+const reviewPlaceholer =  'Define tu experiencia';
 
 export default class TrainingReviewScreen extends Component {
     constructor(props) {
@@ -33,7 +34,7 @@ export default class TrainingReviewScreen extends Component {
             },
             title: '',
             description: '',
-            review: 'Define tu experiencia',
+            review: reviewPlaceholer,
             axiosReviewMethod: axios.post,
         }
         this.starRatingOptions = [1, 2, 3, 4, 5];
@@ -215,7 +216,7 @@ export default class TrainingReviewScreen extends Component {
                     onChangeText={(review) => this.setState({ review })}
                     maxLength={60}
                     placeholder={this.state.review}
-                    value={this.state.review}
+                    value={this.state.review === reviewPlaceholer ? "" : this.state.review}
                     style={{
                         marginTop: 5,
                     }}

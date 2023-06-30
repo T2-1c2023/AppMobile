@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import TrainerVerification from '../src/components/TrainerVerification';
 // Image upload
-import { selectImage, uploadImageFirebase, downloadImage } from '../services/Media';
+import { downloadImage } from '../services/Media';
 import Constants from 'expo-constants'
 import axios from 'axios';
 import { tokenManager } from '../src/TokenManager';
@@ -257,14 +257,14 @@ export default class ProfileScreen extends Component {
                     onPress={this.onPressFollowing}
                 />
             )
-        } else {
+        } /*else {
             return (
                 <ButtonStandard
                     title='Enviar mensaje'
                     onPress={this.onPressSendMessage}
                 />
             )
-        }
+        }*/
     }
 
     // Callback function to show pop up when trainer logo in ProfileHeader is pressed
@@ -280,6 +280,7 @@ export default class ProfileScreen extends Component {
                 isAthlete={this.is_athlete}
                 isTrainer={this.is_trainer}
                 certifiedTrainer={this.state.certifiedTrainer}
+                owner={this.owner}
                 bottomLeft={this.getHeaderLeftButton()}
                 bottomRight={this.getHeaderRightButton()}
                 style={{
@@ -413,7 +414,8 @@ export default class ProfileScreen extends Component {
             animationInTiming={100}
           >
             <TrainerVerification 
-              data={this.props.data} 
+              data={this.props.data}
+              certifiedTrainer={this.state.certifiedTrainer}
               onClose={this.closeVerificationPopUp} 
             />
           </Modal>
