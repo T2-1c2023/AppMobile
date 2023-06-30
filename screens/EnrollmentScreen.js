@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
+import { HelperText } from 'react-native-paper';
 import { TextHeader, TextDetails, ButtonStandard, FingerprintImage } from '../src/styles/BaseComponents';
 import styles from '../src/styles/styles';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -59,7 +60,7 @@ export default class EnrollmentScreen extends Component {
                 payload: payload
             })
         } catch (error) {
-            Alert.alert("","No tenés huella registrada")
+            Alert.alert("", "No tenés huella registrada")
             return
         }
         const { success, signature } = result
@@ -104,18 +105,20 @@ export default class EnrollmentScreen extends Component {
         console.log("[EnrollmentScreen] Token: " + tokenManager.getAccessToken())
         console.log("[EnrollmentScreen] Payload: " + JSON.stringify(tokenManager.getPayload()))
         await this.context.setUserId(tokenManager.getUserId())
+        await this.context.setName(tokenManager.getName())
 
+        console.log("[EnrollmentScreen] isMixedUser: " + tokenManager.isMixedUser())
         if (tokenManager.isMixedUser())
-            // TODO: handle mixed user
-            alert('Usuario mixto en desarrollo')
-        else
+            this.props.navigation.replace('RoleSelectionScreen')
+        else {
             tokenManager.isAthlete() ? await this.context.setAsAthlete()
                 :
                 tokenManager.isTrainer() ? await this.context.setAsTrainer()
                     :
                     alert('No se encontró un rol asignado. Usuario invalido')
+            this.props.navigation.replace('HomeScreen')
+        }
 
-        this.props.navigation.replace('HomeScreen')
     }
 
     componentDidMount() {
@@ -161,6 +164,20 @@ export default class EnrollmentScreen extends Component {
 
 
         }
+    }
+
+    emailWarningMode() {
+        return !this.state.mail.length == 0 && !this.emailIsValid(this.state.mail)
+    }
+
+    emailIsValid(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    allFieldsAreValid() {
+        const { mail } = this.state;
+        return this.emailIsValid(mail)
     }
 
     render() {
@@ -225,15 +242,29 @@ export default class EnrollmentScreen extends Component {
                             onChangeText={(input) => {
                                 this.setState({ mail: input })
                             }}
+                            warningMode={this.emailWarningMode()}
                             style={{
                                 marginTop: 15,
                             }}
                         />}
+                    {this.emailWarningMode() &&
+
+                        <HelperText
+                            type="error"
+                            style={{
+                                color: 'red',
+                                width: 250,
+                            }}
+                        >
+                            El correo es incorrecto
+                        </HelperText>
+                    }
 
                     {this.props.route.params.from === 'LoginScreen' &&
                         <ButtonStandard
                             onPress={this.handleSignIn}
                             title="Ingresar con huella"
+                            disabled={!this.allFieldsAreValid()}
                             style={{
                                 marginTop: 50,
                             }}
@@ -246,7 +277,7 @@ export default class EnrollmentScreen extends Component {
                         style={{
                             marginTop: 50,
                         }}
-                    /> }
+                    />}
 
                 </View>
             </ScrollView>
